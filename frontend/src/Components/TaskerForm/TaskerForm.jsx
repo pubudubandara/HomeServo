@@ -55,7 +55,8 @@ const TaskerForm = () => {
         ...formData,
         skills: formData.skills
           ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
-          : []
+          : [],
+        role: 'tasker',
       };
       Object.entries(processedFormData).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {

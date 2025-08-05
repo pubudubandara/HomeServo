@@ -9,7 +9,7 @@ dotenv.config();
 
 // Register a new user
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
   try {
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -20,19 +20,19 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     // Create user
-    user = new User({ name, email, password: hashedPassword });
+    user = new User({ name, email, password: hashedPassword, role: role || 'user' });
     await user.save();
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
     res.status(201).json({
       message: 'User registered successfully',
-      user: { name: user.name, email: user.email },
+      user: { name: user.name, email: user.email, role: user.role },
       token
     });
   } catch (error) {
@@ -53,13 +53,13 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
     res.status(200).json({
       message: 'Login successful',
-      user: { name: user.name, email: user.email },
+      user: { name: user.name, email: user.email, role: user.role },
       token
     });
   } catch (error) {

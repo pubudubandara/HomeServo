@@ -19,6 +19,12 @@ const TaskerSchema = new mongoose.Schema({
   bio: { type: String, required: true },
   skills: { type: String, required: true },
   profileImageUrl: { type: String }, // Cloudinary image URL
+  role: {
+    type: String,
+    enum: ['tasker'],
+    default: 'tasker',
+    required: true,
+  },
 }, { timestamps: true });
 
 const Tasker = mongoose.model('Tasker', TaskerSchema);

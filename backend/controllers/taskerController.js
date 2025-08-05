@@ -22,7 +22,7 @@ export const registerTasker = async (req, res) => {
     const {
       username, password, fullName, email, phoneNumber,
       addressLine1, addressLine2, city, stateProvince, postalCode, country,
-      category, experience, hourlyRate, bio, skills
+      category, experience, hourlyRate, bio, skills, role
     } = req.body;
 
     // Check for existing user
@@ -55,7 +55,8 @@ export const registerTasker = async (req, res) => {
       hourlyRate,
       bio,
       skills,
-      profileImageUrl
+      profileImageUrl,
+      role: role || 'tasker'
     });
 
     await tasker.save();

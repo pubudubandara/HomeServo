@@ -23,7 +23,9 @@ const Login = () => {
       const data = await response.json();
       if (!response.ok) {
         setError(data.message || "Login failed");
+        console.log("Login failed:", data);
       } else {
+        console.log("Login successful:", data);
         // Save token or user info as needed
         localStorage.setItem("token", data.token);
         // Redirect or update UI as needed
@@ -31,6 +33,7 @@ const Login = () => {
       }
     } catch (err) {
       setError("Server error. Please try again later.");
+      console.log("Login error:", err);
     } finally {
       setLoading(false);
     }
