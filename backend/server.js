@@ -4,7 +4,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 
+
 import userRoutes from './routes/userRoutes.js';
+import taskerRoutes from './routes/taskerRoutes.js';
 
 dotenv.config();
 
@@ -29,7 +31,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+
 app.use('/api/users', userRoutes);
+app.use('/api/taskers', taskerRoutes);
 
 // Start server
 app.listen(PORT, () => {
