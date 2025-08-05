@@ -1,3 +1,17 @@
+// GET /api/taskers/profile
+export const getTaskerProfile = async (req, res) => {
+  try {
+    // req.user is set by auth middleware and should contain userId
+    const tasker = await Tasker.findById(req.user.userId).select('-password');
+    if (!tasker) {
+      return res.status(404).json({ message: 'Tasker not found' });
+    }
+    res.json(tasker);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 import Tasker from '../models/Tasker.js';
 import bcrypt from 'bcryptjs';

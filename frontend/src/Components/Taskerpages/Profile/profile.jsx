@@ -84,9 +84,9 @@ const TaskerProfile = () => {
       <div className="tasker-profile">
         <div className="profile-header">
           <div className="profile-image-section">
-            {taskerData.profileImage ? (
+            {taskerData.profileImageUrl ? (
               <img 
-                src={taskerData.profileImage} 
+                src={taskerData.profileImageUrl} 
                 alt="Profile" 
                 className="profile-image"
               />
