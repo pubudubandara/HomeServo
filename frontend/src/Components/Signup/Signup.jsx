@@ -22,6 +22,7 @@ const SignUp = () => {
         name,
         email,
         password,
+        role: 'user',
       });
       console.log('User registered:', response.data);
       alert('You have signed up successfully!');

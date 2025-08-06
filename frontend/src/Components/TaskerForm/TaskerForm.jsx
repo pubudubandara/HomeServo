@@ -41,22 +41,41 @@ const TaskerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate password confirmation
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
-    
+
     try {
+      const data = new FormData();
+      // Convert skills to array if not empty
+      const processedFormData = {
+        ...formData,
+        skills: formData.skills
+          ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
+          : [],
+        role: 'tasker',
+      };
+      Object.entries(processedFormData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          // For FormData, arrays need to be stringified
+          if (Array.isArray(value)) {
+            data.append(key, JSON.stringify(value));
+          } else {
+            data.append(key, value);
+          }
+        }
+      });
+
       const response = await fetch('http://localhost:5001/api/taskers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: data
       });
       if (response.ok) {
         alert('You are a Tasker now!');
-        navigate('/tasker/profile');  // Redirect to Tasker Profile page after successful signup
+        navigate('/tasker/profile');
       } else {
         alert('Error submitting application');
       }

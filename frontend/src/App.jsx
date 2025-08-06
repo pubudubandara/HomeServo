@@ -1,4 +1,5 @@
 // src/App.jsx
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './Components/Navbar/Navbar';
@@ -16,6 +17,7 @@ import Seller from './Components/Seller/seller';
 import BookingForm from './Components/Book/Book';
 import AboutUs from './Components/AboutUs/AboutUs';
 import Admin from './Components/Admin/Admin';
+import { AuthProvider } from './contexts/AuthContext';
 
 const AppContent = () => {
   const location = useLocation();
@@ -51,10 +53,13 @@ const AppContent = () => {
   );
 };
 
+
 const App = () => {
   return (
     <Router>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 };
