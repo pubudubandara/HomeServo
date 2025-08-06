@@ -100,31 +100,35 @@ const Navbar = () => {
             About Us
           </NavLink>
         </li>
-        <li>
+        {/* User actions group */}
+        <div className="nav-user-actions">
+          {!user && (
+            <>
+              <li>
+                <NavLink to="/login" className={({ isActive }) => isActive ? 'active-link' : undefined}>Login</NavLink>
+              </li>
+              <li>
+                <NavLink to="/signup" className={({ isActive }) => isActive ? 'active-link' : undefined}>Signup</NavLink>
+              </li>
+            </>
+          )}
+          {user && (
+            <li className="user-dropdown">
+              <NavLink to="/profile" className="user-name" aria-label="Profile" title={user.name}>
+                <i className="fas fa-user-circle"></i> {getDisplayName(user.name)}
+              </NavLink>
+              <button className="logout-btn" onClick={handleLogout} disabled={loggingOut} aria-label="Logout">
+                {loggingOut ? 'Logging out...' : 'Logout'}
+              </button>
+            </li>
+          )}
+        </div>
+        {/* Visually separated CTA */}
+        <li className="nav-cta-separator">
           <NavLink to="/become-tasker" className="tasker-btn">
             Become a Tasker
           </NavLink>
         </li>
-        {!user && (
-          <>
-            <li>
-              <NavLink to="/login" className={({ isActive }) => isActive ? 'active-link' : undefined}>Login</NavLink>
-            </li>
-            <li>
-              <NavLink to="/signup" className={({ isActive }) => isActive ? 'active-link' : undefined}>Signup</NavLink>
-            </li>
-          </>
-        )}
-        {user && (
-          <li className="user-dropdown">
-            <NavLink to="/profile" className="user-name" aria-label="Profile" title={user.name}>
-              <i className="fas fa-user-circle"></i> {getDisplayName(user.name)}
-            </NavLink>
-            <button className="logout-btn" onClick={handleLogout} disabled={loggingOut} aria-label="Logout">
-              {loggingOut ? 'Logging out...' : 'Logout'}
-            </button>
-          </li>
-        )}
       </ul>
 
       {/* Hamburger menu button for mobile */}

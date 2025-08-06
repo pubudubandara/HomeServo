@@ -59,6 +59,21 @@
   margin: 0;
 }
 
+/* User actions group for right alignment and spacing */
+.nav-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 24px;
+}
+
+/* Visually separate Become a Tasker CTA */
+.nav-cta-separator {
+  margin-left: 32px !important;
+  display: flex;
+  align-items: center;
+}
+
 /* Active link highlighting */
 .nav-links a,
 .nav-links-mobile a {
@@ -90,20 +105,27 @@
 }
 
 /* Tasker button styling */
+
+/* Become a Tasker: prominent filled button style */
 .tasker-btn {
   background: linear-gradient(90deg, #218838 60%, #1f2937 100%);
   color: #fff !important;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
-  padding: 8px 20px;
+  padding: 10px 28px;
   border-radius: 30px;
   margin-left: 8px;
-  box-shadow: 0 2px 8px rgba(33,136,56,0.08);
-  transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(33,136,56,0.10);
+  font-size: 1.08rem;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  outline: none;
+  display: inline-block;
 }
-.tasker-btn:hover {
-  background: #1f2937;
-  color: #fff;
+.tasker-btn:hover, .tasker-btn:focus {
+  background: #218838;
+  color: #fff !important;
+  box-shadow: 0 6px 18px rgba(33,136,56,0.16);
 }
 
 /* User dropdown/profile styling */
