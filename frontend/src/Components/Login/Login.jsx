@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './Login.css'; // Import CSS
 import cleaner from '../../images/cleaner-illustration.png'; // Import image
 
 const Login = () => {
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,10 +32,8 @@ const Login = () => {
         console.log("Login failed:", data);
       } else {
         console.log("Login successful:", data);
-        // Save token or user info as needed
-        localStorage.setItem("token", data.token);
-        // Redirect or update UI as needed
-        window.location.href = "/";
+        login(data.user); // Set user in context
+        navigate("/"); // Use React Router navigation
       }
     } catch (err) {
       setError("Server error. Please try again later.");

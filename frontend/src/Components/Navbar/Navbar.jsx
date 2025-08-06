@@ -1,31 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Navbar.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+
+import { useAuth } from '../../contexts/AuthContext';
+
 
 
 const Navbar = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Try to get user info from localStorage
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    if (token && userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch {
-        setUser(null);
-      }
-    } else {
-      setUser(null);
-    }
-  }, []);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+    logout();
     window.location.href = '/';
   };
 
