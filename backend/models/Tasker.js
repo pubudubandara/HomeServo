@@ -17,7 +17,7 @@ const TaskerSchema = new mongoose.Schema({
   experience: { type: String, required: true },
   hourlyRate: { type: Number, required: true },
   bio: { type: String, required: true },
-  skills: { type: String, required: true },
+  skills: { type: [String], required: true },
   profileImageUrl: { type: String }, // Cloudinary image URL
   role: {
     type: String,

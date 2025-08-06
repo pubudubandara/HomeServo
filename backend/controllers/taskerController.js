@@ -19,11 +19,26 @@ import bcrypt from 'bcryptjs';
 // POST /api/taskers
 export const registerTasker = async (req, res) => {
   try {
-    const {
+    // Debug: log incoming body and file
+    console.log('req.body:', JSON.stringify(req.body, null, 2));
+    console.log('req.file:', JSON.stringify(req.file, null, 2));
+
+    let {
       username, password, fullName, email, phoneNumber,
       addressLine1, addressLine2, city, stateProvince, postalCode, country,
       category, experience, hourlyRate, bio, skills, role
     } = req.body;
+
+    // Parse skills if it's a string (from FormData)
+    if (typeof skills === 'string') {
+      try {
+        // Try to parse as JSON array (if sent as JSON.stringify)
+        skills = JSON.parse(skills);
+      } catch {
+        // Fallback: split by comma
+        skills = skills.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
 
     // Check for existing user
     const existing = await Tasker.findOne({ $or: [{ username }, { email }] });
@@ -62,7 +77,7 @@ export const registerTasker = async (req, res) => {
     await tasker.save();
     res.status(201).json({ message: 'Tasker registered successfully' });
   } catch (err) {
-    console.error(err);
+    console.error('Register Tasker Error:', err && err.stack ? err.stack : err);
     res.status(500).json({ message: 'Server error' });
   }
 };

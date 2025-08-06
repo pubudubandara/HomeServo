@@ -18,6 +18,9 @@ const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
+// Parse application/x-www-form-urlencoded (for form data)
+app.use(express.urlencoded({ extended: true }));
+// Parse application/json (for JSON bodies)
 app.use(express.json());
 
 // Routes
