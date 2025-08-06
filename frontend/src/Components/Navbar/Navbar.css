@@ -70,10 +70,18 @@
   transition: background 0.2s, color 0.2s;
 }
 
+
+/* Fix hover for all nav links */
 .nav-links a:hover,
 .nav-links-mobile a:hover {
   background: #e6f4ea;
-  color: #218838;
+  color: #218838 !important;
+}
+
+/* Fix hover for tasker button */
+.tasker-btn:hover {
+  background: #e6f4ea !important;
+  color: #218838 !important;
 }
 
 .active-link {
@@ -162,6 +170,58 @@
 @keyframes slideInRight {
   from { right: -100vw; opacity: 0; }
   to { right: 0; opacity: 1; }
+}
+
+/* Fade-out animation for mobile menu */
+.nav-links-mobile.closing {
+  animation: slideOutRight 0.2s forwards;
+}
+@keyframes slideOutRight {
+  from { right: 0; opacity: 1; }
+  to { right: -100vw; opacity: 0; }
+}
+
+/* Backdrop for mobile menu */
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.25);
+  z-index: 1500;
+  animation: fadeInBackdrop 0.2s;
+}
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Truncate user name in navbar */
+.user-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Logout error alert */
+.logout-error {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  background: #f44336;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  z-index: 3000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  animation: fadeInError 0.2s;
+}
+@keyframes fadeInError {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Hamburger menu icon */

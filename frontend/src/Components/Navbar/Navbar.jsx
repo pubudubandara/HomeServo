@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -10,12 +11,38 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+  const menuRef = useRef(null);
 
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    await logout();
-    setLoggingOut(false);
-    navigate('/');
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobile]);
+
+  // Fade-out animation for mobile menu
+  const [closing, setClosing] = useState(false);
+  const closeMobileMenu = () => {
+    if (isMobile) {
+      setClosing(true);
+      setTimeout(() => {
+        setIsMobile(false);
+        setClosing(false);
+      }, 200);
+    }
+  };
+
+  // Only close menu when a link is clicked
+  const handleMenuClick = (e) => {
+    if (e.target.tagName === 'A') {
+      closeMobileMenu();
+    }
   };
 
   // Keyboard accessibility for mobile menu
@@ -23,6 +50,26 @@ const Navbar = () => {
     if (e.key === 'Enter' || e.key === ' ') {
       setIsMobile(!isMobile);
     }
+  };
+
+  // Handle logout with error feedback
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    setLogoutError("");
+    try {
+      await logout();
+      navigate('/');
+    } catch (err) {
+      setLogoutError("Logout failed. Please try again.");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  // Truncate long user names
+  const getDisplayName = (name) => {
+    if (!name) return '';
+    return name.length > 16 ? name.slice(0, 13) + '...' : name;
   };
 
   return (
@@ -33,10 +80,15 @@ const Navbar = () => {
         <span>Servo</span>
       </NavLink>
 
+      {/* Backdrop for mobile menu */}
+      {isMobile && <div className="nav-backdrop" onClick={closeMobileMenu} aria-hidden="true"></div>}
+
       {/* Nav Links */}
       <ul
-        className={isMobile ? 'nav-links-mobile nav-overlay' : 'nav-links'}
-        onClick={() => setIsMobile(false)}
+        id="main-navigation"
+        ref={menuRef}
+        className={isMobile ? `nav-links-mobile nav-overlay${closing ? ' closing' : ''}` : 'nav-links'}
+        onClick={handleMenuClick}
       >
         <li>
           <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : undefined} end>
@@ -65,8 +117,8 @@ const Navbar = () => {
         )}
         {user && (
           <li className="user-dropdown">
-            <NavLink to="/profile" className="user-name" aria-label="Profile">
-              <i className="fas fa-user-circle"></i> {user.name}
+            <NavLink to="/profile" className="user-name" aria-label="Profile" title={user.name}>
+              <i className="fas fa-user-circle"></i> {getDisplayName(user.name)}
             </NavLink>
             <button className="logout-btn" onClick={handleLogout} disabled={loggingOut} aria-label="Logout">
               {loggingOut ? 'Logging out...' : 'Logout'}
@@ -87,6 +139,9 @@ const Navbar = () => {
       >
         {isMobile ? <i className="fas fa-times"></i> : <i className="fas fa-bars"></i>}
       </button>
+
+      {/* Logout error alert */}
+      {logoutError && <div className="logout-error">{logoutError}</div>}
     </nav>
   );
 };
