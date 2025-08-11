@@ -1,49 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './service.css';
 import TaskerNavbar from '../navbar/navbar';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getTaskerProfile } from '../../../utils/taskerAPI';
+
+// API configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+// Service API functions
+const serviceAPI = {
+  getTaskerServices: async (taskerId, token) => {
+    const response = await fetch(`${API_BASE_URL}/services/tasker/${taskerId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.json();
+  },
+
+  createService: async (taskerId, serviceData, token) => {
+    const response = await fetch(`${API_BASE_URL}/services/tasker/${taskerId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(serviceData)
+    });
+    return response.json();
+  },
+
+  updateService: async (serviceId, serviceData, token) => {
+    const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(serviceData)
+    });
+    return response.json();
+  },
+
+  toggleServiceStatus: async (serviceId, token) => {
+    const response = await fetch(`${API_BASE_URL}/services/${serviceId}/toggle-status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.json();
+  },
+
+  deleteService: async (serviceId, token) => {
+    const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.json();
+  },
+
+  getServiceStats: async (taskerId, token) => {
+    const response = await fetch(`${API_BASE_URL}/services/tasker/${taskerId}/stats`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.json();
+  }
+};
 
 const TaskerServiceCards = () => {
-  const [serviceCards, setServiceCards] = useState([
-    {
-      id: 1,
-      title: 'Furniture Assembly & Installation',
-      category: 'Assembly',
-      description: 'Professional furniture assembly service for IKEA, Wayfair, and other furniture brands. Quick and efficient setup with proper tools.',
-      price: '$45/hour',
-      image: '/src/assets/CardImage/hammer 1.png',
-      status: 'active',
-      rating: 4.8,
-      jobsCompleted: 23,
-      tags: ['IKEA', 'Furniture', 'Assembly', 'Installation']
-    },
-    {
-      id: 2,
-      title: 'Interior Painting Services',
-      category: 'Painting',
-      description: 'Complete interior painting including walls, ceilings, and trim. Using high-quality paints and professional techniques.',
-      price: '$55/hour',
-      image: '/src/assets/CardImage/paintwork 1.png',
-      status: 'active',
-      rating: 4.9,
-      jobsCompleted: 18,
-      tags: ['Interior', 'Walls', 'Ceilings', 'Professional']
-    },
-    {
-      id: 3,
-      title: 'Home Repair & Maintenance',
-      category: 'Home Repairs',
-      description: 'General home repairs including plumbing fixes, electrical work, drywall repair, and general maintenance tasks.',
-      price: '$50/hour',
-      image: '/src/assets/CardImage/car-repair 1.png',
-      status: 'inactive',
-      rating: 4.7,
-      jobsCompleted: 31,
-      tags: ['Plumbing', 'Electrical', 'Drywall', 'Maintenance']
-    }
-  ]);
-
+  const { user } = useAuth();
+  const [serviceCards, setServiceCards] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
+  const [taskerId, setTaskerId] = useState(null);
+  const [serviceStats, setServiceStats] = useState({
+    total: 0,
+    active: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    totalJobs: 0,
+    averageRating: '0.0'
+  });
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -53,33 +102,135 @@ const TaskerServiceCards = () => {
     tags: ''
   });
 
+  const token = localStorage.getItem('token');
+
   const categories = [
     'Assembly', 'Mounting', 'Moving', 'Cleaning', 
     'Outdoor Help', 'Home Repairs', 'Painting'
   ];
+
+  // Get tasker profile and load services
+  useEffect(() => {
+    const initializeData = async () => {
+      if (token && user) {
+        try {
+          setLoading(true);
+          
+          // Get tasker profile to get taskerId
+          const taskerResponse = await getTaskerProfile(token);
+          
+          if (taskerResponse.success && taskerResponse.data) {
+            const fetchedTaskerId = taskerResponse.data._id;
+            setTaskerId(fetchedTaskerId);
+            
+            // Load services and stats with the taskerId
+            await Promise.all([
+              loadServices(fetchedTaskerId),
+              loadServiceStats(fetchedTaskerId)
+            ]);
+          } else {
+            setError('Please complete your tasker profile first to manage services.');
+          }
+        } catch (err) {
+          setError('Error loading tasker information.');
+          console.error('Error initializing data:', err);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeData();
+  }, [token, user]);
+
+  const loadServices = async (currentTaskerId = taskerId) => {
+    if (!currentTaskerId) return;
+    
+    try {
+      setError(null);
+      
+      const response = await serviceAPI.getTaskerServices(currentTaskerId, token);
+      
+      if (response.success) {
+        setServiceCards(response.data);
+      } else {
+        setError(response.message || 'Failed to load services');
+      }
+    } catch (err) {
+      setError('Error loading services. Please try again.');
+      console.error('Error loading services:', err);
+    }
+  };
+
+  const loadServiceStats = async (currentTaskerId = taskerId) => {
+    if (!currentTaskerId) return;
+    
+    try {
+      const response = await serviceAPI.getServiceStats(currentTaskerId, token);
+      
+      if (response.success) {
+        setServiceStats(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading service stats:', err);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleCreateCard = (e) => {
+  const handleCreateCard = async (e) => {
     e.preventDefault();
-    const newCard = {
-      id: Date.now(),
-      ...formData,
-      status: 'active',
-      rating: 0,
-      jobsCompleted: 0,
-      tags: formData.tags.split(',').map(tag => tag.trim())
-    };
-    setServiceCards([...serviceCards, newCard]);
-    setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
-    setShowCreateForm(false);
+    
+    if (!taskerId) {
+      setError('Tasker profile not found. Please refresh the page.');
+      return;
+    }
+
+    // Basic validation
+    if (!formData.title || !formData.category || !formData.description || !formData.price || !formData.image) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const serviceData = {
+        title: formData.title.trim(),
+        category: formData.category,
+        description: formData.description.trim(),
+        price: formData.price.trim(),
+        image: formData.image.trim(),
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+      };
+
+      const response = await serviceAPI.createService(taskerId, serviceData, token);
+      
+      if (response.success) {
+        await Promise.all([
+          loadServices(),
+          loadServiceStats()
+        ]);
+        setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
+        setShowCreateForm(false);
+        alert(response.message || 'Service created successfully! It will be reviewed by admin before activation.');
+      } else {
+        setError(response.message || 'Failed to create service');
+      }
+    } catch (err) {
+      setError('Error creating service. Please try again.');
+      console.error('Error creating service:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditCard = (card) => {
-    setEditingCard(card.id);
+    setEditingCard(card._id); // Use _id from MongoDB
     setFormData({
       title: card.title,
       category: card.category,
@@ -90,28 +241,99 @@ const TaskerServiceCards = () => {
     });
   };
 
-  const handleUpdateCard = (e) => {
+  const handleUpdateCard = async (e) => {
     e.preventDefault();
-    setServiceCards(serviceCards.map(card => 
-      card.id === editingCard 
-        ? { ...card, ...formData, tags: formData.tags.split(',').map(tag => tag.trim()) }
-        : card
-    ));
-    setEditingCard(null);
-    setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
+    
+    // Basic validation
+    if (!formData.title || !formData.category || !formData.description || !formData.price || !formData.image) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const serviceData = {
+        title: formData.title.trim(),
+        category: formData.category,
+        description: formData.description.trim(),
+        price: formData.price.trim(),
+        image: formData.image.trim(),
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+      };
+
+      const response = await serviceAPI.updateService(editingCard, serviceData, token);
+      
+      if (response.success) {
+        await Promise.all([
+          loadServices(),
+          loadServiceStats()
+        ]);
+        setEditingCard(null);
+        setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
+        alert(response.message || 'Service updated successfully!');
+      } else {
+        setError(response.message || 'Failed to update service');
+      }
+    } catch (err) {
+      setError('Error updating service. Please try again.');
+      console.error('Error updating service:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleToggleStatus = (id) => {
-    setServiceCards(serviceCards.map(card => 
-      card.id === id 
-        ? { ...card, status: card.status === 'active' ? 'inactive' : 'active' }
-        : card
-    ));
+  const handleToggleStatus = async (serviceId) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await serviceAPI.toggleServiceStatus(serviceId, token);
+      
+      if (response.success) {
+        await Promise.all([
+          loadServices(),
+          loadServiceStats()
+        ]);
+        alert(response.message);
+      } else {
+        setError(response.message || 'Failed to toggle service status');
+        alert(response.message || 'This service must be approved by admin before you can activate it.');
+      }
+    } catch (err) {
+      setError('Error toggling service status. Please try again.');
+      console.error('Error toggling service status:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteCard = (id) => {
-    if (window.confirm('Are you sure you want to delete this service card?')) {
-      setServiceCards(serviceCards.filter(card => card.id !== id));
+  const handleDeleteCard = async (serviceId) => {
+    if (!window.confirm('Are you sure you want to delete this service card?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await serviceAPI.deleteService(serviceId, token);
+      
+      if (response.success) {
+        await Promise.all([
+          loadServices(),
+          loadServiceStats()
+        ]);
+        alert(response.message || 'Service deleted successfully!');
+      } else {
+        setError(response.message || 'Failed to delete service');
+      }
+    } catch (err) {
+      setError('Error deleting service. Please try again.');
+      console.error('Error deleting service:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -119,11 +341,81 @@ const TaskerServiceCards = () => {
     return status === 'active' ? 'status-active' : 'status-inactive';
   };
 
+  const getStateClass = (state) => {
+    switch(state) {
+      case 'approved': return 'state-approved';
+      case 'rejected': return 'state-rejected';
+      case 'pending': return 'state-pending';
+      default: return 'state-pending';
+    }
+  };
+
+  const getStateIcon = (state) => {
+    switch(state) {
+      case 'approved': return 'fas fa-check-circle';
+      case 'rejected': return 'fas fa-times-circle';
+      case 'pending': return 'fas fa-clock';
+      default: return 'fas fa-clock';
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  // Show loading spinner
+  if (loading) {
+    return (
+      <div>
+        <TaskerNavbar />
+        <div className="tasker-service-cards">
+          <div className="service-container">
+            <div className="loading-spinner">
+              <i className="fas fa-spinner fa-spin"></i>
+              <p>Loading services...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if not authenticated
+  if (!taskerId || !token) {
+    return (
+      <div>
+        <TaskerNavbar />
+        <div className="tasker-service-cards">
+          <div className="service-container">
+            <div className="error-message">
+              <i className="fas fa-exclamation-triangle"></i>
+              <p>Please log in as a tasker to manage your services.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <TaskerNavbar />
       <div className="tasker-service-cards">
         <div className="service-container">
+          {/* Error Message */}
+          {error && (
+            <div className="error-banner">
+              <div className="error-content">
+                <i className="fas fa-exclamation-triangle"></i>
+                <span>{error}</span>
+                <button onClick={() => setError(null)} className="error-close">
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Header Section */}
           <div className="service-header">
             <div className="header-content">
@@ -133,6 +425,7 @@ const TaskerServiceCards = () => {
             <button 
               className="create-card-btn"
               onClick={() => setShowCreateForm(true)}
+              disabled={loading}
             >
               <i className="fas fa-plus"></i>
               Create New Service
@@ -142,24 +435,23 @@ const TaskerServiceCards = () => {
           {/* Statistics */}
           <div className="service-stats">
             <div className="stat-card">
-              <div className="stat-number">{serviceCards.length}</div>
+              <div className="stat-number">{serviceStats.total}</div>
               <div className="stat-label">Total Services</div>
             </div>
             <div className="stat-card">
-              <div className="stat-number">{serviceCards.filter(card => card.status === 'active').length}</div>
+              <div className="stat-number">{serviceStats.active}</div>
               <div className="stat-label">Active Services</div>
             </div>
             <div className="stat-card">
-              <div className="stat-number">{serviceCards.reduce((sum, card) => sum + card.jobsCompleted, 0)}</div>
+              <div className="stat-number">{serviceStats.pending}</div>
+              <div className="stat-label">Pending Review</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{serviceStats.totalJobs}</div>
               <div className="stat-label">Total Jobs</div>
             </div>
             <div className="stat-card">
-              <div className="stat-number">
-                {serviceCards.length > 0 
-                  ? (serviceCards.reduce((sum, card) => sum + card.rating, 0) / serviceCards.length).toFixed(1)
-                  : '0.0'
-                }★
-              </div>
+              <div className="stat-number">{serviceStats.averageRating}★</div>
               <div className="stat-label">Avg Rating</div>
             </div>
           </div>
@@ -167,13 +459,19 @@ const TaskerServiceCards = () => {
           {/* Service Cards Grid */}
           <div className="service-cards-grid">
             {serviceCards.map((card) => (
-              <div key={card.id} className={`service-card ${card.status}`}>
+              <div key={card._id} className={`service-card ${card.status} ${card.state}`}>
                 <div className="card-header">
                   <div className="card-image">
                     <img src={card.image} alt={card.title} />
                   </div>
-                  <div className={`card-status ${getStatusClass(card.status)}`}>
-                    {card.status}
+                  <div className="card-badges">
+                    <div className={`card-status ${getStatusClass(card.status)}`}>
+                      {card.status}
+                    </div>
+                    <div className={`card-state ${getStateClass(card.state)}`}>
+                      <i className={getStateIcon(card.state)}></i>
+                      {card.state}
+                    </div>
                   </div>
                 </div>
 
@@ -199,26 +497,51 @@ const TaskerServiceCards = () => {
                     </div>
                     <div className="card-price">{card.price}</div>
                   </div>
+
+                  {/* Admin Review Info */}
+                  <div className="review-info">
+                    <div className="created-date">
+                      <i className="fas fa-calendar"></i>
+                      Created: {formatDate(card.createdAt)}
+                    </div>
+                    {card.state === 'pending' && (
+                      <div className="pending-message">
+                        <i className="fas fa-info-circle"></i>
+                        Waiting for admin approval
+                      </div>
+                    )}
+                    {card.state === 'rejected' && (
+                      <div className="rejected-message">
+                        <i className="fas fa-exclamation-triangle"></i>
+                        Rejected by admin
+                        {card.reviewNotes && <span className="review-notes">: {card.reviewNotes}</span>}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="card-actions">
                   <button 
                     className="edit-btn"
                     onClick={() => handleEditCard(card)}
+                    disabled={loading}
                   >
                     <i className="fas fa-edit"></i>
                     Edit
                   </button>
                   <button 
-                    className={`toggle-btn ${card.status === 'active' ? 'deactivate' : 'activate'}`}
-                    onClick={() => handleToggleStatus(card.id)}
+                    className={`toggle-btn ${card.status === 'active' ? 'deactivate' : 'activate'} ${card.state !== 'approved' ? 'disabled' : ''}`}
+                    onClick={() => handleToggleStatus(card._id)}
+                    disabled={card.state !== 'approved' || loading}
+                    title={card.state !== 'approved' ? 'Service must be approved by admin first' : ''}
                   >
                     <i className={`fas ${card.status === 'active' ? 'fa-pause' : 'fa-play'}`}></i>
                     {card.status === 'active' ? 'Deactivate' : 'Activate'}
                   </button>
                   <button 
                     className="delete-btn"
-                    onClick={() => handleDeleteCard(card.id)}
+                    onClick={() => handleDeleteCard(card._id)}
+                    disabled={loading}
                   >
                     <i className="fas fa-trash"></i>
                     Delete
@@ -320,6 +643,17 @@ const TaskerServiceCards = () => {
                       placeholder="e.g., IKEA, Furniture, Assembly"
                       required
                     />
+                  </div>
+
+                  {/* Admin Review Notice */}
+                  <div className="admin-review-notice">
+                    <div className="notice-content">
+                      <i className="fas fa-info-circle"></i>
+                      <div>
+                        <strong>Admin Review Required</strong>
+                        <p>Your service card will be reviewed by our admin team before it becomes active. This helps ensure quality and accuracy for our customers.</p>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="form-actions">

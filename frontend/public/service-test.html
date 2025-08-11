@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Service API Integration Test</h1>
+    
+    <div>
+        <h3>Backend Connection Test</h3>
+        <button onclick="testHealth()">Test Backend Health</button>
+        <button onclick="testAuthEndpoint()">Test Protected Endpoint</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5001/api';
+        
+        function addResult(message, isSuccess = true) {
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult(`✅ Backend Health Check: ${data.status} at ${data.timestamp}`, true);
+                } else {
+                    addResult(`❌ Backend Health Check Failed: ${data.message}`, false);
+                }
+            } catch (error) {
+                addResult(`❌ Backend Connection Failed: ${error.message}`, false);
+            }
+        }
+        
+        async function testAuthEndpoint() {
+            try {
+                // Test without token (should fail with 401)
+                const response = await fetch(`${API_BASE_URL}/services/tasker/test123`);
+                
+                if (response.status === 401) {
+                    addResult(`✅ Authentication Required: Service endpoint properly protected`, true);
+                } else {
+                    addResult(`❌ Authentication Issue: Expected 401, got ${response.status}`, false);
+                }
+            } catch (error) {
+                addResult(`❌ Auth Test Failed: ${error.message}`, false);
+            }
+        }
+        
+        // Auto-run health check on page load
+        window.onload = () => {
+            testHealth();
+        };
+    </script>
+</body>
+</html>

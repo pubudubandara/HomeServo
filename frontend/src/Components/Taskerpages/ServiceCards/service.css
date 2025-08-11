@@ -620,3 +620,246 @@
     height: 60px;
   }
 }
+
+/* Admin Review State Styles */
+.card-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.card-state {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.state-pending {
+  background-color: #fef3c7;
+  color: #d97706;
+  border: 1px solid #f59e0b;
+}
+
+.state-approved {
+  background-color: #d1fae5;
+  color: #059669;
+  border: 1px solid #10b981;
+}
+
+.state-rejected {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #ef4444;
+}
+
+.review-info {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.created-date {
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.pending-message {
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.rejected-message {
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.review-notes {
+  display: block;
+  margin-top: 4px;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.toggle-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+  color: #9ca3af;
+}
+
+.toggle-btn.disabled:hover {
+  background-color: #f3f4f6;
+  transform: none;
+}
+
+.admin-review-notice {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #0ea5e9;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px 0;
+}
+
+.notice-content {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.notice-content i {
+  color: #0ea5e9;
+  font-size: 1.125rem;
+  margin-top: 2px;
+}
+
+.notice-content strong {
+  color: #0c4a6e;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.notice-content p {
+  color: #075985;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Service card state modifications */
+.service-card.pending {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.service-card.rejected {
+  border-left: 4px solid #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.service-card.approved {
+  border-left: 4px solid #10b981;
+}
+
+/* Error Banner Styles */
+.error-banner {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #ef4444;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.error-content i {
+  color: #ef4444;
+  font-size: 1.125rem;
+}
+
+.error-content span {
+  color: #dc2626;
+  font-weight: 500;
+  flex: 1;
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.error-close:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Loading Spinner Styles */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.loading-spinner i {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: #28a745;
+}
+
+.loading-spinner p {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+/* Error Message Styles */
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #dc2626;
+  text-align: center;
+}
+
+.error-message i {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: #ef4444;
+}
+
+.error-message p {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+/* Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Disabled button styles */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}

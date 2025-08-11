@@ -7,6 +7,8 @@ import connectDB from './config/db.js';
 
 import userRoutes from './routes/userRoutes.js';
 import taskerRoutes from './routes/taskerRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
+import debugRoutes from './routes/debugRoutes.js';
 
 dotenv.config();
 
@@ -43,6 +45,8 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/taskers', taskerRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/debug', debugRoutes);
 
 // Catch-all route for debugging
 app.use('*', (req, res) => {
