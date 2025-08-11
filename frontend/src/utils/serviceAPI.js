@@ -2,6 +2,17 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 export const serviceAPI = {
+  // Public services (no authentication required)
+  getPublicServices: async (queryParams = {}) => {
+    const searchParams = new URLSearchParams(queryParams);
+    const response = await fetch(`${API_BASE_URL}/services/public?${searchParams}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.json();
+  },
+
   // Get all services for a tasker
   getTaskerServices: async (taskerId, token) => {
     const response = await fetch(`${API_BASE_URL}/services/tasker/${taskerId}`, {

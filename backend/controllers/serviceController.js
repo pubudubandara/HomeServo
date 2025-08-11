@@ -324,3 +324,80 @@ export const adminReviewService = async (req, res) => {
     });
   }
 };
+
+// Get all active and approved services for users to browse
+export const getPublicServices = async (req, res) => {
+  try {
+    const { category, page = 1, limit = 20, search } = req.query;
+    
+    // Build query for active and approved services only
+    const query = {
+      status: 'active',
+      state: 'approved'
+    };
+
+    // Add category filter if provided
+    if (category && category !== 'all') {
+      query.category = category;
+    }
+
+    // Add search filter if provided
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { tags: { $in: [new RegExp(search, 'i')] } }
+      ];
+    }
+
+    const services = await Service.find(query)
+      .populate({
+        path: 'taskerId',
+        populate: {
+          path: 'userId',
+          select: 'firstName lastName email'
+        }
+      })
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await Service.countDocuments(query);
+
+    // Format the services for frontend consumption
+    const formattedServices = services.map(service => ({
+      id: service._id,
+      name: service.title,
+      description: service.description,
+      price: service.price,
+      image: service.image,
+      category: service.category,
+      tags: service.tags,
+      rating: service.rating,
+      jobsCompleted: service.jobsCompleted,
+      tasker: {
+        id: service.taskerId._id,
+        name: `${service.taskerId.userId.firstName} ${service.taskerId.userId.lastName}`,
+        email: service.taskerId.userId.email
+      }
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formattedServices,
+      pagination: {
+        current: parseInt(page),
+        total: Math.ceil(total / limit),
+        count: services.length,
+        totalRecords: total
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching public services:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching services',
+      error: error.message 
+    });
+  }
+};

@@ -18,6 +18,7 @@ import Seller from './Components/Seller/seller';
 import BookingForm from './Components/Book/Book';
 import AboutUs from './Components/AboutUs/AboutUs';
 import Admin from './Components/Admin/Admin';
+import ServiceTest from './Components/ServiceTest';
 import { AuthProvider } from './contexts/AuthContext';
 
 const AppContent = () => {
@@ -48,6 +49,7 @@ const AppContent = () => {
         <Route path="/seller" element={<Seller />} />
         <Route path="/book" element={<BookingForm />} />
         <Route path="/admin/*" element={<Admin />} />  {/* Admin panel */}
+        <Route path="/test-services" element={<ServiceTest />} />  {/* Test route for service API */}
         {/* Add more routes as needed */}
       </Routes>
 

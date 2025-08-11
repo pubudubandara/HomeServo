@@ -7,12 +7,16 @@ import {
   deleteService,
   getServiceStats,
   getAllServicesForAdmin,
-  adminReviewService
+  adminReviewService,
+  getPublicServices
 } from '../controllers/serviceController.js';
 import auth from '../middleware/auth.js';
 import { checkServiceOwnership, checkTaskerAccess, checkAdminRole } from '../middleware/serviceAuth.js';
 
 const router = express.Router();
+
+// Public routes (no authentication required)
+router.get('/public', getPublicServices);
 
 // Tasker service routes (protected with ownership checks)
 router.get('/tasker/:taskerId', auth, checkTaskerAccess, getTaskerServices);
