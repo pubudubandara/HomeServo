@@ -1,0 +1,175 @@
+/* TaskerSignup.css - Same styles as regular signup */
+.signup-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f7f8fc;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.form-section {
+  flex: 1;
+  max-width: 400px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+  margin-bottom: 10px;
+  font-size: 28px;
+  color: #333;
+}
+
+.form-section p {
+  margin-bottom: 30px;
+  color: #666;
+  font-size: 14px;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="password"] {
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.signup-form input[type="text"]:focus,
+.signup-form input[type="email"]:focus,
+.signup-form input[type="password"]:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.terms {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.terms input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.terms label {
+  font-size: 14px;
+  color: #666;
+  font-weight: normal;
+}
+
+.terms a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}
+
+.signup-button {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.signup-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.signup-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.social-signup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.google-signup,
+.apple-signup {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.google-signup:hover,
+.apple-signup:hover {
+  background-color: #f8f9fa;
+}
+
+.form-section p:last-child {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.form-section a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.form-section a:hover {
+  text-decoration: underline;
+}
+
+.image-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 40px;
+}
+
+.image-section img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .signup-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .image-section {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  .form-section {
+    max-width: 100%;
+    padding: 20px;
+  }
+}

@@ -23,6 +23,12 @@ app.use(express.urlencoded({ extended: true }));
 // Parse application/json (for JSON bodies)
 app.use(express.json());
 
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 // Routes
 
 // Routes
@@ -37,6 +43,16 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/taskers', taskerRoutes);
+
+// Catch-all route for debugging
+app.use('*', (req, res) => {
+  console.log('Unmatched route:', req.method, req.originalUrl);
+  res.status(404).json({ 
+    message: 'Route not found',
+    method: req.method,
+    url: req.originalUrl
+  });
+});
 
 // Start server
 app.listen(PORT, () => {

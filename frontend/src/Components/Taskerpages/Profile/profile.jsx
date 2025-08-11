@@ -1,40 +1,51 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './profile.css';
 import TaskerNavbar from '../navbar/navbar';
 
 const TaskerProfile = () => {
+  const navigate = useNavigate();
   const [taskerData, setTaskerData] = useState({
     // Account Information
-    username: 'mikejohnson_handyman',
+    name: '',
     // Personal Information
-    fullName: 'Michael Johnson',
-    email: 'mike.johnson@email.com',
-    phoneNumber: '+1 (555) 123-4567',
+    email: '',
+    phoneNumber: '',
     // Address Information
-    addressLine1: '1234 Oak Street',
-    addressLine2: 'Apartment 2B',
-    city: 'San Francisco',
-    stateProvince: 'California',
-    postalCode: '94102',
-    country: 'United States',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    stateProvince: '',
+    postalCode: '',
+    country: '',
     // Professional Information
-    category: 'Home Repairs',
-    experience: 'Advanced',
-    hourlyRate: '45',
-    bio: 'Experienced handyman with over 5 years in home repairs and maintenance. I specialize in plumbing, electrical work, and general home improvements. Customer satisfaction is my top priority, and I always ensure quality workmanship. I have helped hundreds of homeowners with their repair needs and take pride in solving problems efficiently and affordably.',
-    skills: 'Plumbing, Electrical work, Furniture assembly, Painting, Drywall repair, Tile installation, Carpet installation, Window repair, Door installation, Kitchen cabinet mounting',
-    profileImage: null
+    category: '',
+    experience: '',
+    hourlyRate: '',
+    bio: '',
+    skills: '',
+    profileImageUrl: ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to access this page');
+      navigate('/login');
+      return;
+    }
+    
     // Fetch tasker data from API
     fetchTaskerData();
-  }, []);
+  }, [navigate]);
 
   const fetchTaskerData = async () => {
     try {
+      setLoading(true);
       // Replace with actual API call to get tasker data
       const response = await fetch('http://localhost:5001/api/taskers/profile', {
         headers: {
@@ -43,10 +54,27 @@ const TaskerProfile = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        // Convert skills array to comma-separated string for display/editing
+        if (Array.isArray(data.skills)) {
+          data.skills = data.skills.join(', ');
+        }
         setTaskerData(data);
+      } else {
+        console.error('Failed to fetch tasker data:', response.statusText);
+        // Check if it's an auth error
+        if (response.status === 401) {
+          alert('Session expired. Please login again.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login');
+          return;
+        }
       }
     } catch (error) {
       console.error('Error fetching tasker data:', error);
+      alert('Error loading profile data. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,23 +93,42 @@ const TaskerProfile = () => {
         body: JSON.stringify(taskerData)
       });
       if (response.ok) {
+        const result = await response.json();
         setIsEditing(false);
         alert('Profile updated successfully!');
+        // Refresh the data to get the latest from the database
+        fetchTaskerData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error updating profile: ${errorData.message}`);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
+      alert('Error updating profile. Please try again.');
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTaskerData({ ...taskerData, [name]: value });
+    // Handle hourlyRate as a number
+    if (name === 'hourlyRate') {
+      setTaskerData({ ...taskerData, [name]: Number(value) || 0 });
+    } else {
+      setTaskerData({ ...taskerData, [name]: value });
+    }
   };
 
   return (
     <>
       <TaskerNavbar />
-      <div className="tasker-profile">
+      {loading ? (
+        <div className="tasker-profile">
+          <div className="loading-container">
+            <p>Loading profile...</p>
+          </div>
+        </div>
+      ) : (
+        <div className="tasker-profile">
         <div className="profile-header">
           <div className="profile-image-section">
             {taskerData.profileImageUrl ? (
@@ -92,13 +139,13 @@ const TaskerProfile = () => {
               />
             ) : (
               <div className="profile-image-placeholder">
-                <span>{taskerData.fullName?.charAt(0)}</span>
+                <span>{taskerData.name?.charAt(0)}</span>
               </div>
             )}
           </div>
           <div className="profile-basic-info">
-            <h1>{taskerData.fullName}</h1>
-            <p className="username">@{taskerData.username}</p>
+            <h1>{taskerData.name}</h1>
+            <p className="username">@{taskerData.email}</p>
             <p className="category">{taskerData.category} Specialist</p>
             <p className="hourly-rate">${taskerData.hourlyRate}/hour</p>
             <div className="profile-actions">
@@ -296,7 +343,8 @@ const TaskerProfile = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </>
   );
 };

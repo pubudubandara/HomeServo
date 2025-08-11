@@ -1,16 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TaskerForm.css';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const TaskerForm = () => {
   const [formData, setFormData] = useState({
-    // Signup fields
-    username: '',
-    password: '',
-    confirmPassword: '',
     // Personal Information
-    fullName: '',
-    email: '',
     phoneNumber: '',
     // Address Information
     addressLine1: '',
@@ -28,7 +23,43 @@ const TaskerForm = () => {
     profileImage: null
   });
 
-  const navigate = useNavigate();  // Initialize the useNavigate hook
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Check if user is logged in and has tasker role
+    if (!user || user.role !== 'tasker') {
+      alert('Please login as a tasker to access this page.');
+      navigate('/login');
+      return;
+    }
+
+    // Check if tasker profile already exists
+    const checkExistingProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5001/api/taskers/profile/check', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.hasProfile) {
+          alert('You already have a tasker profile. Redirecting to your dashboard.');
+          navigate('/tasker/profile');
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+      }
+    };
+
+    checkExistingProfile();
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -42,11 +73,16 @@ const TaskerForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate password confirmation
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+    // Validate required fields (removed signup fields)
+    const requiredFields = ['addressLine1', 'city', 'postalCode', 'country', 'category', 'experience', 'hourlyRate', 'bio'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const data = new FormData();
@@ -55,11 +91,13 @@ const TaskerForm = () => {
         ...formData,
         skills: formData.skills
           ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
-          : [],
-        role: 'tasker',
+          : []
       };
+      
+      console.log('Sending profile data:', processedFormData); // Debug log
+      
       Object.entries(processedFormData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
+        if (value !== null && value !== undefined && value !== '') {
           // For FormData, arrays need to be stringified
           if (Array.isArray(value)) {
             data.append(key, JSON.stringify(value));
@@ -69,52 +107,43 @@ const TaskerForm = () => {
         }
       });
 
-      const response = await fetch('http://localhost:5001/api/taskers', {
+      console.log('FormData entries:'); // Debug log
+      for (let [key, value] of data.entries()) {
+        console.log(key, value);
+      }
+
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5001/api/taskers/profile', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: data
       });
+      
+      const result = await response.json();
+      console.log('Server response:', result); // Debug log
+      
       if (response.ok) {
-        alert('You are a Tasker now!');
+        alert('Tasker profile created successfully! Welcome to the platform.');
         navigate('/tasker/profile');
       } else {
-        alert('Error submitting application');
+        alert(result.message || 'Error creating profile');
+        console.error('Server error details:', result);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Network Error:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div id="tasker-form">
-      <h1>Become a Tasker</h1>
-      <p>Join our community of skilled Taskers and start earning!</p>
+      <h1>Complete Your Tasker Profile</h1>
+      <p>Add your professional details to start accepting tasks!</p>
       <form onSubmit={handleSubmit}>
-        <h2>Account Information</h2>
-        <input 
-          type="text" 
-          name="username" 
-          placeholder="Username" 
-          value={formData.username} 
-          onChange={handleChange} 
-          required 
-        />
-        <input 
-          type="password" 
-          name="password" 
-          placeholder="Password" 
-          value={formData.password} 
-          onChange={handleChange} 
-          required 
-        />
-        <input 
-          type="password" 
-          name="confirmPassword" 
-          placeholder="Confirm Password" 
-          value={formData.confirmPassword} 
-          onChange={handleChange} 
-          required 
-        />
-
         <h2>Profile Image</h2>
         <input 
           type="file" 
@@ -123,23 +152,7 @@ const TaskerForm = () => {
           onChange={handleChange} 
         />
 
-        <h2>Personal Information</h2>
-        <input 
-          type="text" 
-          name="fullName" 
-          placeholder="Full Name" 
-          value={formData.fullName} 
-          onChange={handleChange} 
-          required 
-        />
-        <input 
-          type="email" 
-          name="email" 
-          placeholder="Email Address" 
-          value={formData.email} 
-          onChange={handleChange} 
-          required 
-        />
+        <h2>Contact Information</h2>
         <input 
           type="text" 
           name="phoneNumber" 
@@ -254,13 +267,10 @@ const TaskerForm = () => {
           required
         />
 
-        <button type="submit">Submit Application</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Creating Profile...' : 'Complete Profile'}
+        </button>
         <button type="reset" onClick={() => setFormData({
-          username: '',
-          password: '',
-          confirmPassword: '',
-          fullName: '',
-          email: '',
           phoneNumber: '',
           addressLine1: '',
           addressLine2: '',

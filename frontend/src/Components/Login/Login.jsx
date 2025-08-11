@@ -32,8 +32,39 @@ const Login = () => {
         console.log("Login failed:", data);
       } else {
         console.log("Login successful:", data);
-        login(data.user); // Set user in context
-        navigate("/"); // Use React Router navigation
+        // Store token in localStorage
+        localStorage.setItem('token', data.token);
+        login(data.user, data.token); // Set user in context with token
+        
+        // Navigate based on user role
+        if (data.user.role === 'tasker') {
+          // Check if tasker has completed their profile
+          try {
+            const profileResponse = await fetch("http://localhost:5001/api/taskers/profile/check", {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${data.token}`,
+                "Content-Type": "application/json",
+              },
+            });
+            
+            const profileData = await profileResponse.json();
+            
+            if (profileResponse.ok && profileData.hasProfile) {
+              navigate("/tasker/profile"); // Navigate to tasker dashboard
+            } else {
+              navigate("/complete-tasker-profile"); // Navigate to profile completion
+            }
+          } catch (profileError) {
+            console.error("Error checking profile:", profileError);
+            // If there's an error checking profile, assume they need to complete it
+            navigate("/complete-tasker-profile");
+          }
+        } else if (data.user.role === 'admin') {
+          navigate("/admin"); // Navigate to admin dashboard
+        } else {
+          navigate("/"); // Navigate to regular user dashboard
+        }
       }
     } catch (err) {
       setError("Server error. Please try again later.");
@@ -85,7 +116,7 @@ const Login = () => {
           <button className="apple-login" type="button">Sign in with Apple</button>
         </div>
 
-        <p>Don't have an account? <a href="#">Sign Up</a></p>
+        <p>Don't have an account? <a href="/signup">Customer Signup</a> | <a href="/tasker-signup">Become a Tasker</a></p>
       </div>
 
       <div className="image-section">

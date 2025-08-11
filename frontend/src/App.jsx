@@ -7,6 +7,7 @@ import ServiceCards from './Components/ServiseCards/ServiceCards';
 import './App.css';
 import Home from './Components/Home/Home';
 import SignUp from './Components/Signup/Signup'; 
+import TaskerSignup from './Components/TaskerSignup/TaskerSignup';
 import Login from './Components/Login/Login';
 import TaskerForm from './Components/TaskerForm/TaskerForm';
 import ProfilePage from './Components/Profilepage/Profilepage';
@@ -35,9 +36,11 @@ const AppContent = () => {
         <Route path="/" element={<Home />} />  {/* Home or landing page */}
         <Route path="/services" element={<ServiceCards />} />  {/* Services page */}
         <Route path="/about" element={<AboutUs />} />  {/* About page */}
-        <Route path="/signup" element={<SignUp />} />  {/* Signup page */}
+        <Route path="/signup" element={<SignUp />} />  {/* Customer signup page */}
+        <Route path="/tasker-signup" element={<TaskerSignup />} />  {/* Tasker signup page */}
         <Route path="/login" element={<Login />} />  {/* Login page */}
-        <Route path="/become-tasker" element={<TaskerForm />} />  {/* TaskerForm page */}
+        <Route path="/become-tasker" element={<TaskerSignup />} />  {/* Redirect old route to new tasker signup */}
+        <Route path="/complete-tasker-profile" element={<TaskerForm />} />  {/* Tasker profile completion */}
         <Route path="/profilepage" element={<ProfilePage />} />  {/* Profile page */}
         <Route path="/tasker/profile" element={<TaskerProfile />} />  {/* Tasker Profile page */}
         <Route path="/tasker/service-cards" element={<TaskerServiceCards />} />  {/* Tasker Service Cards page */}
