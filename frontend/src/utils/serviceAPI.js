@@ -13,6 +13,16 @@ export const serviceAPI = {
     return response.json();
   },
 
+  // Get single service profile with detailed tasker information
+  getServiceProfile: async (serviceId) => {
+    const response = await fetch(`${API_BASE_URL}/services/profile/${serviceId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.json();
+  },
+
   // Get all services for a tasker
   getTaskerServices: async (taskerId, token) => {
     const response = await fetch(`${API_BASE_URL}/services/tasker/${taskerId}`, {

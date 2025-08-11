@@ -16,7 +16,11 @@ const Cards = ({
   const navigate = useNavigate(); // Correctly use useNavigate
 
   const handleClick = () => {
-    navigate('/profilepage'); // Use navigate to redirect
+    if (serviceId) {
+      navigate(`/profilepage/${serviceId}`); // Navigate to profile page with service ID
+    } else {
+      navigate('/profilepage'); // Fallback to original behavior
+    }
   };
 
   // Format price to display correctly

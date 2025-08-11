@@ -43,6 +43,7 @@ const AppContent = () => {
         <Route path="/become-tasker" element={<TaskerSignup />} />  {/* Redirect old route to new tasker signup */}
         <Route path="/complete-tasker-profile" element={<TaskerForm />} />  {/* Tasker profile completion */}
         <Route path="/profilepage" element={<ProfilePage />} />  {/* Profile page */}
+        <Route path="/profilepage/:serviceId" element={<ProfilePage />} />  {/* Profile page with service ID */}
         <Route path="/tasker/profile" element={<TaskerProfile />} />  {/* Tasker Profile page */}
         <Route path="/tasker/service-cards" element={<TaskerServiceCards />} />  {/* Tasker Service Cards page */}
         <Route path="/tasker/bookings" element={<TaskerBookings />} />  {/* Tasker Bookings page */}

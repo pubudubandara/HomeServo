@@ -8,7 +8,8 @@ import {
   getServiceStats,
   getAllServicesForAdmin,
   adminReviewService,
-  getPublicServices
+  getPublicServices,
+  getServiceProfile
 } from '../controllers/serviceController.js';
 import auth from '../middleware/auth.js';
 import { checkServiceOwnership, checkTaskerAccess, checkAdminRole } from '../middleware/serviceAuth.js';
@@ -17,6 +18,7 @@ const router = express.Router();
 
 // Public routes (no authentication required)
 router.get('/public', getPublicServices);
+router.get('/profile/:serviceId', getServiceProfile);
 
 // Tasker service routes (protected with ownership checks)
 router.get('/tasker/:taskerId', auth, checkTaskerAccess, getTaskerServices);
