@@ -364,16 +364,64 @@ const TaskerServiceCards = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  // Show loading spinner
+  // Show professional loading screen
   if (loading) {
     return (
       <div>
         <TaskerNavbar />
         <div className="tasker-service-cards">
           <div className="service-container">
-            <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i>
-              <p>Loading services...</p>
+            <div className="professional-loading">
+              <div className="loading-container">
+                {/* Main Logo at Top */}
+                <div className="loading-header">
+                  <div className="loading-logo">
+                    <div className="logo-icon">
+                      <i className="fas fa-tools"></i>
+                    </div>
+                    <div className="loading-rings">
+                      <div className="ring ring-1"></div>
+                      <div className="ring ring-2"></div>
+                      <div className="ring ring-3"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Loading Text */}
+                <div className="loading-content">
+                  <h2 className="loading-title">Loading Services</h2>
+                  <p className="loading-subtitle">Preparing your service dashboard...</p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="loading-progress">
+                  <div className="progress-bar">
+                    <div className="progress-fill"></div>
+                  </div>
+                  <div className="progress-dots">
+                    <span className="dot active"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                  </div>
+                </div>
+
+                {/* Loading Features */}
+                <div className="loading-features">
+                  <div className="feature-item">
+                    <i className="fas fa-check-circle"></i>
+                    <span>Fetching your services</span>
+                  </div>
+                  <div className="feature-item">
+                    <i className="fas fa-chart-line"></i>
+                    <span>Loading statistics</span>
+                  </div>
+                  <div className="feature-item">
+                    <i className="fas fa-star"></i>
+                    <span>Calculating ratings</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
