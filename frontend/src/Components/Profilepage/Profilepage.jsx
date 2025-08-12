@@ -62,7 +62,12 @@ const ProfilePage = () => {
   }, [serviceId]);
 
   const handleBookNow = () => {
-    navigate('/book');
+    // Navigate to booking form with service ID and service data
+    navigate(`/book/${serviceId || service.id}`, { 
+      state: { 
+        service: service
+      }
+    });
   };
 
   const renderStars = (rating) => {

@@ -78,11 +78,17 @@ ServiceSchema.index({ status: 1 });
 
 // Virtual for formatted creation date
 ServiceSchema.virtual('formattedCreatedAt').get(function() {
-  return this.createdAt.toLocaleDateString();
+  return this.createdAt ? this.createdAt.toLocaleDateString() : 'N/A';
 });
 
-// Ensure virtual fields are serialized
-ServiceSchema.set('toJSON', { virtuals: true });
+// Ensure virtual fields are serialized only when needed
+ServiceSchema.set('toJSON', { 
+  virtuals: false,  // Disable virtuals to prevent errors
+  transform: function(doc, ret) {
+    delete ret.__v;
+    return ret;
+  }
+});
 
 const Service = mongoose.model('Service', ServiceSchema);
 export default Service;

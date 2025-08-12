@@ -1,15 +1,50 @@
-import React, { useState } from 'react';  
+import React, { useState, useEffect } from 'react';  
+import { useParams, useLocation } from 'react-router-dom';
 import './Book.css';
 
 const BookingForm = () => {
+    const { serviceId } = useParams(); // Get service ID from URL
+    const location = useLocation();
+    const serviceData = location.state?.service; // Get service data passed via navigation
+    
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         description: '',
         date: '',
         location: '',
+        serviceCategory: '',
         terms: false
     });
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState('');
+    const [selectedService, setSelectedService] = useState(serviceData || null);
+
+    // If service ID is provided but no service data, fetch service details
+    useEffect(() => {
+        if (serviceId && !selectedService) {
+            // Fetch service details from backend
+            const fetchServiceDetails = async () => {
+                try {
+                    const response = await fetch(`http://localhost:5001/api/services/profile/${serviceId}`);
+                    if (response.ok) {
+                        const serviceData = await response.json();
+                        setSelectedService(serviceData.data || serviceData);
+                    } else {
+                        console.log('Service not found, using serviceId only');
+                        setSelectedService({ id: serviceId });
+                    }
+                } catch (error) {
+                    console.error('Error fetching service details:', error);
+                    setSelectedService({ id: serviceId });
+                }
+            };
+            
+            fetchServiceDetails();
+        }
+    }, [serviceId, selectedService]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -19,10 +54,58 @@ const BookingForm = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission here
-        console.log('Form submitted:', formData);
+        setIsSubmitting(true);
+        setSubmitMessage('');
+
+        try {
+            const bookingData = {
+                customerName: formData.name,
+                customerEmail: formData.email,
+                customerPhone: formData.phone,
+                serviceDescription: formData.description,
+                serviceLocation: formData.location,
+                preferredDate: formData.date,
+                customerNotes: '', // Optional field
+                serviceId: serviceId || selectedService?.id || null // Include service ID
+            };
+
+            console.log('Submitting booking data:', bookingData);
+
+            const response = await fetch('http://localhost:5001/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData)
+            });
+
+            console.log('Response status:', response.status);
+            const result = await response.json();
+            console.log('Response data:', result);
+
+            if (response.ok) {
+                setSubmitMessage('Booking submitted successfully! We will contact you soon.');
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    description: '',
+                    date: '',
+                    location: '',
+                    serviceCategory: '',
+                    terms: false
+                });
+            } else {
+                setSubmitMessage(`Error: ${result.message || 'Failed to submit booking'}`);
+            }
+        } catch (error) {
+            console.error('Error submitting booking:', error);
+            setSubmitMessage('Failed to submit booking. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (  
@@ -30,6 +113,12 @@ const BookingForm = () => {
             <div className="booking-container">
                 <div className="booking-header">
                     <h1>Book Your <span>Service</span></h1>
+                    {selectedService && selectedService.name && (
+                        <div className="selected-service">
+                            <p>Selected Service: <strong>{selectedService.name}</strong></p>
+                            {selectedService.price && <p>Price: <strong>{selectedService.price}</strong></p>}
+                        </div>
+                    )}
                     <p>Get connected with skilled professionals for your needs</p>
                 </div>
                 
@@ -63,6 +152,55 @@ const BookingForm = () => {
                             </div>
                         </div>
 
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="phone">Phone Number</label>  
+                                <input 
+                                    type="tel" 
+                                    id="phone" 
+                                    name="phone" 
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
+                                    placeholder="+1 (555) 123-4567" 
+                                    required 
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="date">Preferred Date</label>  
+                                <input 
+                                    type="date" 
+                                    id="date" 
+                                    name="date"
+                                    value={formData.date}
+                                    onChange={handleInputChange}
+                                    required 
+                                />
+                            </div>
+                        </div>
+
+                        {!selectedService && (
+                            <div className="form-group">
+                                <label htmlFor="serviceCategory">Service Category</label>
+                                <select 
+                                    id="serviceCategory" 
+                                    name="serviceCategory"
+                                    value={formData.serviceCategory || ''}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Select a service category</option>
+                                    <option value="Assembly">Assembly</option>
+                                    <option value="Mounting">Mounting</option>
+                                    <option value="Moving">Moving</option>
+                                    <option value="Cleaning">Cleaning</option>
+                                    <option value="Outdoor Help">Outdoor Help</option>
+                                    <option value="Home Repairs">Home Repairs</option>
+                                    <option value="Painting">Painting</option>
+                                </select>
+                            </div>
+                        )}
+
                         <div className="form-group">
                             <label htmlFor="description">Service Description</label>  
                             <textarea 
@@ -77,18 +215,6 @@ const BookingForm = () => {
                         </div>
 
                         <div className="form-row">
-                            <div className="form-group">
-                                <label htmlFor="date">Preferred Date</label>  
-                                <input 
-                                    type="date" 
-                                    id="date" 
-                                    name="date"
-                                    value={formData.date}
-                                    onChange={handleInputChange}
-                                    required 
-                                />
-                            </div>
-
                             <div className="form-group">
                                 <label htmlFor="location">Service Location</label>  
                                 <input 
@@ -117,9 +243,15 @@ const BookingForm = () => {
                             </label>  
                         </div>  
 
-                        <button type="submit" className="book-btn">
+                        {submitMessage && (
+                            <div className={`submit-message ${submitMessage.includes('Error') ? 'error' : 'success'}`}>
+                                {submitMessage}
+                            </div>
+                        )}
+
+                        <button type="submit" className="book-btn" disabled={isSubmitting}>
                             <i className="fas fa-calendar-check"></i>
-                            Book Service Now
+                            {isSubmitting ? 'Submitting...' : 'Book Service Now'}
                         </button>  
                     </form>  
                 </div>

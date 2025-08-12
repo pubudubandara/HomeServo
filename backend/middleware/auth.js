@@ -22,4 +22,21 @@ const auth = (req, res, next) => {
   }
 };
 
+// Alias for consistency with booking routes
+export const verifyToken = auth;
+
+// Admin verification middleware
+export const verifyAdmin = (req, res, next) => {
+  // Check if user exists and has admin role
+  if (!req.user) {
+    return res.status(401).json({ message: 'No user found in token' });
+  }
+  
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied. Admin role required.' });
+  }
+  
+  next();
+};
+
 export default auth;

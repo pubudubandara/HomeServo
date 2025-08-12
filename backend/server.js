@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js';
 import taskerRoutes from './routes/taskerRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import debugRoutes from './routes/debugRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/taskers', taskerRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/debug', debugRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Catch-all route for debugging
 app.use('*', (req, res) => {
