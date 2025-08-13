@@ -42,3 +42,38 @@ export const checkTaskerProfile = async (token) => {
     return { success: false, message: 'Error checking tasker profile' };
   }
 };
+
+export const getCurrentTasker = async () => {
+  try {
+    // Get tasker data from localStorage or other auth state
+    const userData = JSON.parse(localStorage.getItem('user') || 'null');
+    const token = localStorage.getItem('token');
+    
+    console.log('getCurrentTasker - userData:', userData);
+    console.log('getCurrentTasker - token exists:', !!token);
+    
+    if (userData && (userData.role === 'tasker' || userData.userType === 'tasker')) {
+      // Try to get tasker ID from various possible fields
+      const taskerId = userData.taskerId || userData.id || userData._id;
+      console.log('Found tasker ID:', taskerId);
+      
+      if (taskerId) {
+        return { success: true, data: { ...userData, _id: taskerId, id: taskerId } };
+      }
+    }
+    
+    if (token) {
+      // Try to fetch tasker profile if we have a token but no stored user data
+      console.log('Attempting to fetch tasker profile with token');
+      const profileResult = await getTaskerProfile(token);
+      if (profileResult.success) {
+        return { success: true, data: profileResult.data };
+      }
+    }
+    
+    return { success: false, message: 'No tasker logged in' };
+  } catch (error) {
+    console.error('Error getting current tasker:', error);
+    return { success: false, message: 'Error getting current tasker' };
+  }
+};

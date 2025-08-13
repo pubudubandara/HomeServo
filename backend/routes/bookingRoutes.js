@@ -7,7 +7,8 @@ import {
   getBookingStats,
   addBookingFeedback,
   getTaskerBookings,
-  getServiceBookings
+  getServiceBookings,
+  createTestBookings
 } from '../controllers/bookingController.js';
 import { verifyToken, verifyAdmin } from '../middleware/auth.js';
 
@@ -37,5 +38,8 @@ router.post('/:id/feedback', addBookingFeedback); // Add customer feedback (publ
 router.get('/', getAllBookings); // Get all bookings (public for now)
 router.put('/:id/status', updateBookingStatus); // Update booking status (public for now)
 router.get('/admin/statistics', getBookingStats); // Get booking statistics (public for now)
+
+// Test route to create sample bookings
+router.post('/test/create', createTestBookings); // Create test bookings
 
 export default router;

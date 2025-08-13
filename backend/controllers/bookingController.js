@@ -431,6 +431,8 @@ const getTaskerBookings = async (req, res) => {
     const { taskerId } = req.params;
     const { status, page = 1, limit = 10 } = req.query;
 
+    console.log(`Fetching bookings for tasker: ${taskerId}`);
+
     // Validate tasker exists
     const tasker = await Tasker.findById(taskerId);
     if (!tasker) {
@@ -440,25 +442,32 @@ const getTaskerBookings = async (req, res) => {
       });
     }
 
-    // Get all services by this tasker
-    const taskerServices = await Service.find({ taskerId }).select('_id');
+    // Get all services created by this tasker
+    const taskerServices = await Service.find({ taskerId }).select('_id title');
     const serviceIds = taskerServices.map(service => service._id);
+    
+    console.log(`Found ${taskerServices.length} services for tasker:`, serviceIds);
 
-    // Build query for bookings
+    // Build query for bookings based on services owned by this tasker
     let query = { serviceId: { $in: serviceIds } };
+    
     if (status) {
       query.status = status;
     }
+
+    console.log('Booking query:', query);
 
     // Calculate pagination
     const skip = (page - 1) * limit;
 
     // Get bookings with pagination
     const bookings = await Booking.find(query)
-      .populate('serviceId', 'title category price description')
+      .populate('serviceId', 'title category price description taskerId')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
+
+    console.log(`Found ${bookings.length} bookings`);
 
     // Get total count for pagination
     const totalBookings = await Booking.countDocuments(query);
@@ -472,6 +481,8 @@ const getTaskerBookings = async (req, res) => {
       completed: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'completed' }),
       cancelled: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'cancelled' })
     };
+
+    console.log('Booking stats:', stats);
 
     res.status(200).json({
       success: true,
@@ -560,6 +571,69 @@ const getServiceBookings = async (req, res) => {
   }
 };
 
+// Create test bookings for development
+const createTestBookings = async (req, res) => {
+  try {
+    // Get a tasker and their services
+    const tasker = await Tasker.findOne();
+    if (!tasker) {
+      return res.status(400).json({
+        success: false,
+        message: 'No tasker found. Please create a tasker first.'
+      });
+    }
+
+    const services = await Service.find({ taskerId: tasker._id }).limit(3);
+    if (services.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No services found for the tasker. Please create services first.'
+      });
+    }
+
+    const testBookings = [];
+    
+    // Create bookings for different services
+    for (let i = 0; i < services.length; i++) {
+      const service = services[i];
+      const booking = {
+        customerName: `Test Customer ${i + 1}`,
+        customerEmail: `customer${i + 1}@test.com`,
+        customerPhone: `+123456789${i}`,
+        serviceDescription: `Test booking for ${service.title} - ${service.description}`,
+        serviceLocation: `Test Location ${i + 1}, Test City`,
+        preferredDate: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000), // i+1 days from now
+        serviceId: service._id,
+        status: i === 0 ? 'pending' : i === 1 ? 'confirmed' : 'completed',
+        estimatedCost: 50 + (i * 25)
+      };
+      testBookings.push(booking);
+    }
+
+    const createdBookings = await Booking.insertMany(testBookings);
+
+    res.status(201).json({
+      success: true,
+      message: `Created ${createdBookings.length} test bookings`,
+      data: {
+        tasker: {
+          id: tasker._id,
+          name: `${tasker.firstName} ${tasker.lastName}`
+        },
+        bookings: createdBookings
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating test bookings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating test bookings',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 export {
   createBooking,
   getAllBookings,
@@ -568,5 +642,6 @@ export {
   getBookingStats,
   addBookingFeedback,
   getTaskerBookings,
-  getServiceBookings
+  getServiceBookings,
+  createTestBookings
 };
