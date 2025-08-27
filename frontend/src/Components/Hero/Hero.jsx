@@ -1,9 +1,5 @@
 import React from 'react';
 import './Hero.css';
-import backgreen from '../../../public/Decore.png';
-import charactor from '../../../public/girl-base.png';
-import search from '../../../public/search.png';
-
 
 const Hero = () => {
   return (
@@ -20,14 +16,14 @@ const Hero = () => {
         </div>
         <div className="SearchBar">
           <input type="text" placeholder="Search..."/>
-          <img src={search} alt="" />
+          <img src="/search.png" alt="" />
         </div>
       </div>
       <div className="Background">
-        <img src={backgreen} alt="Background Decoration" />
+        <img src="/Decore.png" alt="Background Decoration" />
       </div>
       <div className="Charactor">
-        <img src={charactor} alt="Character Image" />
+        <img src="/girl-base.png" alt="Character Image" />
       </div>
     </div>
   );

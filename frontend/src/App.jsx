@@ -1,24 +1,31 @@
 // src/App.jsx
+// Main application component with routing setup
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './Components/Navbar/Navbar';
-import ServiceCards from './Components/ServiseCards/ServiceCards';
 import './App.css';
-import Home from './Components/Home/Home';
-import SignUp from './Components/Signup/Signup'; 
-import TaskerSignup from './Components/TaskerSignup/TaskerSignup';
-import Login from './Components/Login/Login';
-import TaskerForm from './Components/TaskerForm/TaskerForm';
-import ProfilePage from './Components/Profilepage/Profilepage';
-import TaskerProfile from './Components/Taskerpages/Profile/profile';
-import TaskerBookings from './Components/Taskerpages/Bookings/bookings';
-import TaskerServiceCards from './Components/Taskerpages/ServiceCards/service';
+
+// Import all page components
+import {
+  HomePage,
+  LoginPage,
+  SignupPage,
+  TaskerSignupPage,
+  ServicesPage,
+  AboutUs,
+  BookingPage,
+  CustomerProfilePage,
+  TaskerProfileFormPage,
+  TaskerProfilePage,
+  TaskerBookingsPage,
+  TaskerServicesPage,
+  AdminPage,
+  TestPage
+} from './pages';
+
+// Legacy components (to be refactored)
 import Seller from './Components/Seller/seller';
-import BookingForm from './Components/Book/Book';
-import AboutUs from './Components/AboutUs/AboutUs';
-import Admin from './Components/Admin/Admin';
-import ServiceTest from './Components/ServiceTest';
 import { AuthProvider } from './contexts/AuthContext';
 
 const AppContent = () => {
@@ -32,30 +39,40 @@ const AppContent = () => {
       {/* Only show regular navbar if not on tasker routes */}
       {!isTaskerRoute && <Navbar />}
 
-      {/* Set up routing */}
+      {/* Main application routes */}
       <Routes>
-        <Route path="/" element={<Home />} />  {/* Home or landing page */}
-        <Route path="/services" element={<ServiceCards />} />  {/* Services page */}
-        <Route path="/about" element={<AboutUs />} />  {/* About page */}
-        <Route path="/signup" element={<SignUp />} />  {/* Customer signup page */}
-        <Route path="/tasker-signup" element={<TaskerSignup />} />  {/* Tasker signup page */}
-        <Route path="/login" element={<Login />} />  {/* Login page */}
-        <Route path="/become-tasker" element={<TaskerSignup />} />  {/* Redirect old route to new tasker signup */}
-        <Route path="/complete-tasker-profile" element={<TaskerForm />} />  {/* Tasker profile completion */}
-        <Route path="/profilepage" element={<ProfilePage />} />  {/* Profile page */}
-        <Route path="/profilepage/:serviceId" element={<ProfilePage />} />  {/* Profile page with service ID */}
-        <Route path="/tasker/profile" element={<TaskerProfile />} />  {/* Tasker Profile page */}
-        <Route path="/tasker/service-cards" element={<TaskerServiceCards />} />  {/* Tasker Service Cards page */}
-        <Route path="/tasker/bookings" element={<TaskerBookings />} />  {/* Tasker Bookings page */}
+        {/* Public Routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/about" element={<AboutUs />} />
+        
+        {/* Authentication Routes */}
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/tasker-signup" element={<TaskerSignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/become-tasker" element={<TaskerSignupPage />} />
+        
+        {/* Profile Routes */}
+        <Route path="/complete-tasker-profile" element={<TaskerProfileFormPage />} />
+        <Route path="/profilepage" element={<CustomerProfilePage />} />
+        <Route path="/profilepage/:serviceId" element={<CustomerProfilePage />} />
+        
+        {/* Tasker Dashboard Routes */}
+        <Route path="/tasker/profile" element={<TaskerProfilePage />} />
+        <Route path="/tasker/service-cards" element={<TaskerServicesPage />} />
+        <Route path="/tasker/bookings" element={<TaskerBookingsPage />} />
+        
+        {/* Booking Routes */}
+        <Route path="/book" element={<BookingPage />} />
+        <Route path="/book/:serviceId" element={<BookingPage />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={<AdminPage />} />
+        
+        {/* Legacy/Utility Routes */}
         <Route path="/seller" element={<Seller />} />
-        <Route path="/book" element={<BookingForm />} />
-        <Route path="/book/:serviceId" element={<BookingForm />} />
-        <Route path="/admin/*" element={<Admin />} />  {/* Admin panel */}
-        <Route path="/test-services" element={<ServiceTest />} />  {/* Test route for service API */}
-        {/* Add more routes as needed */}
+        <Route path="/test-services" element={<TestPage />} />
       </Routes>
-
-      {/* Footer will be placed at the bottom */}
     </div>
   );
 };
