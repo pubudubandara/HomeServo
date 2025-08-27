@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { serviceAPI } from '../../utils/serviceAPI';
-import './ProfilePage.css';
+import { serviceAPI } from '../../../utils/serviceAPI';
+import './ServiceProfile.css';
 
-const ProfilePage = () => {
+const ServiceProfile = () => {
   const navigate = useNavigate();
   const { serviceId } = useParams();
   const [service, setService] = useState(null);
@@ -278,8 +278,6 @@ const ProfilePage = () => {
             </div>
           )}
 
-
-
           {/* Service Description */}
           <div className="service-description card">
             <h3 className="section-title">
@@ -450,4 +448,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default ServiceProfile;

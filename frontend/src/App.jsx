@@ -15,7 +15,7 @@ import {
   ServicesPage,
   AboutUs,
   BookingPage,
-  CustomerProfilePage,
+  ServiceProfile,
   TaskerProfileFormPage,
   TaskerProfilePage,
   TaskerBookingsPage,
@@ -25,7 +25,6 @@ import {
 } from './pages';
 
 // Legacy components (to be refactored)
-import Seller from './Components/Seller/seller';
 import { AuthProvider } from './contexts/AuthContext';
 
 const AppContent = () => {
@@ -54,8 +53,8 @@ const AppContent = () => {
         
         {/* Profile Routes */}
         <Route path="/complete-tasker-profile" element={<TaskerProfileFormPage />} />
-        <Route path="/profilepage" element={<CustomerProfilePage />} />
-        <Route path="/profilepage/:serviceId" element={<CustomerProfilePage />} />
+        <Route path="/profilepage" element={<ServiceProfile />} />
+        <Route path="/profilepage/:serviceId" element={<ServiceProfile />} />
         
         {/* Tasker Dashboard Routes */}
         <Route path="/tasker/profile" element={<TaskerProfilePage />} />
@@ -70,7 +69,6 @@ const AppContent = () => {
         <Route path="/admin/*" element={<AdminPage />} />
         
         {/* Legacy/Utility Routes */}
-        <Route path="/seller" element={<Seller />} />
         <Route path="/test-services" element={<TestPage />} />
       </Routes>
     </div>

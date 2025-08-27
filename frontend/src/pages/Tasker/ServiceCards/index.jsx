@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './service.css';
-import { TaskerNavbar } from '../../../Components/Tasker';
+import TaskerNavbar from '../../../Components/Tasker/TaskerNavbar';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getTaskerProfile } from '../../../utils/taskerAPI';
 

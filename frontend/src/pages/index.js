@@ -6,11 +6,11 @@ export { default as TaskerSignupPage } from './Auth/TaskerSignUp';
 // Main Pages
 export { default as HomePage } from './Home';
 export { default as ServicesPage } from './Services';
+export { default as ServiceProfile } from './Services/ServiceProfile';
 export { default as AboutUs } from './AboutUs';
 export { default as BookingPage } from './Booking';
 
-// Profile Pages
-export { default as CustomerProfilePage } from './Profile/CustomerProfile';
+// Profile Pages  
 export { default as TaskerProfileFormPage } from './Profile/TaskerProfileForm';
 
 // Tasker Pages

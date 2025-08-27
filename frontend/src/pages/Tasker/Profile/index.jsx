@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './profile.css';
-import { TaskerNavbar } from '../../../Components/Tasker';
+import TaskerNavbar from '../../../Components/Tasker/TaskerNavbar';
 
 const TaskerProfile = () => {
   const navigate = useNavigate();
