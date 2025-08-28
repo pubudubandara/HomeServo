@@ -51,12 +51,6 @@
   white-space: nowrap;
 }
 
-/* Add transition for smooth color change */
-.service-item p,
-.service-item svg {
-  transition: color 0.3s ease;
-}
-
 .service-item p {
   margin-top: 8px;
   font-size: 10px;
@@ -91,18 +85,14 @@
 /* Modern Active State */
 .service-item.active {
   background: linear-gradient(135deg, #218838 0%, #28a745 100%);
+  color: white;
   box-shadow: 0 4px 8px -3px rgb(33 136 56 / 0.3);
-}
-
-.service-item.active p {
-  color: #ffffff;
-  font-weight: 700;
 }
 
 .service-item.active .icon,
 .service-item.active svg {
   transform: scale(1.05);
-  color: #ffffff;
+  color: white;
 }
 
 /* Ripple Effect */

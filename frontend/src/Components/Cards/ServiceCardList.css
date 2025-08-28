@@ -1,0 +1,146 @@
+/* Service Card List Container */
+.service-card-list-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.service-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #218838;
+  padding-bottom: 10px;
+}
+
+/* Service Card Grid */
+.service-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  min-height: 400px;
+}
+
+/* Service Card Wrapper */
+.service-card-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading, Error, and No Services Messages */
+.loading-message,
+.error-message,
+.no-services-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  grid-column: 1 / -1;
+}
+
+.loading-message i,
+.error-message i,
+.no-services-message i {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #218838;
+}
+
+.loading-message i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-message p,
+.error-message p,
+.no-services-message p {
+  font-size: 1.125rem;
+  margin: 0;
+  color: #374151;
+}
+
+.no-services-message h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.error-message button {
+  margin-top: 20px;
+  background: #218838;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.error-message button:hover {
+  background: #1e7e34;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .service-card-list-container {
+    padding: 30px 16px;
+  }
+  
+  .service-card-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  .loading-message,
+  .error-message,
+  .no-services-message {
+    padding: 40px 16px;
+  }
+  
+  .service-section-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-card-list-container {
+    padding: 20px 12px;
+  }
+  
+  .service-card-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .loading-message,
+  .error-message,
+  .no-services-message {
+    padding: 30px 12px;
+  }
+  
+  .loading-message i,
+  .error-message i,
+  .no-services-message i {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+  
+  .service-section-title {
+    font-size: 1.5rem;
+  }
+}
