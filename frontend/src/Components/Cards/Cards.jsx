@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Cards.css'; // Import your CSS styles if any
+import './Cards.css'; // Import the CSS file
 
 const Cards = ({ 
   name, 
@@ -11,15 +11,16 @@ const Cards = ({
   rating, 
   jobsCompleted, 
   tasker, 
-  serviceId 
+  serviceId,
+  isFeatured = false
 }) => {
-  const navigate = useNavigate(); // Correctly use useNavigate
+  const navigate = useNavigate();
 
   const handleClick = () => {
     if (serviceId) {
-      navigate(`/profilepage/${serviceId}`); // Navigate to profile page with service ID
+      navigate(`/profilepage/${serviceId}`);
     } else {
-      navigate('/profilepage'); // Fallback to original behavior
+      navigate('/profilepage');
     }
   };
 
@@ -53,19 +54,24 @@ const Cards = ({
   };
 
   return (
-    <div className="card" onClick={handleClick}>
+    <div className={`card ${isFeatured ? 'featured' : ''}`} onClick={handleClick}>
       <div className="card-image-container">
         <img 
           src={image || '/api/placeholder/300/200'} 
           alt={name} 
           className="card-image"
           onError={(e) => {
-            e.target.src = '/api/placeholder/300/200';
+            e.target.src = 'https://via.placeholder.com/300x200?text=Service+Image';
           }}
         />
         {category && (
           <div className="card-category">
             {category}
+          </div>
+        )}
+        {isFeatured && (
+          <div className="popular-badge">
+            Popular
           </div>
         )}
       </div>
@@ -106,7 +112,7 @@ const Cards = ({
           </div>
         )}
         
-        <button className="card-button">
+        <button className="card-button" onClick={(e) => e.stopPropagation()}>
           View Details
           <i className="fas fa-arrow-right"></i>
         </button>
