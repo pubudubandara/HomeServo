@@ -1,5 +1,5 @@
 import React from 'react';
-import TaskerForm from '../../Components/Tasker/TaskerForm';
+import TaskerForm from '../../Components/Tasker/TaskerForm/TaskerForm';
 
 const TaskerProfileFormPage = () => {
   return (

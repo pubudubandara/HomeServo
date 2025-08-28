@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './bookings.css';
-import TaskerNavbar from '../../../Components/Tasker/TaskerNavbar';
+import TaskerNavbar from '../../../Components/Tasker/TaskerNavbar/TaskerNavbar';
 import { getTaskerBookings, updateBookingStatus } from '../../../utils/bookingAPI';
 import { getCurrentTasker } from '../../../utils/taskerAPI';
 import { useAuth } from '../../../contexts/AuthContext';
