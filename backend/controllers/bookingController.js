@@ -634,6 +634,38 @@ const createTestBookings = async (req, res) => {
   }
 };
 
+// Get bookings by customer email
+const getCustomerBookings = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer email is required'
+      });
+    }
+
+    const bookings = await Booking.find({ customerEmail: email })
+      .populate('serviceId', 'title description category')
+      .sort({ createdAt: -1 }); // Sort by newest first
+
+    res.status(200).json({
+      success: true,
+      message: `Found ${bookings.length} bookings for customer`,
+      data: bookings
+    });
+
+  } catch (error) {
+    console.error('Error fetching customer bookings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching customer bookings',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 export {
   createBooking,
   getAllBookings,
@@ -643,5 +675,6 @@ export {
   addBookingFeedback,
   getTaskerBookings,
   getServiceBookings,
+  getCustomerBookings,
   createTestBookings
 };

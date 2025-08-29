@@ -57,7 +57,7 @@ const LoginPage = () => {
             navigate('/complete-tasker-profile');
           }
         } else {
-          navigate('/');
+          navigate('/services');
         }
       }
     } catch (error) {

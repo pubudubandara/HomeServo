@@ -11,6 +11,10 @@ export { default as ServiceProfile } from './Services/ServiceProfile';
 export { default as AboutUs } from './AboutUs';
 export { default as BookingPage } from './Booking';
 
+// User Pages
+export { default as MyBookings } from './User/MyBookings';
+export { default as Profile } from './User/Profile';
+
 // Profile Pages  
 export { default as TaskerProfileFormPage } from './Profile/TaskerProfileForm';
 

@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './Components/Navbar/Navbar';
 import './App.css';
 
@@ -22,7 +23,9 @@ import {
   TaskerBookingsPage,
   TaskerServicesPage,
   AdminPage,
-  TestPage
+  TestPage,
+  MyBookings,
+  Profile
 } from './pages';
 
 // Legacy components (to be refactored)
@@ -45,6 +48,8 @@ const AppContent = () => {
         <Route path="/" element={<Landing />} />
         <Route path="/services" element={<HomePage />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/profile" element={<Profile />} />
         
         {/* Authentication Routes */}
         <Route path="/signup" element={<SignupPage />} />
@@ -82,6 +87,30 @@ const App = () => {
     <Router>
       <AuthProvider>
         <AppContent />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              theme: {
+                primary: '#10B981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 4000,
+              theme: {
+                primary: '#EF4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
       </AuthProvider>
     </Router>
   );

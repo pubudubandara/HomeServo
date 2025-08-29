@@ -55,9 +55,9 @@ export const updateBookingStatus = async (bookingId, updateData) => {
   }
 };
 
-export const getBookingById = async (bookingId) => {
+export const getCustomerBookings = async (customerEmail) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+    const response = await fetch(`${API_BASE_URL}/bookings/customer/${encodeURIComponent(customerEmail)}`, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -65,13 +65,13 @@ export const getBookingById = async (bookingId) => {
     
     if (response.ok) {
       const data = await response.json();
-      return { success: true, data };
+      return { success: true, data: data.data };
     } else {
       const errorData = await response.json();
-      return { success: false, message: errorData.message || 'Failed to fetch booking details' };
+      return { success: false, message: errorData.message || 'Failed to fetch customer bookings' };
     }
   } catch (error) {
-    console.error('Error fetching booking details:', error);
-    return { success: false, message: 'Error fetching booking details' };
+    console.error('Error fetching customer bookings:', error);
+    return { success: false, message: 'Error fetching customer bookings' };
   }
 };

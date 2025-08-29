@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [isMobile, setIsMobile] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState("");
   const menuRef = useRef(null);
@@ -90,21 +91,50 @@ const Navbar = () => {
         className={isMobile ? `nav-links-mobile nav-overlay${closing ? ' closing' : ''}` : 'nav-links'}
         onClick={handleMenuClick}
       >
-        <li>
-          <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : undefined} end>
-            Home
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : undefined}>
-            Services
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/about" className={({ isActive }) => isActive ? 'active-link' : undefined}>
-            About Us
-          </NavLink>
-        </li>
+        {/* Show Home link only when NOT on services, my-bookings, or profile page */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+          <li>
+            <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : undefined} end>
+              Home
+            </NavLink>
+          </li>
+        )}
+        
+        {/* Show Explore Services when on services, my-bookings, or profile page */}
+        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile') && (
+          <li>
+            <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+              Explore Services
+            </NavLink>
+          </li>
+        )}
+        
+        {/* Show Services link only when NOT on services, my-bookings, or profile page */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+          <li>
+            <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+              Services
+            </NavLink>
+          </li>
+        )}
+        
+        {/* Show About Us link only when NOT on services, my-bookings, or profile page */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+          <li>
+            <NavLink to="/about" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+              About Us
+            </NavLink>
+          </li>
+        )}
+        
+        {/* Show My Bookings when on services, my-bookings, or profile page */}
+        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile') && (
+          <li>
+            <NavLink to="/my-bookings" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+              My Bookings
+            </NavLink>
+          </li>
+        )}
         {/* User actions group */}
         <div className="nav-user-actions">
           {!user && (
@@ -128,12 +158,14 @@ const Navbar = () => {
             </li>
           )}
         </div>
-        {/* Visually separated CTA */}
-        <li className="nav-cta-separator">
-          <NavLink to="/become-tasker" className="tasker-btn">
-            Become a Tasker
-          </NavLink>
-        </li>
+        {/* Visually separated CTA - Hide on services, my-bookings, and profile page */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+          <li className="nav-cta-separator">
+            <NavLink to="/become-tasker" className="tasker-btn">
+              Become a Tasker
+            </NavLink>
+          </li>
+        )}
       </ul>
 
       {/* Hamburger menu button for mobile */}

@@ -8,6 +8,7 @@ import {
   addBookingFeedback,
   getTaskerBookings,
   getServiceBookings,
+  getCustomerBookings,
   createTestBookings
 } from '../controllers/bookingController.js';
 import { verifyToken, verifyAdmin } from '../middleware/auth.js';
@@ -20,6 +21,7 @@ router.post('/', createBooking); // Create new booking (public)
 // Tasker routes (for getting their bookings)
 router.get('/tasker/:taskerId', getTaskerBookings); // Get bookings for a specific tasker
 router.get('/service/:serviceId', getServiceBookings); // Get bookings for a specific service
+router.get('/customer/:email', getCustomerBookings); // Get bookings for a specific customer
 
 // Protected routes (require authentication) - commented out for now since we don't have user auth in frontend
 // router.get('/:id', verifyToken, getBookingById); // Get booking by ID

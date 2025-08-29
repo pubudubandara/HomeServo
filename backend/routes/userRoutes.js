@@ -1,6 +1,7 @@
 
 import express from 'express';
-import { registerUser, registerTasker, loginUser } from '../controllers/userController.js';
+import { registerUser, registerTasker, loginUser, updateProfile, changePassword } from '../controllers/userController.js';
+import { verifyToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // @route   POST /api/users
@@ -17,5 +18,15 @@ router.post('/tasker', registerTasker);
 // @desc    Login user
 // @access  Public
 router.post('/login', loginUser);
+
+// @route   PUT /api/users/update-profile
+// @desc    Update user profile
+// @access  Private
+router.put('/update-profile', verifyToken, updateProfile);
+
+// @route   PUT /api/users/change-password
+// @desc    Change user password
+// @access  Private
+router.put('/change-password', verifyToken, changePassword);
 
 export default router;
