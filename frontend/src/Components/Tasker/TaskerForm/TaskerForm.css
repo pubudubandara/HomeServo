@@ -45,7 +45,7 @@
   margin-right: auto;
 }
 
-/* Section Headers */
+/* Section Headers with improved styling */
 form h2 {
   font-size: 1.5rem;
   font-weight: 600;
@@ -55,6 +55,17 @@ form h2 {
   padding-bottom: 12px;
   border-bottom: 2px solid #f1f5f9;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+form h2::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(135deg, #218838, #28a745);
+  border-radius: 2px;
 }
 
 form h2::after {
@@ -123,11 +134,25 @@ form input[type="file"] {
   padding: 24px;
   text-align: center;
   font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 form input[type="file"]:hover {
   border-color: #218838;
   background: #f0fdf4;
+}
+
+form input[type="file"]::before {
+  content: '📁 Choose or drag image here';
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+form input[type="file"]:focus {
+  outline: none;
+  border-color: #218838;
+  box-shadow: 0 0 0 4px rgb(33 136 56 / 0.1);
 }
 
 /* Select Dropdown */
@@ -244,22 +269,28 @@ form button[type="reset"]:hover {
   transform: translateY(-1px);
 }
 
-/* Form Footer */
+/* Form Footer with improved styling */
 form p {
   text-align: center;
   font-size: 0.925rem;
   color: #6b7280;
   margin-top: 32px;
   line-height: 1.6;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
 }
 
 form p a {
   color: #218838;
   text-decoration: none;
   font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 form p a:hover {
+  color: #28a745;
   text-decoration: underline;
 }
 
@@ -335,6 +366,17 @@ form p a:hover {
     padding: 12px 18px;
     font-size: 0.975rem;
   }
+
+  /* Improve file upload on mobile */
+  form input[type="file"] {
+    padding: 16px;
+    font-size: 0.875rem;
+  }
+
+  form input[type="file"]::before {
+    content: '📁 Tap to select image';
+    font-size: 0.8rem;
+  }
 }
 
 /* Animation for form entrance */
@@ -395,21 +437,43 @@ form input[type="number"]:focus {
   animation: slideInUp 0.6s ease-out;
 }
 
-/* Focus states for accessibility */
+/* Loading state for form submission */
+form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+form button:disabled::before {
+  display: none;
+}
+
+form button:disabled:hover {
+  transform: none !important;
+  box-shadow: 0 4px 6px -1px rgb(33 136 56 / 0.3) !important;
+}
+
+/* Better focus states for better accessibility */
 form input:focus,
 form select:focus,
-form textarea:focus,
-form button:focus {
+form textarea:focus {
   outline: 2px solid #218838;
   outline-offset: 2px;
 }
 
-/* Error states */
+/* Improved error states with better visibility */
 .form-group.error input,
 .form-group.error select,
 .form-group.error textarea {
   border-color: #ef4444;
   box-shadow: 0 0 0 4px rgb(239 68 68 / 0.1);
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 .error-message {
@@ -417,12 +481,35 @@ form button:focus {
   font-size: 0.875rem;
   font-weight: 500;
   margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-/* Success states */
+.error-message::before {
+  content: '⚠️';
+  font-size: 0.75rem;
+}
+
+/* Success states with better feedback */
 .form-group.success input,
 .form-group.success select,
 .form-group.success textarea {
   border-color: #10b981;
   box-shadow: 0 0 0 4px rgb(16 185 129 / 0.1);
+}
+
+.success-message {
+  color: #10b981;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.success-message::before {
+  content: '✅';
+  font-size: 0.75rem;
 }

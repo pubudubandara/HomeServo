@@ -52,7 +52,6 @@
   padding: 8px 12px;
   border-radius: 50px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   gap: 4px;
 }
 
@@ -83,7 +82,7 @@
   padding: 8px 18px;
   border-radius: 30px;
   font-weight: 500;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
 }
 
 
@@ -94,6 +93,12 @@
   color: #218838 !important;
 }
 
+/* Ensure non-active links don't have unwanted styling */
+.nav-links a:not(.active-link),
+.nav-links-mobile a:not(.active-link) {
+  box-shadow: none !important;
+}
+
 /* Fix hover for tasker button */
 .tasker-btn:hover {
   background: #e6f4ea !important;
@@ -101,8 +106,17 @@
 }
 
 .active-link {
-  background: #218838;
+  background: #218838 !important;
   color: #fff !important;
+
+}
+
+/* Ensure active link overrides all other styles */
+.nav-links a.active-link,
+.nav-links-mobile a.active-link {
+  background: #218838 !important;
+  color: #fff !important;
+  box-shadow: none !important;
 }
 
 /* Tasker button styling */

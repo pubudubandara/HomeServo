@@ -41,74 +41,85 @@ const TaskerForm = () => {
   };
 
   return (
-    <div className="tasker-form-container">
-      <h2>Complete Your Tasker Profile</h2>
-      <form onSubmit={handleSubmit} className="tasker-form">
+    <div id="tasker-form">
+      <h1>Complete Your Tasker Profile</h1>
+      <p>Join our community of skilled professionals and start offering your services to customers in your area.</p>
+      <form onSubmit={handleSubmit}>
+        <h2>Professional Information</h2>
+        
         <div className="form-group">
-          <label htmlFor="skills">Skills</label>
+          <label className="form-label" htmlFor="skills">Skills</label>
           <textarea
             id="skills"
             name="skills"
             value={formData.skills}
             onChange={handleChange}
-            placeholder="List your skills and expertise"
+            placeholder="List your skills and expertise (e.g., plumbing, electrical, cleaning, etc.)"
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="experience">Experience</label>
+          <label className="form-label" htmlFor="experience">Experience</label>
           <textarea
             id="experience"
             name="experience"
             value={formData.experience}
             onChange={handleChange}
-            placeholder="Describe your relevant experience"
+            placeholder="Describe your relevant experience and qualifications"
             required
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="availability">Availability</label>
-          <input
-            type="text"
-            id="availability"
-            name="availability"
-            value={formData.availability}
-            onChange={handleChange}
-            placeholder="e.g., Weekdays 9AM-5PM"
-            required
-          />
+        <h2>Availability & Location</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label" htmlFor="availability">Availability</label>
+            <input
+              type="text"
+              id="availability"
+              name="availability"
+              value={formData.availability}
+              onChange={handleChange}
+              placeholder="e.g., Weekdays 9AM-5PM"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="rate">Hourly Rate ($)</label>
+            <input
+              type="number"
+              id="rate"
+              name="rate"
+              value={formData.rate}
+              onChange={handleChange}
+              placeholder="Enter your hourly rate"
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="rate">Hourly Rate ($)</label>
-          <input
-            type="number"
-            id="rate"
-            name="rate"
-            value={formData.rate}
-            onChange={handleChange}
-            placeholder="Enter your hourly rate"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="location">Location</label>
+          <label className="form-label" htmlFor="location">Service Location</label>
           <input
             type="text"
             id="location"
             name="location"
             value={formData.location}
             onChange={handleChange}
-            placeholder="Enter your service area"
+            placeholder="Enter your service area (city, state)"
             required
           />
         </div>
 
+        <h2>Profile Image</h2>
+        
         <div className="form-group">
-          <label htmlFor="profileImage">Profile Image</label>
+          <label className="form-label" htmlFor="profileImage">Upload Profile Picture</label>
           <input
             type="file"
             id="profileImage"
@@ -118,9 +129,11 @@ const TaskerForm = () => {
           />
         </div>
 
-        <button type="submit" className="submit-button">
-          Create Profile
-        </button>
+        <button type="submit">Create Profile</button>
+        
+        <p>
+          By creating your profile, you agree to our terms of service and privacy policy.
+        </p>
       </form>
     </div>
   );
