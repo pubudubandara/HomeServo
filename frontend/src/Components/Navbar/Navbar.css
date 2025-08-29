@@ -29,6 +29,7 @@
   letter-spacing: -0.5px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  text-decoration: none;
 }
 
 .logo:hover {

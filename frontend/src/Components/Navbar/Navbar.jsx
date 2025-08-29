@@ -92,7 +92,12 @@ const Navbar = () => {
       >
         <li>
           <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : undefined} end>
-            Explore Services
+            Home
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+            Services
           </NavLink>
         </li>
         <li>

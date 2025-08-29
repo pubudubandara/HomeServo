@@ -8,6 +8,7 @@ import './App.css';
 
 // Import all page components
 import {
+  Landing,
   HomePage,
   LoginPage,
   SignupPage,
@@ -41,8 +42,8 @@ const AppContent = () => {
       {/* Main application routes */}
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/services" element={<HomePage />} />
         <Route path="/about" element={<AboutUs />} />
         
         {/* Authentication Routes */}

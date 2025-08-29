@@ -5,7 +5,7 @@ import ServiceCardList from '../../Components/Cards/ServiceCardList';
 import Footer from '../../Components/Footer/Footer';
 import { serviceAPI } from '../../utils/serviceAPI';
 
-const HomePage = () => {
+const ServicesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('Assembly');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,8 +41,8 @@ const HomePage = () => {
     <div>
       <Hero />
       <ServiceCards onCategoryChange={handleCategoryChange} />
-      <ServiceCardList 
-        services={services} 
+      <ServiceCardList
+        services={services}
         title={`${selectedCategory} Services`}
         loading={loading}
         error={error}
@@ -52,4 +52,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default ServicesPage;

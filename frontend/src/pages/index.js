@@ -4,6 +4,7 @@ export { default as SignupPage } from './Auth/SignUp';
 export { default as TaskerSignupPage } from './Auth/TaskerSignUp';
 
 // Main Pages
+export { default as Landing } from './Landing';
 export { default as HomePage } from './Home';
 export { default as ServicesPage } from './Services';
 export { default as ServiceProfile } from './Services/ServiceProfile';
