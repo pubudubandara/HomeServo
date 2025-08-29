@@ -40,6 +40,7 @@
   align-items: center;
   position: relative;
   z-index: 2;
+  border-radius: 20px;
 }
 
 .hero-title {
@@ -159,7 +160,7 @@
   height: 800px;
   object-fit: cover;
   border: none;
-  opacity: 0.9;
+  opacity: 0.2;
 }
 
 /* =================== */

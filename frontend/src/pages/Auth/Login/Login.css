@@ -24,9 +24,12 @@
 .form-section {
   flex: 1;
   padding: 60px 40px;
-  max-width: 500px;
+  max-width: 600px;
   position: relative;
   z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 /* Modern Typography */
@@ -202,12 +205,13 @@ h2 {
 
 /* Image Section Enhancement */
 .image-section {
-  flex: 1;
+  flex: 1.2;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   position: relative;
+  min-height: 100vh;
 }
 
 .image-section::before {
@@ -218,8 +222,9 @@ h2 {
 }
 
 .image-section img {
-  max-width: 80%;
-  height: auto;
+  width: 85%;
+  max-height: 85vh;
+  object-fit: contain;
   filter: drop-shadow(0 20px 40px rgba(33, 136, 56, 0.2));
   position: relative;
   z-index: 1;
