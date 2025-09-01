@@ -1,54 +1,84 @@
 // src/App.jsx
+// Main application component with routing setup
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './Components/Navbar/Navbar';
-import ServiceCards from './Components/ServiseCards/ServiceCards';
 import './App.css';
-import Home from './Components/Home/Home';
-import SignUp from './Components/Signup/Signup'; 
-import Login from './Components/Login/Login';
-import TaskerForm from './Components/TaskerForm/TaskerForm';
-import ProfilePage from './Components/Profilepage/Profilepage';
-import TaskerProfile from './Components/Taskerpages/Profile/profile';
-import TaskerBookings from './Components/Taskerpages/Bookings/bookings';
-import TaskerServiceCards from './Components/Taskerpages/ServiceCards/service';
-import Seller from './Components/Seller/seller';
-import BookingForm from './Components/Book/Book';
-import AboutUs from './Components/AboutUs/AboutUs';
-import Admin from './Components/Admin/Admin';
+
+// Import all page components
+import {
+  Landing,
+  HomePage,
+  LoginPage,
+  SignupPage,
+  TaskerSignupPage,
+  ServicesPage,
+  AboutUs,
+  BookingPage,
+  ServiceProfile,
+  TaskerProfileFormPage,
+  TaskerProfilePage,
+  TaskerBookingsPage,
+  TaskerServicesPage,
+  AdminPage,
+  TestPage,
+  MyBookings,
+  Profile
+} from './pages';
+
+// Legacy components (to be refactored)
 import { AuthProvider } from './contexts/AuthContext';
 
 const AppContent = () => {
   const location = useLocation();
   
-  // Check if current path is a tasker route
+  // Check if current path is a tasker route or booking route
   const isTaskerRoute = location.pathname.startsWith('/tasker');
+  const isBookingRoute = location.pathname.startsWith('/book');
 
   return (
     <div className="app-container">
-      {/* Only show regular navbar if not on tasker routes */}
-      {!isTaskerRoute && <Navbar />}
+      {/* Only show regular navbar if not on tasker routes or booking routes */}
+      {!isTaskerRoute && !isBookingRoute && <Navbar />}
 
-      {/* Set up routing */}
+      {/* Main application routes */}
       <Routes>
-        <Route path="/" element={<Home />} />  {/* Home or landing page */}
-        <Route path="/services" element={<ServiceCards />} />  {/* Services page */}
-        <Route path="/about" element={<AboutUs />} />  {/* About page */}
-        <Route path="/signup" element={<SignUp />} />  {/* Signup page */}
-        <Route path="/login" element={<Login />} />  {/* Login page */}
-        <Route path="/become-tasker" element={<TaskerForm />} />  {/* TaskerForm page */}
-        <Route path="/profilepage" element={<ProfilePage />} />  {/* Profile page */}
-        <Route path="/tasker/profile" element={<TaskerProfile />} />  {/* Tasker Profile page */}
-        <Route path="/tasker/service-cards" element={<TaskerServiceCards />} />  {/* Tasker Service Cards page */}
-        <Route path="/tasker/bookings" element={<TaskerBookings />} />  {/* Tasker Bookings page */}
-        <Route path="/seller" element={<Seller />} />
-        <Route path="/book" element={<BookingForm />} />
-        <Route path="/admin/*" element={<Admin />} />  {/* Admin panel */}
-        {/* Add more routes as needed */}
+        {/* Public Routes */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/services" element={<HomePage />} />
+        <Route path="/services/:id" element={<ServiceProfile />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/profile" element={<Profile />} />
+        
+        {/* Authentication Routes */}
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/tasker-signup" element={<TaskerSignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/become-tasker" element={<TaskerSignupPage />} />
+        
+        {/* Profile Routes */}
+        <Route path="/complete-tasker-profile" element={<TaskerProfileFormPage />} />
+        <Route path="/profilepage" element={<ServiceProfile />} />
+        <Route path="/profilepage/:serviceId" element={<ServiceProfile />} />
+        
+        {/* Tasker Dashboard Routes */}
+        <Route path="/tasker/profile" element={<TaskerProfilePage />} />
+        <Route path="/tasker/service-cards" element={<TaskerServicesPage />} />
+        <Route path="/tasker/bookings" element={<TaskerBookingsPage />} />
+        
+        {/* Booking Routes */}
+        <Route path="/book" element={<BookingPage />} />
+        <Route path="/book/:id" element={<BookingPage />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={<AdminPage />} />
+        
+        {/* Legacy/Utility Routes */}
+        <Route path="/test-services" element={<TestPage />} />
       </Routes>
-
-      {/* Footer will be placed at the bottom */}
     </div>
   );
 };
@@ -59,6 +89,30 @@ const App = () => {
     <Router>
       <AuthProvider>
         <AppContent />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              theme: {
+                primary: '#10B981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 4000,
+              theme: {
+                primary: '#EF4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
       </AuthProvider>
     </Router>
   );

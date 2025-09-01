@@ -7,6 +7,9 @@ import connectDB from './config/db.js';
 
 import userRoutes from './routes/userRoutes.js';
 import taskerRoutes from './routes/taskerRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
+import debugRoutes from './routes/debugRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 
 dotenv.config();
 
@@ -23,6 +26,12 @@ app.use(express.urlencoded({ extended: true }));
 // Parse application/json (for JSON bodies)
 app.use(express.json());
 
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 // Routes
 
 // Routes
@@ -37,6 +46,19 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/taskers', taskerRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/debug', debugRoutes);
+app.use('/api/bookings', bookingRoutes);
+
+// Catch-all route for debugging
+app.use('*', (req, res) => {
+  console.log('Unmatched route:', req.method, req.originalUrl);
+  res.status(404).json({ 
+    message: 'Route not found',
+    method: req.method,
+    url: req.originalUrl
+  });
+});
 
 // Start server
 app.listen(PORT, () => {

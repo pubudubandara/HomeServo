@@ -2,10 +2,12 @@
 import mongoose from 'mongoose';
 
 const TaskerSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  fullName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true, 
+    unique: true 
+  },
   phoneNumber: { type: String },
   addressLine1: { type: String, required: true },
   addressLine2: { type: String },
@@ -17,14 +19,8 @@ const TaskerSchema = new mongoose.Schema({
   experience: { type: String, required: true },
   hourlyRate: { type: Number, required: true },
   bio: { type: String, required: true },
-  skills: { type: [String], required: true },
+  skills: { type: [String], default: [] },
   profileImageUrl: { type: String }, // Cloudinary image URL
-  role: {
-    type: String,
-    enum: ['tasker'],
-    default: 'tasker',
-    required: true,
-  },
 }, { timestamps: true });
 
 const Tasker = mongoose.model('Tasker', TaskerSchema);
