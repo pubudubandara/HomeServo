@@ -3,6 +3,7 @@
     width: 1000px;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 80px; /* Add space for navbar */
     display: flex;
     justify-content: space-between;
     padding: 30px;
@@ -185,4 +186,22 @@ p {
 
 .book-now:hover {
     background-color: #28a867;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        width: 95%;
+        margin-top: 70px; /* Slightly less space for mobile navbar */
+        padding: 20px;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        width: 100%;
+        margin-top: 60px; /* Even less space for very small screens */
+        padding: 15px;
+    }
 }

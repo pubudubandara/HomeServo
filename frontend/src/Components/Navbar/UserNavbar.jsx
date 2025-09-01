@@ -89,8 +89,8 @@ const UserNavbar = () => {
         className={isMobile ? `nav-links-mobile nav-overlay${closing ? ' closing' : ''}` : 'nav-links'}
         onClick={handleMenuClick}
       >
-        {/* Show Home link only when NOT on services, my-bookings, or profile page */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+        {/* Show Home link only when NOT on services, my-bookings, profile, or service detail pages */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
           <li>
             <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : ''} end>
               Home
@@ -98,8 +98,8 @@ const UserNavbar = () => {
           </li>
         )}
         
-        {/* Show Explore Services when on services, my-bookings, or profile page */}
-        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile') && (
+        {/* Show Explore Services when on services, my-bookings, profile, or service detail pages */}
+        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile' || location.pathname.startsWith('/services/')) && (
           <li>
             <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : ''}>
               Explore Services
@@ -107,8 +107,8 @@ const UserNavbar = () => {
           </li>
         )}
         
-        {/* Show Services link only when NOT on services, my-bookings, or profile page */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+        {/* Show Services link only when NOT on services, my-bookings, profile, or service detail pages */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
           <li>
             <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : ''}>
               Services
@@ -116,8 +116,8 @@ const UserNavbar = () => {
           </li>
         )}
         
-        {/* Show About Us link only when NOT on services, my-bookings, or profile page */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+        {/* Show About Us link only when NOT on services, my-bookings, profile, or service detail pages */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
           <li>
             <NavLink to="/about" className={({ isActive }) => isActive ? 'active-link' : ''}>
               About Us
@@ -125,8 +125,8 @@ const UserNavbar = () => {
           </li>
         )}
         
-        {/* Show My Bookings when on services, my-bookings, or profile page */}
-        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile') && (
+        {/* Show My Bookings when on services, my-bookings, profile, or service detail pages */}
+        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile' || location.pathname.startsWith('/services/')) && (
           <li>
             <NavLink to="/my-bookings" className={({ isActive }) => isActive ? 'active-link' : ''}>
               My Bookings
@@ -146,8 +146,8 @@ const UserNavbar = () => {
           </li>
         </div>
 
-        {/* Hide CTA on services, my-bookings, and profile page when user is logged in */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && (
+        {/* Hide CTA on services, my-bookings, profile, and service detail pages when user is logged in */}
+        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
           <li className="nav-cta-separator">
             <NavLink to="/become-tasker" className="tasker-btn">
               Become a Tasker

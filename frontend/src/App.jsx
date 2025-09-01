@@ -47,6 +47,7 @@ const AppContent = () => {
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/services" element={<HomePage />} />
+        <Route path="/services/:id" element={<ServiceProfile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/profile" element={<Profile />} />
