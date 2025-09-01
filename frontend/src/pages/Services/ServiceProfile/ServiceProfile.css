@@ -88,10 +88,27 @@
 
 /* Service Description Card */
 .card.description {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-bottom: 24px;
+  box-sizing: border-box;
   min-height: 200px;
   max-height: 300px;
   overflow-y: auto;
-  width: 100%;
+}
+
+.card.description h3 {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-top: 0;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .card.description p {
@@ -102,10 +119,27 @@
 
 /* Tasker Info Card */
 .card.tasker-info {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-bottom: 24px;
+  box-sizing: border-box;
   min-height: 250px;
   max-height: 400px;
   overflow-y: auto;
-  width: 100%;
+}
+
+.card.tasker-info h3 {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-top: 0;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .tasker-details {
