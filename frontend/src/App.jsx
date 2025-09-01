@@ -70,7 +70,7 @@ const AppContent = () => {
         
         {/* Booking Routes */}
         <Route path="/book" element={<BookingPage />} />
-        <Route path="/book/:serviceId" element={<BookingPage />} />
+        <Route path="/book/:id" element={<BookingPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin/*" element={<AdminPage />} />

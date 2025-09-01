@@ -55,9 +55,9 @@ export const updateBookingStatus = async (bookingId, updateData) => {
   }
 };
 
-export const getCustomerBookings = async (customerEmail) => {
+export const getCustomerBookings = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/bookings/customer/${encodeURIComponent(customerEmail)}`, {
+    const response = await fetch(`${API_BASE_URL}/bookings/customer/${encodeURIComponent(userId)}`, {
       headers: {
         'Content-Type': 'application/json'
       }

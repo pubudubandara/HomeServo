@@ -21,7 +21,7 @@ router.post('/', createBooking); // Create new booking (public)
 // Tasker routes (for getting their bookings)
 router.get('/tasker/:taskerId', getTaskerBookings); // Get bookings for a specific tasker
 router.get('/service/:serviceId', getServiceBookings); // Get bookings for a specific service
-router.get('/customer/:email', getCustomerBookings); // Get bookings for a specific customer
+router.get('/customer/:userId', getCustomerBookings); // Get bookings for a specific user
 
 // Protected routes (require authentication) - commented out for now since we don't have user auth in frontend
 // router.get('/:id', verifyToken, getBookingById); // Get booking by ID

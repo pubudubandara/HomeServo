@@ -4,47 +4,138 @@ import { useAuth } from '../../contexts/AuthContext';
 import './Book.css';
 
 const BookingForm = () => {
-    const { serviceId } = useParams(); // Get service ID from URL
+    const { id } = useParams(); // Get service ID from URL (matches the route parameter)
     const location = useLocation();
-    const { user } = useAuth(); // Get current user from auth context
+    const { user, isLoading } = useAuth(); // Get current user from auth context
     const serviceData = location.state?.service; // Get service data passed via navigation
-    
+
+    // Debug URL parameters
+    console.log('BookingForm - Full URL:', window.location.href);
+    console.log('BookingForm - URL pathname:', window.location.pathname);
+    console.log('BookingForm - useParams result:', { id });
+    console.log('BookingForm - location state:', location.state);
+
+    // Show loading while checking authentication
+    if (isLoading) {
+        return (
+            <div className="booking-container">
+                <div className="booking-form">
+                    <h2>Loading...</h2>
+                    <p>Checking authentication status...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Check if we have a service ID from URL
+    if (!id) {
+        return (
+            <div className="booking-container">
+                <div className="booking-form">
+                    <h2>Service Required</h2>
+                    <p>You need to select a service before booking. Please go back to the services page and choose a service.</p>
+                    <a href="/services" className="book-btn">Browse Services</a>
+                </div>
+            </div>
+        );
+    }
+
+    // Check if user is logged in - more comprehensive check
+    if (!user || !user._id) {
+        // Try to get user from localStorage directly
+        const storedUser = localStorage.getItem('user');
+        const storedToken = localStorage.getItem('token');
+        
+        console.log('BookingForm - Checking localStorage...');
+        console.log('BookingForm - Stored user:', storedUser);
+        console.log('BookingForm - Stored token:', storedToken ? 'exists' : 'null');
+        
+        if (storedUser && storedToken) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                console.log('BookingForm - Parsed user from localStorage:', parsedUser);
+                if (parsedUser && (parsedUser._id || parsedUser.id)) {
+                    console.log('BookingForm - Valid user found in localStorage, but not in context');
+                    // Force a page reload to refresh the context
+                    window.location.reload();
+                    return (
+                        <div className="booking-container">
+                            <div className="booking-form">
+                                <h2>Refreshing...</h2>
+                                <p>Please wait...</p>
+                            </div>
+                        </div>
+                    );
+                }
+            } catch (e) {
+                console.error('Error parsing stored user:', e);
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+            }
+        }
+        
+        return (
+            <div className="booking-container">
+                <div className="booking-form">
+                    <h2>Login Required</h2>
+                    <p>You must be logged in to make a booking.</p>
+                    <p>If you are logged in, please refresh the page.</p>
+                    <div style={{ margin: '10px 0' }}>
+                        <button onClick={() => window.location.reload()} style={{ marginRight: '10px' }}>Refresh Page</button>
+                        <a href="/login" className="book-btn">Go to Login</a>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const [formData, setFormData] = useState({
         phone: '',
         description: '',
         date: '',
         location: '',
-        serviceCategory: '',
         terms: false
     });
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitMessage, setSubmitMessage] = useState('');
     const [selectedService, setSelectedService] = useState(serviceData || null);
+    const [isLoadingService, setIsLoadingService] = useState(false);
 
     // If service ID is provided but no service data, fetch service details
     useEffect(() => {
-        if (serviceId && !selectedService) {
+        if (id && !selectedService) {
+            console.log('useEffect triggered - fetching service for ID:', id);
+            setIsLoadingService(true);
             // Fetch service details from backend
             const fetchServiceDetails = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5001/api/services/profile/${serviceId}`);
+                    console.log('Fetching service details for ID:', id);
+                    const response = await fetch(`http://localhost:5001/api/services/profile/${id}`);
+                    console.log('Service fetch response status:', response.status);
+                    
                     if (response.ok) {
                         const serviceData = await response.json();
+                        console.log('Service data fetched successfully:', serviceData);
                         setSelectedService(serviceData.data || serviceData);
                     } else {
-                        console.log('Service not found, using serviceId only');
-                        setSelectedService({ id: serviceId });
+                        console.log('Service fetch failed with status:', response.status);
+                        // Don't fail the booking, just log the error
                     }
                 } catch (error) {
                     console.error('Error fetching service details:', error);
-                    setSelectedService({ id: serviceId });
+                    // Don't fail the booking, just log the error
+                    console.log('Proceeding with service ID from URL despite fetch error');
+                } finally {
+                    setIsLoadingService(false);
                 }
             };
-            
+
             fetchServiceDetails();
+        } else {
+            console.log('useEffect - no ID or service already selected:', { id, selectedService });
         }
-    }, [serviceId, selectedService]);
+    }, [id, selectedService]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -60,14 +151,53 @@ const BookingForm = () => {
         setSubmitMessage('');
 
         try {
+            // Get user ID from auth context
+            const currentUserId = user?._id || user?.id;
+            let currentServiceId = id || selectedService?.id || selectedService?._id;
+
+            // If we don't have a service ID but we have an ID from URL, use it directly
+            if (!currentServiceId && id) {
+                currentServiceId = id;
+                console.log('Using service ID from URL parameter:', currentServiceId);
+            }
+
+            console.log('Current user:', user);
+            console.log('Current userId:', currentUserId);
+            console.log('Current serviceId:', currentServiceId);
+            console.log('URL param id:', id);
+            console.log('Selected service:', selectedService);
+            console.log('Service data from location:', serviceData);
+
+            // Validate required fields
+            if (!currentUserId) {
+                setSubmitMessage('Error: You must be logged in to make a booking');
+                setIsSubmitting(false);
+                return;
+            }
+
+            if (!currentServiceId) {
+                console.error('Service ID validation failed:', { id, selectedService, serviceData });
+                setSubmitMessage('Error: Service ID is missing. Please go back and select a service.');
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Validate service ID format (should be a non-empty string)
+            if (typeof currentServiceId !== 'string' || currentServiceId.trim().length === 0) {
+                console.error('Invalid service ID format:', currentServiceId);
+                setSubmitMessage('Error: Invalid service ID format. Please go back and select a service.');
+                setIsSubmitting(false);
+                return;
+            }
+
             const bookingData = {
-                customerPhone: formData.phone,
-                serviceDescription: formData.description,
-                serviceLocation: formData.location,
-                preferredDate: formData.date,
+                customerPhone: formData.phone.trim(),
+                serviceDescription: formData.description.trim(),
+                serviceLocation: formData.location.trim(),
+                preferredDate: new Date(formData.date).toISOString(), // Ensure proper date format
                 customerNotes: '', // Optional field
-                serviceId: serviceId || selectedService?.id || null, // Include service ID
-                userId: user?._id || user?.id || null // Include user ID if logged in
+                serviceId: currentServiceId,
+                userId: currentUserId
             };
 
             console.log('Submitting booking data:', bookingData);
@@ -91,7 +221,6 @@ const BookingForm = () => {
                     description: '',
                     date: '',
                     location: '',
-                    serviceCategory: '',
                     terms: false
                 });
             } else {
@@ -110,10 +239,21 @@ const BookingForm = () => {
             <div className="booking-container">
                 <div className="booking-header">
                     <h1>Book Your <span>Service</span></h1>
-                    {selectedService && selectedService.name && (
+                    {isLoadingService && (
+                        <div className="service-loading">
+                            <p>Loading service details...</p>
+                        </div>
+                    )}
+                    {selectedService && (selectedService.name || selectedService.title) && (
                         <div className="selected-service">
-                            <p>Selected Service: <strong>{selectedService.name}</strong></p>
+                            <p>Selected Service: <strong>{selectedService.name || selectedService.title}</strong></p>
                             {selectedService.price && <p>Price: <strong>{selectedService.price}</strong></p>}
+                            {selectedService.category && <p>Category: <strong>{selectedService.category}</strong></p>}
+                        </div>
+                    )}
+                    {!isLoadingService && !selectedService && id && (
+                        <div className="service-warning">
+                            <p>⚠️ Service details could not be loaded, but booking will still work.</p>
                         </div>
                     )}
                     <p>Get connected with skilled professionals for your needs</p>
@@ -148,27 +288,7 @@ const BookingForm = () => {
                             </div>
                         </div>
 
-                        {!selectedService && (
-                            <div className="form-group">
-                                <label htmlFor="serviceCategory">Service Category</label>
-                                <select 
-                                    id="serviceCategory" 
-                                    name="serviceCategory"
-                                    value={formData.serviceCategory || ''}
-                                    onChange={handleInputChange}
-                                    required
-                                >
-                                    <option value="">Select a service category</option>
-                                    <option value="Assembly">Assembly</option>
-                                    <option value="Mounting">Mounting</option>
-                                    <option value="Moving">Moving</option>
-                                    <option value="Cleaning">Cleaning</option>
-                                    <option value="Outdoor Help">Outdoor Help</option>
-                                    <option value="Home Repairs">Home Repairs</option>
-                                    <option value="Painting">Painting</option>
-                                </select>
-                            </div>
-                        )}
+
 
                         <div className="form-group">
                             <label htmlFor="description">Service Description</label>  
@@ -218,9 +338,9 @@ const BookingForm = () => {
                             </div>
                         )}
 
-                        <button type="submit" className="book-btn" disabled={isSubmitting}>
+                        <button type="submit" className="book-btn" disabled={isSubmitting || isLoadingService}>
                             <i className="fas fa-calendar-check"></i>
-                            {isSubmitting ? 'Submitting...' : 'Book Service Now'}
+                            {isSubmitting ? 'Submitting...' : isLoadingService ? 'Loading Service...' : 'Book Service Now'}
                         </button>  
                     </form>  
                 </div>

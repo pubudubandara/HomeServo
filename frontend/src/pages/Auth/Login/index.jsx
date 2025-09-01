@@ -30,9 +30,17 @@ const LoginPage = () => {
         console.log("Login failed:", data);
       } else {
         console.log("Login successful:", data);
+        console.log("User data received:", data.user);
+        console.log("User ID:", data.user?._id);
+        
         // Store token in localStorage
         localStorage.setItem('token', data.token);
-        login(data.user, data.token); // Set user in context with token
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Set user in context
+        login(data.user, data.token);
+        
+        console.log("User stored in localStorage:", localStorage.getItem('user'));
         
         // Navigate based on user role
         if (data.user.role === 'tasker') {

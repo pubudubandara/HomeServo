@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
 import Service from '../models/Service.js';
 import Tasker from '../models/Tasker.js';
+import User from '../models/User.js';
 
 // Create a new booking
 const createBooking = async (req, res) => {
@@ -24,22 +25,87 @@ const createBooking = async (req, res) => {
       serviceLocation,
       preferredDate,
       userId,
-      serviceId
+      serviceId,
+      hasUserId: !!userId,
+      hasServiceId: !!serviceId,
+      userIdType: typeof userId,
+      serviceIdType: typeof serviceId
     });
 
     // Validate required fields
-    if (!customerPhone || !serviceDescription || !serviceLocation || !preferredDate || !serviceId) {
+    if (!customerPhone || !serviceDescription || !serviceLocation || !preferredDate || !serviceId || !userId) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields including service ID',
+        message: 'Please provide all required fields including user ID and service ID',
         missingFields: {
           customerPhone: !customerPhone,
           serviceDescription: !serviceDescription,
           serviceLocation: !serviceLocation,
           preferredDate: !preferredDate,
-          serviceId: !serviceId
+          serviceId: !serviceId,
+          userId: !userId
         }
       });
+    }
+
+    // Validate userId format if provided
+    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('Invalid user ID format:', userId);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format'
+      });
+    }
+
+    // Check if user exists
+    if (userId) {
+      try {
+        const userExists = await User.findById(userId);
+        if (!userExists) {
+          console.log('User not found:', userId);
+          return res.status(400).json({
+            success: false,
+            message: 'User not found. Please log in again.'
+          });
+        }
+        console.log('User found:', userExists.email);
+      } catch (userError) {
+        console.log('Error checking user:', userError.message);
+        return res.status(400).json({
+          success: false,
+          message: 'Error validating user'
+        });
+      }
+    }
+
+    // Validate serviceId format if provided
+    if (serviceId && !mongoose.Types.ObjectId.isValid(serviceId.trim())) {
+      console.log('Invalid service ID format:', serviceId);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid service ID format'
+      });
+    }
+
+    // Check if service exists
+    if (serviceId) {
+      try {
+        const serviceExists = await Service.findById(serviceId.trim());
+        if (!serviceExists) {
+          console.log('Service not found:', serviceId);
+          return res.status(400).json({
+            success: false,
+            message: 'Service not found. Please select a valid service.'
+          });
+        }
+        console.log('Service found:', serviceExists.title);
+      } catch (serviceError) {
+        console.log('Error checking service:', serviceError.message);
+        return res.status(400).json({
+          success: false,
+          message: 'Error validating service'
+        });
+      }
     }
 
     // Validate date is in the future
@@ -67,7 +133,8 @@ const createBooking = async (req, res) => {
 
     // Create booking object
     const bookingData = {
-      serviceId: serviceId.trim(), // Always include serviceId
+      userId: userId, // Always required now
+      serviceId: serviceId.trim(),
       customerPhone: customerPhone.trim(),
       serviceDescription: serviceDescription.trim(),
       serviceLocation: serviceLocation.trim(),
@@ -77,17 +144,7 @@ const createBooking = async (req, res) => {
       priority: 'medium'
     };
 
-    console.log('Base booking data with serviceId:', bookingData);
-
-    // Add userId if provided (for authenticated users)
-    if (userId) {
-      bookingData.userId = userId;
-      console.log('Adding userId from request body:', userId);
-    } else if (req.user?.id) {
-      // Fallback to authenticated user ID from JWT token
-      bookingData.userId = req.user.id;
-      console.log('Adding userId from JWT token:', req.user.id);
-    }
+    console.log('Booking data with required userId and serviceId:', bookingData);
 
     console.log('Booking data prepared:', bookingData);
 
@@ -349,7 +406,7 @@ const getBookingStats = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5)
       .populate('serviceId', 'title category')
-      .select('customerName serviceDescription status createdAt priority');
+      .select('customerPhone serviceDescription status createdAt priority');
 
     const urgentBookings = await Booking.getUrgentBookings().limit(10);
 
@@ -606,8 +663,7 @@ const createTestBookings = async (req, res) => {
     for (let i = 0; i < services.length; i++) {
       const service = services[i];
       const booking = {
-        customerName: `Test Customer ${i + 1}`,
-        customerEmail: `customer${i + 1}@test.com`,
+        userId: users[Math.floor(Math.random() * users.length)]._id, // Random user from test users
         customerPhone: `+123456789${i}`,
         serviceDescription: `Test booking for ${service.title} - ${service.description}`,
         serviceLocation: `Test Location ${i + 1}, Test City`,
@@ -643,25 +699,25 @@ const createTestBookings = async (req, res) => {
   }
 };
 
-// Get bookings by customer email
+// Get bookings by user ID
 const getCustomerBookings = async (req, res) => {
   try {
-    const { email } = req.params;
+    const { userId } = req.params;
 
-    if (!email) {
+    if (!userId) {
       return res.status(400).json({
         success: false,
-        message: 'Customer email is required'
+        message: 'User ID is required'
       });
     }
 
-    const bookings = await Booking.find({ customerEmail: email })
+    const bookings = await Booking.find({ userId: userId })
       .populate('serviceId', 'title description category')
       .sort({ createdAt: -1 }); // Sort by newest first
 
     res.status(200).json({
       success: true,
-      message: `Found ${bookings.length} bookings for customer`,
+      message: `Found ${bookings.length} bookings for user`,
       data: bookings
     });
 

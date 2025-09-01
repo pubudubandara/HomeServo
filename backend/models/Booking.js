@@ -1,59 +1,43 @@
 import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema({
-  // User Information
+  // User Information (automatically filled from authentication)
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false, // Optional for guest bookings
+    required: true, // Required for authenticated bookings
     index: true // Add index for faster queries
   },
-  
-  // Service Information
+
+  // Service Information (automatically filled from URL params)
   serviceId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Service',
-    required: true, // Make service ID required
+    required: true, // Required for all bookings
     index: true // Add index for faster queries
   },
-  
-  // Customer Information
-  customerName: {
-    type: String,
-    trim: true,
-    maxlength: [100, 'Customer name cannot exceed 100 characters']
-  },
-  customerEmail: {
-    type: String,
-    lowercase: true,
-    trim: true,
-    validate: {
-      validator: function(v) {
-        if (!v) return true; // Allow empty email
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-      },
-      message: 'Please enter a valid email address'
-    }
-  },
+
+  // Essential Booking Information
   customerPhone: {
     type: String,
     required: [true, 'Customer phone number is required'],
     trim: true
   },
-  
-  // Service Information
+
   serviceDescription: {
     type: String,
     required: [true, 'Service description is required'],
     trim: true,
     maxlength: [1000, 'Service description cannot exceed 1000 characters']
   },
+
   serviceLocation: {
     type: String,
     required: [true, 'Service location is required'],
     trim: true,
     maxlength: [200, 'Service location cannot exceed 200 characters']
   },
+
   preferredDate: {
     type: Date,
     required: [true, 'Preferred service date is required'],
@@ -76,13 +60,8 @@ const bookingSchema = new mongoose.Schema({
     enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium'
   },
-  
-  // Optional: Link to specific service and tasker
-  serviceId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Service',
-    required: false
-  },
+
+  // Optional: Link to specific tasker
   assignedTasker: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tasker',
@@ -144,10 +123,11 @@ const bookingSchema = new mongoose.Schema({
 });
 
 // Indexes for better query performance
-bookingSchema.index({ customerEmail: 1 });
 bookingSchema.index({ status: 1 });
 bookingSchema.index({ preferredDate: 1 });
 bookingSchema.index({ assignedTasker: 1 });
+bookingSchema.index({ userId: 1 });
+bookingSchema.index({ serviceId: 1 });
 bookingSchema.index({ serviceId: 1 });
 bookingSchema.index({ createdAt: -1 });
 
@@ -205,7 +185,7 @@ bookingSchema.methods.getEstimatedDuration = function() {
 bookingSchema.methods.toCustomerNotification = function() {
   return {
     bookingId: this._id,
-    customerName: this.customerName,
+    userId: this.userId,
     serviceDescription: this.serviceDescription,
     preferredDate: this.preferredDate,
     status: this.status,

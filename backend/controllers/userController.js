@@ -32,7 +32,7 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       message: 'User registered successfully',
-      user: { name: user.name, email: user.email, role: user.role },
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
       token
     });
   } catch (error) {
@@ -65,7 +65,7 @@ export const registerTasker = async (req, res) => {
 
     res.status(201).json({
       message: 'Tasker user registered successfully',
-      user: { name: user.name, email: user.email, role: user.role },
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
       token
     });
   } catch (error) {
@@ -92,7 +92,7 @@ export const loginUser = async (req, res) => {
     );
     res.status(200).json({
       message: 'Login successful',
-      user: { name: user.name, email: user.email, role: user.role },
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
       token
     });
   } catch (error) {
@@ -120,7 +120,7 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json({
       message: 'Profile updated successfully',
-      user: { name: user.name, email: user.email, role: user.role }
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
