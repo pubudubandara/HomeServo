@@ -102,7 +102,7 @@ const LoginPage = () => {
               />
             </div>
             
-            <button type="submit" className="login-btn" disabled={loading}>
+            <button type="submit" className="login-button" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>

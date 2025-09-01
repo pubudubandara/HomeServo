@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../../Components/Footer/Footer';
 import './Landing.css';
 
 const Landing = () => {
+  const navigate = useNavigate();
   return (
     <div className="landing-page">
       {/* Hero Section */}
@@ -19,13 +20,13 @@ const Landing = () => {
               From cleaning to repairs, we've got you covered.
             </p>
             <div className="hero-buttons">
-              <Link to="/services" className="btn-primary">
+              <button className="btn-primary" onClick={() => navigate('/services')}>
                 Explore Services
                 <i className="fas fa-arrow-right"></i>
-              </Link>
-              <Link to="/tasker-signup" className="btn-secondary">
+              </button>
+              <button className="btn-secondary" onClick={() => navigate('/tasker-signup')}>
                 Become a Tasker
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -85,12 +86,12 @@ const Landing = () => {
             <h2>Ready to Get Started?</h2>
             <p>Join thousands of satisfied customers who trust HomeServo for their home service needs.</p>
             <div className="cta-buttons">
-              <Link to="/services" className="btn-primary">
+              <button className="btn-outline" onClick={() => navigate('/services')}>
                 Browse Services
-              </Link>
-              <Link to="/signup" className="btn-outline">
+              </button>
+              <button className="btn-primary" onClick={() => navigate('/signup')}>
                 Sign Up Today
-              </Link>
+              </button>
             </div>
           </div>
         </div>
