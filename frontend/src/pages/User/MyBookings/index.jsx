@@ -11,13 +11,20 @@ const MyBookings = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!user?.email) {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      // Use user._id if available, otherwise fall back to email
+      const userIdentifier = user._id || user.email;
+      if (!userIdentifier) {
         setLoading(false);
         return;
       }
 
       try {
-        const result = await getCustomerBookings(user.email);
+        const result = await getCustomerBookings(userIdentifier);
         if (result.success) {
           setBookings(result.data);
         } else {

@@ -711,7 +711,30 @@ const getCustomerBookings = async (req, res) => {
       });
     }
 
-    const bookings = await Booking.find({ userId: userId })
+    let userObjectId = userId;
+
+    // Check if userId is an email (contains @) or an ObjectId
+    if (userId.includes('@')) {
+      // It's an email, find the user by email first
+      const user = await User.findOne({ email: userId });
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+      userObjectId = user._id;
+    } else {
+      // It's an ObjectId, validate it
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID format'
+        });
+      }
+    }
+
+    const bookings = await Booking.find({ userId: userObjectId })
       .populate('serviceId', 'title description category')
       .sort({ createdAt: -1 }); // Sort by newest first
 
