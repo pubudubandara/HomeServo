@@ -34,13 +34,14 @@ import { AuthProvider } from './contexts/AuthContext';
 const AppContent = () => {
   const location = useLocation();
   
-  // Check if current path is a tasker route
+  // Check if current path is a tasker route or booking route
   const isTaskerRoute = location.pathname.startsWith('/tasker');
+  const isBookingRoute = location.pathname.startsWith('/book');
 
   return (
     <div className="app-container">
-      {/* Only show regular navbar if not on tasker routes */}
-      {!isTaskerRoute && <Navbar />}
+      {/* Only show regular navbar if not on tasker routes or booking routes */}
+      {!isTaskerRoute && !isBookingRoute && <Navbar />}
 
       {/* Main application routes */}
       <Routes>
