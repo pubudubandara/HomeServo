@@ -9,37 +9,35 @@ const createBooking = async (req, res) => {
     console.log('Received booking data:', req.body);
     
     const {
-      customerName,
-      customerEmail,
       customerPhone,
       serviceDescription,
       serviceLocation,
       preferredDate,
       serviceId,
-      customerNotes
+      customerNotes,
+      userId
     } = req.body;
 
     console.log('Extracted fields:', {
-      customerName,
-      customerEmail,
       customerPhone,
       serviceDescription,
       serviceLocation,
-      preferredDate
+      preferredDate,
+      userId,
+      serviceId
     });
 
     // Validate required fields
-    if (!customerName || !customerEmail || !customerPhone || !serviceDescription || !serviceLocation || !preferredDate) {
+    if (!customerPhone || !serviceDescription || !serviceLocation || !preferredDate || !serviceId) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields',
+        message: 'Please provide all required fields including service ID',
         missingFields: {
-          customerName: !customerName,
-          customerEmail: !customerEmail,
           customerPhone: !customerPhone,
           serviceDescription: !serviceDescription,
           serviceLocation: !serviceLocation,
-          preferredDate: !preferredDate
+          preferredDate: !preferredDate,
+          serviceId: !serviceId
         }
       });
     }
@@ -69,8 +67,7 @@ const createBooking = async (req, res) => {
 
     // Create booking object
     const bookingData = {
-      customerName: customerName.trim(),
-      customerEmail: customerEmail.toLowerCase().trim(),
+      serviceId: serviceId.trim(), // Always include serviceId
       customerPhone: customerPhone.trim(),
       serviceDescription: serviceDescription.trim(),
       serviceLocation: serviceLocation.trim(),
@@ -79,6 +76,18 @@ const createBooking = async (req, res) => {
       status: 'pending',
       priority: 'medium'
     };
+
+    console.log('Base booking data with serviceId:', bookingData);
+
+    // Add userId if provided (for authenticated users)
+    if (userId) {
+      bookingData.userId = userId;
+      console.log('Adding userId from request body:', userId);
+    } else if (req.user?.id) {
+      // Fallback to authenticated user ID from JWT token
+      bookingData.userId = req.user.id;
+      console.log('Adding userId from JWT token:', req.user.id);
+    }
 
     console.log('Booking data prepared:', bookingData);
 

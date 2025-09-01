@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';  
 import { useParams, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import './Book.css';
 
 const BookingForm = () => {
     const { serviceId } = useParams(); // Get service ID from URL
     const location = useLocation();
+    const { user } = useAuth(); // Get current user from auth context
     const serviceData = location.state?.service; // Get service data passed via navigation
     
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
         phone: '',
         description: '',
         date: '',
@@ -61,14 +61,13 @@ const BookingForm = () => {
 
         try {
             const bookingData = {
-                customerName: formData.name,
-                customerEmail: formData.email,
                 customerPhone: formData.phone,
                 serviceDescription: formData.description,
                 serviceLocation: formData.location,
                 preferredDate: formData.date,
                 customerNotes: '', // Optional field
-                serviceId: serviceId || selectedService?.id || null // Include service ID
+                serviceId: serviceId || selectedService?.id || null, // Include service ID
+                userId: user?._id || user?.id || null // Include user ID if logged in
             };
 
             console.log('Submitting booking data:', bookingData);
@@ -88,8 +87,6 @@ const BookingForm = () => {
             if (response.ok) {
                 setSubmitMessage('Booking submitted successfully! We will contact you soon.');
                 setFormData({
-                    name: '',
-                    email: '',
                     phone: '',
                     description: '',
                     date: '',
@@ -124,34 +121,6 @@ const BookingForm = () => {
                 
                 <div className="form-container">  
                     <form id="bookingForm" onSubmit={handleSubmit}>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label htmlFor="name">Full Name</label>  
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    name="name" 
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter your full name" 
-                                    required 
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="email">Email Address</label>  
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    placeholder="yourname@example.com" 
-                                    required 
-                                />
-                            </div>
-                        </div>
-
                         <div className="form-row">
                             <div className="form-group">
                                 <label htmlFor="phone">Phone Number</label>  

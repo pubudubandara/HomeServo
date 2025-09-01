@@ -5,7 +5,7 @@ import './ServiceProfile.css';
 
 const ServiceProfile = () => {
   const navigate = useNavigate();
-  const { id: serviceId } = useParams(); // Extract 'id' parameter and rename to serviceId
+  const { id } = useParams(); // Changed from serviceId to id to match the route
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,15 +16,13 @@ const ServiceProfile = () => {
         setLoading(true);
         setError(null);
 
-        console.log('Service ID from URL:', serviceId); // Debug log
-
-        if (!serviceId) {
+        if (!id) {
           setError('Service ID is missing.');
           setLoading(false);
           return;
         }
 
-        const response = await serviceAPI.getServiceProfile(serviceId);
+        const response = await serviceAPI.getServiceProfile(id);
         console.log('API Response:', response); // Debug
 
         if (response.success && response.data) {
@@ -41,7 +39,7 @@ const ServiceProfile = () => {
     };
 
     fetchServiceProfile();
-  }, [serviceId]);
+  }, [id]);
 
   if (loading) {
     return (
@@ -109,80 +107,76 @@ const ServiceProfile = () => {
       </section>
 
       <div className="main-content">
-        {/* Top Booking Section */}
-        <aside className="sidebar">
-          <div className="booking-card">
-            <div>
-              <h3>Book This Service</h3>
-              <ul className="features">
-                <li><i className="fas fa-check"></i> Professional {service.category} service</li>
-                <li><i className="fas fa-check"></i> Quality guaranteed</li>
-                <li><i className="fas fa-check"></i> On-time delivery</li>
-                {tasker?.skills?.[0] && (
-                  <li><i className="fas fa-check"></i> Specialized in {tasker.skills[0]}</li>
-                )}
-              </ul>
-            </div>
-            
-            <div className="price">${service.price}/hr</div>
-            
-            <div className="booking-actions">
-              <button className="btn-book" onClick={() => navigate(`/book/${service.id}`)}>
-                <i className="fas fa-calendar-check"></i> Book Now
-              </button>
-            </div>
+        {/* Booking Card at the top */}
+        <section className="booking-card">
+          <h3>Book This Service</h3>
+          <div className="price">{service.price}</div>
+          <ul className="features">
+            <li><i className="fas fa-check"></i> Professional {service.category} service</li>
+            <li><i className="fas fa-check"></i> Quality guaranteed</li>
+            <li><i className="fas fa-check"></i> On-time delivery</li>
+            {tasker?.skills?.[0] && (
+              <li><i className="fas fa-check"></i> Specialized in {tasker.skills[0]}</li>
+            )}
+          </ul>
+
+          <button className="btn-book" onClick={() => navigate(`/book/${id}`)}>
+            <i className="fas fa-calendar-check"></i> Book Now
+          </button>
+
+          <div className="guarantees">
+            <div><i className="fas fa-shield-alt"></i> Verified</div>
+            <div><i className="fas fa-medal"></i> Top Rated</div>
+            <div><i className="fas fa-hand-holding-usd"></i> Money Back</div>
           </div>
-        </aside>
+        </section>
 
-        {/* Content Column */}
-        <div className="left-column">
-          {/* About Service */}
-          <section className="card description">
+        {/* About Service */}
+        <section className="card description">
+          <h3>
+            <i className="fas fa-info-circle"></i> About This Service
+          </h3>
+          <p>{service.description}</p>
+
+          {service.tags && service.tags.length > 0 && (
+            <div className="tags">
+              {service.tags.map((tag, i) => (
+                <span className="tag" key={i}>{tag}</span>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Tasker Info (if available) */}
+        {tasker && (
+          <section className="card tasker-info">
             <h3>
-              <i className="fas fa-info-circle"></i> About This Service
+              <i className="fas fa-user"></i> About the Tasker
             </h3>
-            <p>{service.description}</p>
+            <div className="tasker-details">
+              {tasker.profileImage ? (
+                <img src={tasker.profileImage} alt={tasker.firstName} className="tasker-img" />
+              ) : (
+                <div className="tasker-img placeholder">?</div>
+              )}
+              <div>
+                <h4>{tasker.firstName} {tasker.lastName}</h4>
+                <p>{formatLocation(tasker.location)}</p>
+                <p>{tasker.bio}</p>
+                {tasker.experience && <p><strong>Experience:</strong> {tasker.experience}</p>}
+              </div>
+            </div>
 
-            {service.tags && service.tags.length > 0 && (
-              <div className="tags">
-                {service.tags.map((tag, i) => (
-                  <span className="tag" key={i}>{tag}</span>
+            {tasker.skills && tasker.skills.length > 0 && (
+              <div className="skills">
+                <h4>Skills</h4>
+                {tasker.skills.map((skill, i) => (
+                  <span className="skill-tag" key={i}>{skill}</span>
                 ))}
               </div>
             )}
           </section>
-
-          {/* Tasker Info (if available) */}
-          {tasker && (
-            <section className="card tasker-info">
-              <h3>
-                <i className="fas fa-user"></i> About the Tasker
-              </h3>
-              <div className="tasker-details">
-                {tasker.profileImage ? (
-                  <img src={tasker.profileImage} alt={tasker.firstName} className="tasker-img" />
-                ) : (
-                  <div className="tasker-img placeholder">?</div>
-                )}
-                <div>
-                  <h4>{tasker.firstName} {tasker.lastName}</h4>
-                  <p>{formatLocation(tasker.location)}</p>
-                  <p>{tasker.bio}</p>
-                  {tasker.experience && <p><strong>Experience:</strong> {tasker.experience}</p>}
-                </div>
-              </div>
-
-              {tasker.skills && tasker.skills.length > 0 && (
-                <div className="skills">
-                  <h4>Skills</h4>
-                  {tasker.skills.map((skill, i) => (
-                    <span className="skill-tag" key={i}>{skill}</span>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

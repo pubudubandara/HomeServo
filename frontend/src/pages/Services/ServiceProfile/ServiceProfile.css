@@ -60,15 +60,9 @@
 
 /* Main Layout */
 .main-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 20px;
-  max-width: 900px;
+  max-width: 800px;
   margin: 0 auto;
-}
-
-.left-column {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -80,7 +74,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: 900px;
+  box-sizing: border-box;
 }
 
 .card h3 {
@@ -90,6 +84,54 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Service Description Card */
+.card.description {
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.card.description p {
+  line-height: 1.6;
+  color: #4a5568;
+  margin-bottom: 16px;
+}
+
+/* Tasker Info Card */
+.card.tasker-info {
+  min-height: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.tasker-details {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Tags and Skills styling */
+.tags, .skills {
+  margin-top: 16px;
+}
+
+.tag, .skill-tag {
+  display: inline-block;
+  background: #e2e8f0;
+  color: #4a5568;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  margin: 4px 8px 4px 0;
+}
+
+.skill-tag {
+  background: #bee3f8;
+  color: #2b6cb0;
 }
 
 /* Rating Section */
@@ -182,31 +224,25 @@
   color: #888;
 }
 
-/* Booking Section (Top) */
-.sidebar {
-  position: static;
-  width: 100%;
-  max-width: none;
-  margin-bottom: 24px;
-}
-
 .booking-card {
   background: white;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-  align-items: center;
   width: 100%;
-  max-width: 900px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
 }
 
 .booking-card h3 {
-  text-align: left;
+  text-align: center;
   font-size: 1.3rem;
-  margin: 0;
+  margin-top: 0;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .price {
@@ -214,13 +250,7 @@
   font-weight: bold;
   color: #28a745;
   text-align: center;
-  margin: 0;
-}
-
-.booking-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin: 16px 0;
 }
 
 .features {
@@ -246,7 +276,7 @@
   border-radius: 8px;
   font-size: 1.1rem;
   cursor: pointer;
-  margin: 0;
+  margin-bottom: 20px;
 }
 
 .btn-book:hover {
@@ -293,20 +323,9 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .main-content {
-    max-width: 100%;
-    padding: 15px;
-  }
-
-  .booking-card {
     grid-template-columns: 1fr;
-    gap: 16px;
-    text-align: center;
-  }
-
-  .booking-card h3 {
-    text-align: center;
   }
 
   .hero {
@@ -316,15 +335,5 @@
 
   .hero-content h1 {
     font-size: 1.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .booking-card {
-    padding: 16px;
-  }
-  
-  .price {
-    font-size: 1.6rem;
   }
 }

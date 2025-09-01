@@ -1,25 +1,44 @@
 import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema({
+  // User Information
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false, // Optional for guest bookings
+    index: true // Add index for faster queries
+  },
+  
+  // Service Information
+  serviceId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Service',
+    required: true, // Make service ID required
+    index: true // Add index for faster queries
+  },
+  
   // Customer Information
   customerName: {
     type: String,
-    required: [true, 'Customer name is required'],
     trim: true,
     maxlength: [100, 'Customer name cannot exceed 100 characters']
   },
   customerEmail: {
     type: String,
-    required: [true, 'Customer email is required'],
     lowercase: true,
     trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+    validate: {
+      validator: function(v) {
+        if (!v) return true; // Allow empty email
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: 'Please enter a valid email address'
+    }
   },
   customerPhone: {
     type: String,
     required: [true, 'Customer phone number is required'],
-    trim: true,
-    match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number']
+    trim: true
   },
   
   // Service Information
