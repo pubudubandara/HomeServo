@@ -30,6 +30,11 @@
   color: var(--text-light);
 }
 
+.hero-content{
+  top:200px;
+  z-index: 3;
+}
+
 .hero-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -48,9 +53,10 @@
   font-weight: 800;
   line-height: 1.15;
   margin-bottom: 1rem;
-  color: var(--text-light);
+  color: var(--text-primary);
   text-shadow: none;
   z-index: 3;
+  padding-bottom: 20px;
 }
 
 .hero-highlight {
@@ -74,6 +80,7 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-top: 150px;
 }
 
 /* =================== */
@@ -191,12 +198,13 @@
 .hero-image-main {
   position: relative;
   z-index: 2; /* Girl on top */
+  right: -400px;
+
 }
 
 .hero-main-image {
   width: 400px;
   height: 400px;
-  object-fit: cover;
   border-radius: 0;
   box-shadow: none;
   border: none;
@@ -205,7 +213,7 @@
 .hero-image-decoration {
   position: absolute;
   top: -200px;
-  right: -50px;
+  right: -600px;
   z-index: -1; /* Behind the girl */
   opacity: 0.85;
 }
@@ -456,6 +464,7 @@
     top: -60px;
     right: -20px;
     opacity: 0.6;
+
   }
 
   .hero-decoration-image {
