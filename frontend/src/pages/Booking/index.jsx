@@ -316,12 +316,6 @@ const BookingForm = () => {
                 <p>Loading service details...</p>
               </div>
             )}
-            {selectedService && (selectedService.name || selectedService.title) && (
-              <div className="selected-service">
-                <p>Selected Service: <strong>{selectedService.name || selectedService.title}</strong></p>
-                {selectedService.price && <p>Price: <strong>{selectedService.price}</strong></p>}
-              </div>
-            )}
             {!isLoadingService && !selectedService && id && (
               <div className="service-warning">
                 <p>⚠️ Service details could not be loaded, but booking will still work.</p>
