@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Admin.css';
 import { FaUsers, FaTasks, FaChartBar, FaCog, FaCheck, FaTimes, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import AdminDashboard from '../../Components/Admin/AdminDashboard';
@@ -6,6 +7,8 @@ import TaskApproval from '../../Components/Admin/TaskApproval';
 import UserManagement from '../../Components/Admin/UserManagement';
 
 const Admin = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState([]);
   const [taskers, setTaskers] = useState([]);
@@ -17,6 +20,23 @@ const Admin = () => {
     completedTasks: 0,
     revenue: 0
   });
+
+  // Handle URL-based routing for admin pages
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/dashboard')) {
+      setActiveTab('dashboard');
+    } else if (path.includes('/users')) {
+      setActiveTab('users');
+    } else if (path.includes('/taskers')) {
+      setActiveTab('taskers');
+    } else if (path.includes('/approvals')) {
+      setActiveTab('approvals');
+    } else {
+      // Default to dashboard
+      setActiveTab('dashboard');
+    }
+  }, [location.pathname]);
 
   // Mock data - replace with API calls
   useEffect(() => {
@@ -215,25 +235,25 @@ const Admin = () => {
         <nav className="admin-nav">
           <button 
             className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
+            onClick={() => navigate('/admin/dashboard')}
           >
             <FaChartBar /> Dashboard
           </button>
           <button 
             className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
-            onClick={() => setActiveTab('approvals')}
+            onClick={() => navigate('/admin/approvals')}
           >
             <FaTasks /> Task Approvals
           </button>
           <button 
             className={`nav-item ${activeTab === 'users' ? 'active' : ''}`}
-            onClick={() => setActiveTab('users')}
+            onClick={() => navigate('/admin/users')}
           >
             <FaUsers /> User Management
           </button>
           <button 
             className={`nav-item ${activeTab === 'taskers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('taskers')}
+            onClick={() => navigate('/admin/taskers')}
           >
             <FaCog /> Tasker Management
           </button>
