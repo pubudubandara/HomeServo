@@ -202,16 +202,19 @@
 /* Dashboard Charts */
 .dashboard-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 2rem;
   margin-bottom: 3rem;
+  max-width: 100%;
 }
 
 .chart-container {
   background: white;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .chart-container h3 {
@@ -219,6 +222,24 @@
   color: #1f2937;
   font-size: 1.125rem;
   font-weight: 600;
+  text-align: center;
+}
+
+/* Chart specific styles */
+.recharts-cartesian-axis-tick-value {
+  font-size: 12px;
+  fill: #6b7280;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-default-tooltip {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
 .simple-chart {
@@ -967,15 +988,16 @@
   padding: 0.5rem 1rem;
   border: 1px solid #e5e7eb;
   background: white;
-  color: #374151;
+  color: #218838;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .page-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: #218838 !important;
+  color: white !important;
+  border-color: #218838 !important;
 }
 
 .page-info {
@@ -1118,4 +1140,105 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Loading and Error States */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.loading::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #16a34a;
+  border-radius: 50%;
+  margin-right: 10px;
+  animation: spin 1s linear infinite;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #dc2626;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.page-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #218838;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #218838 !important;
+  color: white !important;
+  border-color: #218838 !important;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Role and Status badges */
+.role {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.role.user {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.role.tasker {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.role.admin {
+  background-color: #fef3c7;
+  color: #92400e;
 }

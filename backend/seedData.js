@@ -122,8 +122,7 @@ const sampleData = [
   },
   {
     user: {
-      firstName: 'Sarah',
-      lastName: 'Wilson',
+      name: 'Sarah Wilson',
       email: 'sarah.wilson@example.com',
       password: 'password123',
       role: 'tasker'

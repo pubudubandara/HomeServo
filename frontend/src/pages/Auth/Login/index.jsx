@@ -42,6 +42,7 @@ const LoginPage = () => {
         
         console.log("User stored in localStorage:", localStorage.getItem('user'));
         
+
         // Navigate based on user role
         if (data.user.role === 'tasker') {
           // Check if tasker has completed their profile
@@ -67,6 +68,7 @@ const LoginPage = () => {
         } else {
           navigate('/services');
         }
+
       }
     } catch (error) {
       console.error("Login error:", error);

@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 import bcrypt from 'bcryptjs';
 import User from './models/User.js';
 import Tasker from './models/Tasker.js';
 import Service from './models/Service.js';
 import Booking from './models/Booking.js';
-
 dotenv.config();
 
 const connectDB = async () => {
   try {
+
     await mongoose.connect(process.env.MONGODB_URI);
+
     console.log('MongoDB connected');
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -20,6 +22,7 @@ const connectDB = async () => {
 
 const createTestData = async () => {
   try {
+
     console.log('Connecting to database...');
     await connectDB();
     
@@ -227,3 +230,4 @@ const createTestData = async () => {
 };
 
 createTestData();
+
