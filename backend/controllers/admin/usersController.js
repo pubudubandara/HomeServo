@@ -9,7 +9,7 @@ export const getAllUsers = async (req, res) => {
     const status = req.query.status || '';
     
     // Build filter query
-    let filter = {};
+    let filter = { role: 'user' }; // Only get users with role = 'user'
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },

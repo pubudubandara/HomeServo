@@ -6,9 +6,6 @@ const AdminDashboard = ({ stats }) => {
     <div className="dashboard-content">
       <div className="dashboard-header">
         <h2>Dashboard Overview</h2>
-        <div className="dashboard-actions">
-          <button className="btn-refresh">Refresh Data</button>
-        </div>
       </div>
 
       <div className="stats-grid">
@@ -79,24 +76,7 @@ const AdminDashboard = ({ stats }) => {
         </div>
       </div>
 
-      <div className="quick-stats">
-        <div className="quick-stat-item">
-          <h4>Today's Bookings</h4>
-          <span className="quick-stat-number">23</span>
-        </div>
-        <div className="quick-stat-item">
-          <h4>Active Sessions</h4>
-          <span className="quick-stat-number">156</span>
-        </div>
-        <div className="quick-stat-item">
-          <h4>Avg. Rating</h4>
-          <span className="quick-stat-number">4.8</span>
-        </div>
-        <div className="quick-stat-item">
-          <h4>Response Time</h4>
-          <span className="quick-stat-number">2.3h</span>
-        </div>
-      </div>
+     
     </div>
   );
 };

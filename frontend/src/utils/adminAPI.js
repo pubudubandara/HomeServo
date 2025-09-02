@@ -37,8 +37,7 @@ export const adminAPI = {
       const queryParams = new URLSearchParams({
         page: params.page || 1,
         limit: params.limit || 10,
-        search: params.search || '',
-        status: params.status || ''
+        search: params.search || ''
       });
       
       const response = await fetch(`${API_BASE_URL}/admin/users?${queryParams}`, {

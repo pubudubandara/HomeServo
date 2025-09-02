@@ -88,9 +88,9 @@ const Admin = () => {
     }
   };
 
-  const loadUsers = async (page = 1, search = '', status = '') => {
+  const loadUsers = async (page = 1, search = '') => {
     try {
-      const response = await adminAPI.users.getAll({ page, search, status });
+      const response = await adminAPI.users.getAll({ page, search });
       setUsers(response.users || []);
       setPagination(prev => ({
         ...prev,
