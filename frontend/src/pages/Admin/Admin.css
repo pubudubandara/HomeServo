@@ -202,16 +202,19 @@
 /* Dashboard Charts */
 .dashboard-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 2rem;
   margin-bottom: 3rem;
+  max-width: 100%;
 }
 
 .chart-container {
   background: white;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .chart-container h3 {
@@ -219,6 +222,24 @@
   color: #1f2937;
   font-size: 1.125rem;
   font-weight: 600;
+  text-align: center;
+}
+
+/* Chart specific styles */
+.recharts-cartesian-axis-tick-value {
+  font-size: 12px;
+  fill: #6b7280;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-default-tooltip {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
 .simple-chart {
@@ -967,15 +988,16 @@
   padding: 0.5rem 1rem;
   border: 1px solid #e5e7eb;
   background: white;
-  color: #374151;
+  color: #218838;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .page-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: #218838 !important;
+  color: white !important;
+  border-color: #218838 !important;
 }
 
 .page-info {
@@ -1175,15 +1197,16 @@
   padding: 0.5rem 1rem;
   border: 1px solid #d1d5db;
   background: white;
-  color: #374151;
+  color: #218838;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .page-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+  background: #218838 !important;
+  color: white !important;
+  border-color: #218838 !important;
 }
 
 .page-btn:disabled {
