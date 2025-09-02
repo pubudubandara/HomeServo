@@ -45,33 +45,41 @@ export const checkTaskerProfile = async (token) => {
 
 export const getCurrentTasker = async () => {
   try {
-    // Get tasker data from localStorage or other auth state
-    const userData = JSON.parse(localStorage.getItem('user') || 'null');
+    // Get token first
     const token = localStorage.getItem('token');
+    const userData = JSON.parse(localStorage.getItem('user') || 'null');
     
     console.log('getCurrentTasker - userData:', userData);
     console.log('getCurrentTasker - token exists:', !!token);
     
-    if (userData && (userData.role === 'tasker' || userData.userType === 'tasker')) {
-      // Try to get tasker ID from various possible fields
-      const taskerId = userData.taskerId || userData.id || userData._id;
-      console.log('Found tasker ID:', taskerId);
-      
-      if (taskerId) {
-        return { success: true, data: { ...userData, _id: taskerId, id: taskerId } };
-      }
+    if (!token || !userData) {
+      return { success: false, message: 'No authentication found' };
     }
     
-    if (token) {
-      // Try to fetch tasker profile if we have a token but no stored user data
-      console.log('Attempting to fetch tasker profile with token');
-      const profileResult = await getTaskerProfile(token);
-      if (profileResult.success) {
-        return { success: true, data: profileResult.data };
-      }
+    // Check if user has tasker role
+    if (userData.role !== 'tasker') {
+      return { success: false, message: 'User is not a tasker' };
     }
     
-    return { success: false, message: 'No tasker logged in' };
+    // Try to fetch tasker profile to get the tasker ID
+    console.log('Attempting to fetch tasker profile with token');
+    const profileResult = await getTaskerProfile(token);
+    
+    if (profileResult.success) {
+      // The profile data should include the tasker _id
+      const taskerData = {
+        ...profileResult.data,
+        userId: userData._id, // The user ID from login
+        _id: profileResult.data._id, // The tasker profile ID
+        id: profileResult.data._id // Alias for consistency
+      };
+      console.log('Successfully got tasker profile:', taskerData);
+      return { success: true, data: taskerData };
+    } else {
+      console.log('Failed to get tasker profile:', profileResult.message);
+      return { success: false, message: 'Tasker profile not found' };
+    }
+    
   } catch (error) {
     console.error('Error getting current tasker:', error);
     return { success: false, message: 'Error getting current tasker' };

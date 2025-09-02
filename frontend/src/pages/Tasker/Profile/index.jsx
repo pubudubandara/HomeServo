@@ -52,6 +52,7 @@ const TaskerProfile = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
       if (response.ok) {
         const data = await response.json();
         // Convert skills array to comma-separated string for display/editing
@@ -68,7 +69,14 @@ const TaskerProfile = () => {
           localStorage.removeItem('user');
           navigate('/login');
           return;
+        } else if (response.status === 404) {
+          // Tasker profile doesn't exist, redirect to create profile
+          alert('Tasker profile not found. Please complete your profile first.');
+          navigate('/tasker/form');
+          return;
         }
+        // For other errors, show generic message but stay on page
+        alert('Error loading profile data. Please try again.');
       }
     } catch (error) {
       console.error('Error fetching tasker data:', error);
@@ -84,14 +92,23 @@ const TaskerProfile = () => {
 
   const handleSave = async () => {
     try {
+      // Create a copy of taskerData and process skills
+      const dataToSend = { ...taskerData };
+      
+      // Convert skills string back to array if needed
+      if (typeof dataToSend.skills === 'string') {
+        dataToSend.skills = dataToSend.skills.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      
       const response = await fetch('http://localhost:5001/api/taskers/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(taskerData)
+        body: JSON.stringify(dataToSend)
       });
+      
       if (response.ok) {
         const result = await response.json();
         setIsEditing(false);

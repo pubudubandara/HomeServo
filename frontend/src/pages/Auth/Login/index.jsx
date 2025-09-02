@@ -58,11 +58,11 @@ const LoginPage = () => {
             if (profileData.hasProfile) {
               navigate('/tasker/profile');
             } else {
-              navigate('/complete-tasker-profile');
+              navigate('/tasker/form');
             }
           } catch (profileError) {
             console.error("Error checking tasker profile:", profileError);
-            navigate('/complete-tasker-profile');
+            navigate('/tasker/form');
           }
         } else {
           navigate('/services');

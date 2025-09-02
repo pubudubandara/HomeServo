@@ -65,6 +65,7 @@ const AppContent = () => {
         <Route path="/profilepage/:serviceId" element={<ServiceProfile />} />
         
         {/* Tasker Dashboard Routes */}
+        <Route path="/tasker/form" element={<TaskerProfileFormPage />} />
         <Route path="/tasker/profile" element={<TaskerProfilePage />} />
         <Route path="/tasker/service-cards" element={<TaskerServicesPage />} />
         <Route path="/tasker/bookings" element={<TaskerBookingsPage />} />
