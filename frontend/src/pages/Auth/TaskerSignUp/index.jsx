@@ -95,7 +95,7 @@ const TaskerSignupPage = () => {
                 onChange={(e) => setTerms(e.target.checked)}
               />
               <label htmlFor="terms" className="terms">
-                I agree to the <a href="/terms">Terms and Conditions</a> and <a href="/privacy">Privacy Policy</a>
+                I agree to the Terms and Conditions and Privacy Policy
               </label>
             </div>
             
