@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Admin.css';
-import { FaUsers, FaTasks, FaChartBar, FaCog, FaCheck, FaTimes, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaUsers, FaTasks, FaChartBar, FaCog, FaCheck, FaTimes, FaEye, FaEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa';
 import AdminDashboard from '../../Components/Admin/AdminDashboard';
 import TaskApproval from '../../Components/Admin/TaskApproval';
 import UserManagement from '../../Components/Admin/UserManagement';
@@ -28,6 +28,10 @@ const Admin = () => {
     taskers: { currentPage: 1, totalPages: 1 },
     approvals: { currentPage: 1, totalPages: 1 }
   });
+
+  // Search and filter states for taskers
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
 
   // Handle URL-based routing for admin pages
   useEffect(() => {
@@ -61,7 +65,7 @@ const Admin = () => {
       } else if (activeTab === 'users') {
         await loadUsers();
       } else if (activeTab === 'taskers') {
-        await loadTaskers();
+        await loadTaskers(1, searchTerm, filterCategory);
       } else if (activeTab === 'approvals') {
         await loadApprovals();
       }
@@ -101,9 +105,9 @@ const Admin = () => {
     }
   };
 
-  const loadTaskers = async (page = 1, search = '', status = '', category = '') => {
+  const loadTaskers = async (page = 1, search = '', category = '') => {
     try {
-      const response = await adminAPI.taskers.getAll({ page, search, status, category });
+      const response = await adminAPI.taskers.getAll({ page, search, category });
       setTaskers(response.taskers || []);
       setPagination(prev => ({
         ...prev,
@@ -150,7 +154,7 @@ const Admin = () => {
       await loadApprovals();
       // Also refresh taskers list if on that tab
       if (activeTab === 'taskers') {
-        await loadTaskers();
+        await loadTaskers(1, searchTerm, filterCategory);
       }
     } catch (err) {
       console.error('Error approving tasker:', err);
@@ -165,12 +169,28 @@ const Admin = () => {
       await loadApprovals();
       // Also refresh taskers list if on that tab
       if (activeTab === 'taskers') {
-        await loadTaskers();
+        await loadTaskers(1, searchTerm, filterCategory);
       }
     } catch (err) {
       console.error('Error rejecting tasker:', err);
       setError('Failed to reject tasker: ' + err.message);
     }
+  };
+
+  // Handler functions for tasker search and filters
+  const handleSearch = (e) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+    // Debounce the search
+    setTimeout(() => {
+      loadTaskers(1, newSearchTerm, filterCategory);
+    }, 500);
+  };
+
+  const handleCategoryFilter = (e) => {
+    const newCategory = e.target.value;
+    setFilterCategory(newCategory);
+    loadTaskers(1, searchTerm, newCategory);
   };
 
   const renderDashboard = () => {
@@ -209,7 +229,42 @@ const Admin = () => {
     
     return (
       <div className="tasker-management">
-        <h2>Tasker Management</h2>
+        <div className="section-header">
+          <h2>Tasker Management</h2>
+          <div className="header-stats">
+            <span className="stat-item">
+              Total Taskers: <strong>{pagination?.taskers?.totalTaskers || taskers.length}</strong>
+            </span>
+          </div>
+        </div>
+
+        <div className="management-controls">
+          <div className="search-filter-section">
+            <div className="search-box">
+              <FaSearch />
+              <input
+                type="text"
+                placeholder="Search taskers by name or email..."
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+            </div>
+            
+            <div className="filter-box">
+              <FaFilter />
+              <select value={filterCategory} onChange={handleCategoryFilter}>
+                <option value="">All Categories</option>
+                <option value="cleaning">Cleaning</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="painting">Painting</option>
+                <option value="carpentry">Carpentry</option>
+                <option value="gardening">Gardening</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div className="taskers-table">
           <table>
             <thead>
@@ -237,19 +292,31 @@ const Admin = () => {
           </table>
         </div>
         
+        {taskers.length === 0 && (
+          <div className="empty-state">
+            <FaSearch size={48} />
+            <h3>No Taskers Found</h3>
+            <p>Try adjusting your search criteria or filters.</p>
+          </div>
+        )}
+
         {/* Pagination */}
         {pagination.taskers.totalPages > 1 && (
           <div className="pagination">
             <button 
+              className="page-btn"
               disabled={!pagination.taskers.hasPrevPage}
-              onClick={() => loadTaskers(pagination.taskers.currentPage - 1)}
+              onClick={() => loadTaskers(pagination.taskers.currentPage - 1, searchTerm, filterCategory)}
             >
               Previous
             </button>
-            <span>Page {pagination.taskers.currentPage} of {pagination.taskers.totalPages}</span>
+            <span className="page-info">
+              {pagination.taskers.currentPage} of {pagination.taskers.totalPages}
+            </span>
             <button 
+              className="page-btn"
               disabled={!pagination.taskers.hasNextPage}
-              onClick={() => loadTaskers(pagination.taskers.currentPage + 1)}
+              onClick={() => loadTaskers(pagination.taskers.currentPage + 1, searchTerm, filterCategory)}
             >
               Next
             </button>
