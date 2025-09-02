@@ -7,15 +7,22 @@ export const getApprovalRequests = async (req, res) => {
     const skip = (page - 1) * limit;
     
     const pendingTaskers = await Tasker.find({ status: 'pending' })
-      .populate('user', 'name email phone')
+      .populate('userId', 'name email phone')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
       
+    // Transform the data to match frontend expectations
+    const transformedTaskers = pendingTaskers.map(tasker => ({
+      ...tasker.toObject(),
+      user: tasker.userId,
+      userId: undefined // Remove the userId field
+    }));
+      
     const totalPending = await Tasker.countDocuments({ status: 'pending' });
     
     res.json({
-      pendingTaskers,
+      pendingTaskers: transformedTaskers,
       pagination: {
         currentPage: page,
         totalPages: Math.ceil(totalPending / limit),

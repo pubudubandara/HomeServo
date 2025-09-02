@@ -1,4 +1,6 @@
 import Tasker from '../../models/Tasker.js';
+import User from '../../models/User.js';
+import mongoose from 'mongoose';
 
 export const getAllTaskers = async (req, res) => {
   try {
@@ -12,28 +14,44 @@ export const getAllTaskers = async (req, res) => {
     // Build filter query
     let filter = {};
     if (search) {
-      filter.$or = [
-        { 'user.name': { $regex: search, $options: 'i' } },
-        { 'user.email': { $regex: search, $options: 'i' } }
-      ];
+      // For search, we need to find users first and then match their IDs
+      const userFilter = {
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ]
+      };
+      
+      const User = mongoose.model('User');
+      const matchingUsers = await User.find(userFilter, '_id');
+      const userIds = matchingUsers.map(user => user._id);
+      
+      filter.userId = { $in: userIds };
     }
     if (status && status !== 'all') {
       filter.status = status;
     }
     if (category && category !== 'all') {
-      filter.serviceCategories = { $in: [category] };
+      filter.category = category;
     }
     
     const taskers = await Tasker.find(filter)
-      .populate('user', 'name email phone')
+      .populate('userId', 'name email phone')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
       
+    // Transform the data to match frontend expectations
+    const transformedTaskers = taskers.map(tasker => ({
+      ...tasker.toObject(),
+      user: tasker.userId,
+      userId: undefined // Remove the userId field
+    }));
+      
     const totalTaskers = await Tasker.countDocuments(filter);
     
     res.json({
-      taskers,
+      taskers: transformedTaskers,
       pagination: {
         currentPage: page,
         totalPages: Math.ceil(totalTaskers / limit),
