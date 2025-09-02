@@ -42,8 +42,33 @@ const LoginPage = () => {
         
         console.log("User stored in localStorage:", localStorage.getItem('user'));
         
-        // Navigate to root, middleware will handle role-based redirection
-        navigate('/');
+
+        // Navigate based on user role
+        if (data.user.role === 'tasker') {
+          // Check if tasker has completed their profile
+          try {
+            const profileResponse = await fetch("http://localhost:5001/api/taskers/profile/check", {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${data.token}`,
+                "Content-Type": "application/json",
+              },
+            });
+            
+            const profileData = await profileResponse.json();
+            if (profileData.hasProfile) {
+              navigate('/tasker/profile');
+            } else {
+              navigate('/tasker/form');
+            }
+          } catch (profileError) {
+            console.error("Error checking tasker profile:", profileError);
+            navigate('/tasker/form');
+          }
+        } else {
+          navigate('/services');
+        }
+
       }
     } catch (error) {
       console.error("Login error:", error);

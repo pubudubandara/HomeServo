@@ -80,9 +80,13 @@ const AppContent = () => {
         <Route path="/tasker/service-cards" element={<TaskerRoute><TaskerServicesPage /></TaskerRoute>} />
         <Route path="/tasker/bookings" element={<TaskerRoute><TaskerBookingsPage /></TaskerRoute>} />
         
-        {/* User-Specific Routes */}
-        <Route path="/book" element={<UserRoute><BookingPage /></UserRoute>} />
-        <Route path="/book/:id" element={<UserRoute><BookingPage /></UserRoute>} />
+
+        {/* Tasker Dashboard Routes */}
+        <Route path="/tasker/form" element={<TaskerProfileFormPage />} />
+        <Route path="/tasker/profile" element={<TaskerProfilePage />} />
+        <Route path="/tasker/service-cards" element={<TaskerServicesPage />} />
+        <Route path="/tasker/bookings" element={<TaskerBookingsPage />} />
+
         
         {/* Admin-Specific Routes */}
         <Route path="/admin/*" element={<AdminRoute><AdminPage /></AdminRoute>} />

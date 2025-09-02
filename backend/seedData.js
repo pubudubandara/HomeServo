@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 import User from './models/User.js';
 import Tasker from './models/Tasker.js';
 import Service from './models/Service.js';
@@ -31,11 +32,18 @@ const sampleData = [
       role: 'tasker'
     },
     tasker: {
-      skills: ['cleaning', 'maintenance'],
-      experience: 5,
+      phoneNumber: '123-456-7890',
+      addressLine1: '123 Main St',
+      addressLine2: 'Apt 1',
+      city: 'Springfield',
+      stateProvince: 'IL',
+      postalCode: '62701',
+      country: 'USA',
+      category: 'Cleaning',
+      experience: 'Advanced',
       hourlyRate: 25,
-      availability: ['monday', 'tuesday', 'wednesday'],
-      bio: 'Professional cleaner with 5 years of experience'
+      bio: 'Professional cleaner with 5 years of experience',
+      skills: ['cleaning', 'maintenance']
     },
     services: [
       {
@@ -72,11 +80,18 @@ const sampleData = [
       role: 'tasker'
     },
     tasker: {
-      skills: ['repairs', 'maintenance', 'painting'],
-      experience: 8,
+      phoneNumber: '987-654-3210',
+      addressLine1: '456 Oak Ave',
+      addressLine2: '',
+      city: 'Chicago',
+      stateProvince: 'IL',
+      postalCode: '60601',
+      country: 'USA',
+      category: 'Home Repairs',
+      experience: 'Expert',
       hourlyRate: 35,
-      availability: ['monday', 'wednesday', 'friday'],
-      bio: 'Experienced handyman specializing in home repairs'
+      bio: 'Experienced handyman specializing in home repairs',
+      skills: ['repairs', 'maintenance', 'painting']
     },
     services: [
       {
@@ -160,8 +175,15 @@ const createSampleData = async () => {
     await User.deleteMany({ role: 'tasker' });
     
     for (const data of sampleData) {
-      // Create user
-      const user = new User(data.user);
+      // Hash the password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(data.user.password, salt);
+      
+      // Create user with hashed password
+      const user = new User({
+        ...data.user,
+        password: hashedPassword
+      });
       await user.save();
       
       // Create tasker

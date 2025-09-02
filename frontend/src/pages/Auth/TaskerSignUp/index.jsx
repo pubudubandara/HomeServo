@@ -3,6 +3,7 @@ import './TaskerSignup.css';
 import cleaner from '../../../images/cleaner-illustration.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const TaskerSignupPage = () => {
   const [name, setName] = useState('');
@@ -12,6 +13,7 @@ const TaskerSignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,8 +33,22 @@ const TaskerSignupPage = () => {
         role: 'tasker',
       });
       console.log('Tasker registered:', response.data);
-      alert('You have signed up as a tasker successfully! Please complete your profile.');
-      navigate('/complete-tasker-profile');
+      
+      // Automatically log in the user after successful registration
+      if (response.data.token && response.data.user) {
+        // Store token and user data
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        // Set user in auth context
+        login(response.data.user, response.data.token);
+        
+        alert('You have signed up as a tasker successfully! Please complete your profile.');
+        navigate('/tasker/form');
+      } else {
+        alert('You have signed up successfully! Please login to complete your profile.');
+        navigate('/login');
+      }
     } catch (error) {
       console.error('Tasker signup error:', error);
       setError(error.response?.data?.message || 'An error occurred during signup');

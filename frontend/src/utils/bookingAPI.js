@@ -13,17 +13,29 @@ export const getTaskerBookings = async (taskerId, params = {}) => {
     const queryString = queryParams.toString();
     const url = `${API_BASE_URL}/bookings/tasker/${taskerId}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    console.log('Fetching tasker bookings from:', url);
+    
+    // Get token for potential future authentication
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(url, { headers });
+    
+    console.log('Response status:', response.status);
     
     if (response.ok) {
       const data = await response.json();
+      console.log('Fetched booking data:', data);
       return { success: true, data: data.data };
     } else {
       const errorData = await response.json();
+      console.error('Failed to fetch bookings:', errorData);
       return { success: false, message: errorData.message || 'Failed to fetch bookings' };
     }
   } catch (error) {

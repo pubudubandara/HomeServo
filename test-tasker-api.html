@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tasker API Test</title>
+</head>
+<body>
+    <h1>Tasker API Test</h1>
+    
+    <div>
+        <h2>Login First</h2>
+        <input type="email" id="email" placeholder="Email" value="testtasker@example.com">
+        <input type="password" id="password" placeholder="Password" value="123456">
+        <button onclick="login()">Login</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div>
+        <h2>Create Tasker Profile</h2>
+        <button onclick="createTaskerProfile()">Create Profile</button>
+        <div id="createResult"></div>
+    </div>
+    
+    <div>
+        <h2>Get Tasker Profile</h2>
+        <button onclick="getTaskerProfile()">Get Profile</button>
+        <div id="getResult"></div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                document.getElementById('loginResult').innerHTML = JSON.stringify(result, null, 2);
+                
+                if (result.token) {
+                    token = result.token;
+                    localStorage.setItem('token', token);
+                }
+            } catch (error) {
+                document.getElementById('loginResult').innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        async function createTaskerProfile() {
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('phoneNumber', '123-456-7890');
+            formData.append('addressLine1', '123 Main St');
+            formData.append('addressLine2', 'Apt 1');
+            formData.append('city', 'Test City');
+            formData.append('stateProvince', 'Test State');
+            formData.append('postalCode', '12345');
+            formData.append('country', 'Test Country');
+            formData.append('category', 'Cleaning');
+            formData.append('experience', 'Intermediate');
+            formData.append('hourlyRate', '25');
+            formData.append('bio', 'I am a test tasker');
+            formData.append('skills', 'cleaning, organizing');
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/taskers/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                document.getElementById('createResult').innerHTML = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('createResult').innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        async function getTaskerProfile() {
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/taskers/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                document.getElementById('getResult').innerHTML = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('getResult').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

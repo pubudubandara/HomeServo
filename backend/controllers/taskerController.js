@@ -71,17 +71,21 @@ export const getTaskerProfile = async (req, res) => {
 export const createTaskerProfile = async (req, res) => {
   try {
     // Debug: log incoming body and file
-    console.log('req.body:', JSON.stringify(req.body, null, 2));
-    console.log('req.file:', JSON.stringify(req.file, null, 2));
+    console.log('=== CREATE TASKER PROFILE REQUEST ===');
+    console.log('req.user:', req.user);
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
 
     // Check if user is authenticated and has tasker role
     if (!req.user || req.user.role !== 'tasker') {
+      console.log('Access denied - not a tasker or not authenticated');
       return res.status(403).json({ message: 'Access denied. Tasker role required.' });
     }
 
     // Check if tasker profile already exists
     const existingTasker = await Tasker.findOne({ userId: req.user.userId });
     if (existingTasker) {
+      console.log('Tasker profile already exists for user:', req.user.userId);
       return res.status(400).json({ message: 'Tasker profile already exists' });
     }
 
@@ -96,8 +100,22 @@ export const createTaskerProfile = async (req, res) => {
     });
 
     // Validate required fields
-    if (!addressLine1 || !city || !postalCode || !country || !category || !experience || !hourlyRate || !bio) {
-      return res.status(400).json({ message: 'All required fields must be filled' });
+    const missingFields = [];
+    if (!addressLine1) missingFields.push('addressLine1');
+    if (!city) missingFields.push('city');
+    if (!postalCode) missingFields.push('postalCode');
+    if (!country) missingFields.push('country');
+    if (!category) missingFields.push('category');
+    if (!experience) missingFields.push('experience');
+    if (!hourlyRate) missingFields.push('hourlyRate');
+    if (!bio) missingFields.push('bio');
+
+    if (missingFields.length > 0) {
+      console.log('Missing required fields:', missingFields);
+      return res.status(400).json({ 
+        message: 'Missing required fields', 
+        missingFields: missingFields 
+      });
     }
 
     // Parse skills if it's a string (from FormData)
@@ -124,18 +142,18 @@ export const createTaskerProfile = async (req, res) => {
     console.log('Creating tasker profile...');
     const tasker = new Tasker({
       userId: req.user.userId,
-      phoneNumber,
+      phoneNumber: phoneNumber || '',
       addressLine1,
-      addressLine2,
+      addressLine2: addressLine2 || '',
       city,
-      stateProvince,
+      stateProvince: stateProvince || '',
       postalCode,
       country,
       category,
       experience,
       hourlyRate: Number(hourlyRate),
       bio,
-      skills,
+      skills: skills || [],
       profileImageUrl
     });
 
@@ -153,7 +171,7 @@ export const createTaskerProfile = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Create Tasker Profile Error Details:');
+    console.error('=== CREATE TASKER PROFILE ERROR ===');
     console.error('Error message:', err.message);
     console.error('Error stack:', err.stack);
     console.error('Full error:', err);
