@@ -7,7 +7,7 @@ export const getApprovalRequests = async (req, res) => {
     const skip = (page - 1) * limit;
     
     const pendingTaskers = await Tasker.find({ status: 'pending' })
-      .populate('userId', 'name email phone')
+      .populate('userId', 'name email')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);

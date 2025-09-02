@@ -36,7 +36,7 @@ export const getAllTaskers = async (req, res) => {
     }
     
     const taskers = await Tasker.find(filter)
-      .populate('userId', 'name email phone')
+      .populate('userId', 'name email')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);

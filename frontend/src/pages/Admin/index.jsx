@@ -129,7 +129,7 @@ const Admin = () => {
         priority: 'normal',
         experience: tasker.experience || 'N/A',
         location: tasker.location || 'N/A',
-        phone: tasker.user?.phone || 'N/A',
+        phone: tasker.phoneNumber || 'N/A',
         skills: tasker.skills || []
       })) || [];
       
@@ -216,8 +216,8 @@ const Admin = () => {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Phone</th>
                 <th>Category</th>
-                <th>Status</th>
                 <th>Experience</th>
                 <th>Rate</th>
               </tr>
@@ -227,12 +227,8 @@ const Admin = () => {
                 <tr key={tasker._id}>
                   <td>{tasker.user?.name || 'N/A'}</td>
                   <td>{tasker.user?.email || 'N/A'}</td>
+                  <td>{tasker.phoneNumber || 'N/A'}</td>
                   <td>{tasker.category || 'N/A'}</td>
-                  <td>
-                    <span className={`status ${tasker.status?.toLowerCase()}`}>
-                      {tasker.status}
-                    </span>
-                  </td>
                   <td>{tasker.experience || 'N/A'}</td>
                   <td>${tasker.hourlyRate || 0}/hr</td>
                 </tr>
