@@ -25,8 +25,7 @@ const connectDB = async () => {
 const sampleData = [
   {
     user: {
-      firstName: 'John',
-      lastName: 'Smith',
+      name: 'John Smith',
       email: 'john.smith@example.com',
       password: 'password123',
       role: 'tasker'
@@ -67,8 +66,7 @@ const sampleData = [
   },
   {
     user: {
-      firstName: 'Mike',
-      lastName: 'Johnson',
+      name: 'Mike Johnson',
       email: 'mike.johnson@example.com',
       password: 'password123',
       role: 'tasker'
@@ -109,8 +107,7 @@ const sampleData = [
   },
   {
     user: {
-      firstName: 'Sarah',
-      lastName: 'Wilson',
+      name: 'Sarah Wilson',
       email: 'sarah.wilson@example.com',
       password: 'password123',
       role: 'tasker'
@@ -191,13 +188,13 @@ const createSampleData = async () => {
       path: 'taskerId',
       populate: {
         path: 'userId',
-        select: 'firstName lastName email'
+        select: 'name email'
       }
     });
     
     console.log(`Created ${services.length} services:`);
     services.forEach(service => {
-      console.log(`- ${service.title} by ${service.taskerId.userId.firstName} ${service.taskerId.userId.lastName}`);
+      console.log(`- ${service.title} by ${service.taskerId.userId.name}`);
     });
     
     process.exit(0);

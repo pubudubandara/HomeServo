@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Admin.css';
-import { FaUsers, FaTasks, FaChartBar, FaCog, FaCheck, FaTimes, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaUsers, FaTasks, FaChartBar, FaCog, FaCheck, FaTimes, FaEye, FaEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa';
 import AdminDashboard from '../../Components/Admin/AdminDashboard';
 import TaskApproval from '../../Components/Admin/TaskApproval';
 import UserManagement from '../../Components/Admin/UserManagement';
+import { adminAPI } from '../../utils/adminAPI';
 
 const Admin = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState([]);
   const [taskers, setTaskers] = useState([]);
@@ -17,194 +21,310 @@ const Admin = () => {
     completedTasks: 0,
     revenue: 0
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    users: { currentPage: 1, totalPages: 1 },
+    taskers: { currentPage: 1, totalPages: 1 },
+    approvals: { currentPage: 1, totalPages: 1 }
+  });
 
-  // Mock data - replace with API calls
+  // Search and filter states for taskers
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+
+  // Handle URL-based routing for admin pages
   useEffect(() => {
-    // Simulate API calls
-    setUsers([
-      { 
-        id: 1, 
-        name: 'John Doe', 
-        email: 'john@example.com', 
-        phone: '+94 77 111 2222',
-        location: 'Colombo, LK',
-        status: 'Active', 
-        joinedDate: '2024-01-15',
-        lastActive: '2 hours ago',
-        orders: 12
-      },
-      { 
-        id: 2, 
-        name: 'Jane Smith', 
-        email: 'jane@example.com', 
-        phone: '+94 77 333 4444',
-        location: 'Kandy, LK',
-        status: 'Active', 
-        joinedDate: '2024-02-20',
-        lastActive: '1 day ago',
-        orders: 8
-      },
-      { 
-        id: 3, 
-        name: 'Bob Wilson', 
-        email: 'bob@example.com', 
-        phone: '+94 77 555 6666',
-        location: 'Galle, LK',
-        status: 'Suspended', 
-        joinedDate: '2024-03-10',
-        lastActive: '1 week ago',
-        orders: 3
+    const path = location.pathname;
+    if (path.includes('/dashboard')) {
+      setActiveTab('dashboard');
+    } else if (path.includes('/users')) {
+      setActiveTab('users');
+    } else if (path.includes('/taskers')) {
+      setActiveTab('taskers');
+    } else if (path.includes('/approvals')) {
+      setActiveTab('approvals');
+    } else {
+      // Default to dashboard
+      setActiveTab('dashboard');
+    }
+  }, [location.pathname]);
+
+  // Load initial data based on active tab
+  useEffect(() => {
+    loadData();
+  }, [activeTab]);
+
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      if (activeTab === 'dashboard') {
+        await loadDashboardData();
+      } else if (activeTab === 'users') {
+        await loadUsers();
+      } else if (activeTab === 'taskers') {
+        await loadTaskers(1, searchTerm, filterCategory);
+      } else if (activeTab === 'approvals') {
+        await loadApprovals();
       }
-    ]);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError(err.message || 'Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setTaskers([
-      { id: 1, name: 'Alice Johnson', email: 'alice@example.com', category: 'Cleaning', status: 'Approved', rating: 4.8 },
-      { id: 2, name: 'Mike Brown', email: 'mike@example.com', category: 'Plumbing', status: 'Pending', rating: 0 },
-      { id: 3, name: 'Sarah Davis', email: 'sarah@example.com', category: 'Painting', status: 'Approved', rating: 4.9 }
-    ]);
+  const loadDashboardData = async () => {
+    try {
+      const dashboardData = await adminAPI.dashboard.getStats();
+      setStats({
+        totalUsers: dashboardData.totalUsers || 0,
+        totalTaskers: dashboardData.totalTaskers || 0,
+        pendingTasks: dashboardData.pendingApprovals || 0,
+        completedTasks: dashboardData.completedBookings || 0,
+        revenue: dashboardData.totalRevenue || 0
+      });
+    } catch (err) {
+      throw new Error('Failed to load dashboard data: ' + err.message);
+    }
+  };
 
-    setPendingTasks([
-      { 
-        id: 1, 
-        taskerId: 2, 
-        taskerName: 'Mike Brown', 
-        email: 'mike@example.com',
-        category: 'Plumbing', 
-        submittedDate: '2024-12-01', 
-        documents: ['ID Copy', 'Certificate'],
-        priority: 'high',
-        experience: '5+ years',
-        location: 'Kandy, Sri Lanka',
-        phone: '+94 77 123 4567',
-        skills: ['Pipe Installation', 'Leak Repair', 'Bathroom Fitting']
-      },
-      { 
-        id: 2, 
-        taskerId: 4, 
-        taskerName: 'Emma Wilson', 
-        email: 'emma@example.com',
-        category: 'Gardening', 
-        submittedDate: '2024-12-02', 
-        documents: ['ID Copy', 'Experience Letter'],
+  const loadUsers = async (page = 1, search = '') => {
+    try {
+      const response = await adminAPI.users.getAll({ page, search });
+      setUsers(response.users || []);
+      setPagination(prev => ({
+        ...prev,
+        users: response.pagination || { currentPage: 1, totalPages: 1 }
+      }));
+    } catch (err) {
+      throw new Error('Failed to load users: ' + err.message);
+    }
+  };
+
+  const loadTaskers = async (page = 1, search = '', category = '') => {
+    try {
+      const response = await adminAPI.taskers.getAll({ page, search, category });
+      setTaskers(response.taskers || []);
+      setPagination(prev => ({
+        ...prev,
+        taskers: response.pagination || { currentPage: 1, totalPages: 1 }
+      }));
+    } catch (err) {
+      throw new Error('Failed to load taskers: ' + err.message);
+    }
+  };
+
+  const loadApprovals = async (page = 1) => {
+    try {
+      const response = await adminAPI.approvals.getAll({ page });
+      // Transform the data to match the expected format
+      const transformedTasks = response.pendingTaskers?.map(tasker => ({
+        id: tasker._id,
+        taskerId: tasker._id,
+        taskerName: tasker.user?.name || 'N/A',
+        email: tasker.user?.email || 'N/A',
+        category: tasker.serviceCategories?.join(', ') || 'N/A',
+        submittedDate: new Date(tasker.createdAt).toLocaleDateString(),
+        documents: tasker.documents || [],
         priority: 'normal',
-        experience: '3+ years',
-        location: 'Colombo, Sri Lanka',
-        phone: '+94 77 987 6543',
-        skills: ['Lawn Care', 'Plant Maintenance', 'Landscaping']
+        experience: tasker.experience || 'N/A',
+        location: tasker.location || 'N/A',
+        phone: tasker.phoneNumber || 'N/A',
+        skills: tasker.skills || []
+      })) || [];
+      
+      setPendingTasks(transformedTasks);
+      setPagination(prev => ({
+        ...prev,
+        approvals: response.pagination || { currentPage: 1, totalPages: 1 }
+      }));
+    } catch (err) {
+      throw new Error('Failed to load pending approvals: ' + err.message);
+    }
+  };
+
+  const handleApproveTasker = async (taskerId) => {
+    try {
+      await adminAPI.approvals.approve(taskerId);
+      // Refresh the pending tasks list
+      await loadApprovals();
+      // Also refresh taskers list if on that tab
+      if (activeTab === 'taskers') {
+        await loadTaskers(1, searchTerm, filterCategory);
       }
-    ]);
-
-    setStats({
-      totalUsers: 156,
-      totalTaskers: 89,
-      pendingTasks: 12,
-      completedTasks: 234,
-      revenue: 15420
-    });
-  }, []);
-
-  const handleApproveTasker = (taskerId) => {
-    setTaskers(prev => prev.map(tasker => 
-      tasker.id === taskerId ? { ...tasker, status: 'Approved' } : tasker
-    ));
-    setPendingTasks(prev => prev.filter(task => task.taskerId !== taskerId));
+    } catch (err) {
+      console.error('Error approving tasker:', err);
+      setError('Failed to approve tasker: ' + err.message);
+    }
   };
 
-  const handleRejectTasker = (taskerId) => {
-    setTaskers(prev => prev.map(tasker => 
-      tasker.id === taskerId ? { ...tasker, status: 'Rejected' } : tasker
-    ));
-    setPendingTasks(prev => prev.filter(task => task.taskerId !== taskerId));
+  const handleRejectTasker = async (taskerId) => {
+    try {
+      await adminAPI.approvals.reject(taskerId);
+      // Refresh the pending tasks list
+      await loadApprovals();
+      // Also refresh taskers list if on that tab
+      if (activeTab === 'taskers') {
+        await loadTaskers(1, searchTerm, filterCategory);
+      }
+    } catch (err) {
+      console.error('Error rejecting tasker:', err);
+      setError('Failed to reject tasker: ' + err.message);
+    }
   };
 
-  const handleEditUser = (userId) => {
-    // Implement edit user functionality
-    console.log('Edit user:', userId);
+  // Handler functions for tasker search and filters
+  const handleSearch = (e) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+    // Debounce the search
+    setTimeout(() => {
+      loadTaskers(1, newSearchTerm, filterCategory);
+    }, 500);
   };
 
-  const handleDeleteUser = (userId) => {
-    setUsers(prev => prev.filter(user => user.id !== userId));
+  const handleCategoryFilter = (e) => {
+    const newCategory = e.target.value;
+    setFilterCategory(newCategory);
+    loadTaskers(1, searchTerm, newCategory);
   };
 
-  const handleSuspendUser = (userId) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, status: user.status === 'Active' ? 'Suspended' : 'Active' } : user
-    ));
+  const renderDashboard = () => {
+    if (loading) return <div className="loading">Loading dashboard...</div>;
+    if (error) return <div className="error">Error: {error}</div>;
+    return <AdminDashboard stats={stats} />;
   };
 
-  const renderDashboard = () => (
-    <AdminDashboard stats={stats} />
-  );
+  const renderTaskApprovals = () => {
+    if (loading) return <div className="loading">Loading approvals...</div>;
+    if (error) return <div className="error">Error: {error}</div>;
+    return (
+      <TaskApproval 
+        pendingTasks={pendingTasks}
+        onApprove={handleApproveTasker}
+        onReject={handleRejectTasker}
+      />
+    );
+  };
 
-  const renderTaskApprovals = () => (
-    <TaskApproval 
-      pendingTasks={pendingTasks}
-      onApprove={handleApproveTasker}
-      onReject={handleRejectTasker}
-    />
-  );
+  const renderUserManagement = () => {
+    if (loading) return <div className="loading">Loading users...</div>;
+    if (error) return <div className="error">Error: {error}</div>;
+    return (
+      <UserManagement 
+        users={users}
+        pagination={pagination.users}
+        onLoadUsers={loadUsers}
+      />
+    );
+  };
 
-  const renderUserManagement = () => (
-    <UserManagement 
-      users={users}
-      onSuspendUser={handleSuspendUser}
-      onEditUser={handleEditUser}
-      onDeleteUser={handleDeleteUser}
-    />
-  );
+  const renderTaskerManagement = () => {
+    if (loading) return <div className="loading">Loading taskers...</div>;
+    if (error) return <div className="error">Error: {error}</div>;
+    
+    return (
+      <div className="tasker-management">
+        <div className="section-header">
+          <h2>Tasker Management</h2>
+          <div className="header-stats">
+            <span className="stat-item">
+              Total Taskers: <strong>{pagination?.taskers?.totalTaskers || taskers.length}</strong>
+            </span>
+          </div>
+        </div>
 
-  const renderTaskerManagement = () => (
-    <div className="tasker-management">
-      <h2>Tasker Management</h2>
-      <div className="taskers-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Rating</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {taskers.map(tasker => (
-              <tr key={tasker.id}>
-                <td>{tasker.name}</td>
-                <td>{tasker.email}</td>
-                <td>{tasker.category}</td>
-                <td>
-                  <span className={`status ${tasker.status.toLowerCase()}`}>
-                    {tasker.status}
-                  </span>
-                </td>
-                <td>
-                  {tasker.rating > 0 ? `${tasker.rating} ⭐` : 'N/A'}
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button 
-                      className="btn-edit" 
-                      title="Edit Tasker"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button 
-                      className="btn-view" 
-                      title="View Profile"
-                    >
-                      <FaEye />
-                    </button>
-                  </div>
-                </td>
+        <div className="management-controls">
+          <div className="search-filter-section">
+            <div className="search-box">
+              <FaSearch />
+              <input
+                type="text"
+                placeholder="Search taskers by name or email..."
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+            </div>
+            
+            <div className="filter-box">
+              <FaFilter />
+              <select value={filterCategory} onChange={handleCategoryFilter}>
+                <option value="">All Categories</option>
+                <option value="cleaning">Cleaning</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="painting">Painting</option>
+                <option value="carpentry">Carpentry</option>
+                <option value="gardening">Gardening</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="taskers-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Category</th>
+                <th>Experience</th>
+                <th>Rate</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {taskers.map(tasker => (
+                <tr key={tasker._id}>
+                  <td>{tasker.user?.name || 'N/A'}</td>
+                  <td>{tasker.user?.email || 'N/A'}</td>
+                  <td>{tasker.phoneNumber || 'N/A'}</td>
+                  <td>{tasker.category || 'N/A'}</td>
+                  <td>{tasker.experience || 'N/A'}</td>
+                  <td>${tasker.hourlyRate || 0}/hr</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {taskers.length === 0 && (
+          <div className="empty-state">
+            <FaSearch size={48} />
+            <h3>No Taskers Found</h3>
+            <p>Try adjusting your search criteria or filters.</p>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination.taskers.totalPages > 1 && (
+          <div className="pagination">
+            <button 
+              className="page-btn"
+              disabled={!pagination.taskers.hasPrevPage}
+              onClick={() => loadTaskers(pagination.taskers.currentPage - 1, searchTerm, filterCategory)}
+            >
+              Previous
+            </button>
+            <span className="page-info">
+              {pagination.taskers.currentPage} of {pagination.taskers.totalPages}
+            </span>
+            <button 
+              className="page-btn"
+              disabled={!pagination.taskers.hasNextPage}
+              onClick={() => loadTaskers(pagination.taskers.currentPage + 1, searchTerm, filterCategory)}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="admin-panel">
@@ -215,25 +335,25 @@ const Admin = () => {
         <nav className="admin-nav">
           <button 
             className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
+            onClick={() => navigate('/admin/dashboard')}
           >
             <FaChartBar /> Dashboard
           </button>
           <button 
             className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
-            onClick={() => setActiveTab('approvals')}
+            onClick={() => navigate('/admin/approvals')}
           >
             <FaTasks /> Task Approvals
           </button>
           <button 
             className={`nav-item ${activeTab === 'users' ? 'active' : ''}`}
-            onClick={() => setActiveTab('users')}
+            onClick={() => navigate('/admin/users')}
           >
             <FaUsers /> User Management
           </button>
           <button 
             className={`nav-item ${activeTab === 'taskers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('taskers')}
+            onClick={() => navigate('/admin/taskers')}
           >
             <FaCog /> Tasker Management
           </button>

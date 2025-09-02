@@ -7,6 +7,17 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './Components/Navbar/Navbar';
 import './App.css';
 
+// Import middleware components
+import { 
+  AdminRoute, 
+  TaskerRoute, 
+  UserRoute, 
+  AuthenticatedRoute, 
+  PublicRoute, 
+  RestrictedPublicRoute,
+  LandingOrRedirect
+} from './middleware';
+
 // Import all page components
 import {
   Landing,
@@ -45,39 +56,44 @@ const AppContent = () => {
 
       {/* Main application routes */}
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/services" element={<HomePage />} />
-        <Route path="/services/:id" element={<ServiceProfile />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/profile" element={<Profile />} />
+        {/* Root Route - Landing page for unauthenticated, redirect for authenticated */}
+        <Route path="/" element={<LandingOrRedirect />} />
         
-        {/* Authentication Routes */}
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/tasker-signup" element={<TaskerSignupPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/become-tasker" element={<TaskerSignupPage />} />
+        {/* Public Routes - Only accessible to non-authenticated users */}
+        <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
+        <Route path="/tasker-signup" element={<PublicRoute><TaskerSignupPage /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+        <Route path="/become-tasker" element={<PublicRoute><TaskerSignupPage /></PublicRoute>} />
         
-        {/* Profile Routes */}
-        <Route path="/complete-tasker-profile" element={<TaskerProfileFormPage />} />
-        <Route path="/profilepage" element={<ServiceProfile />} />
-        <Route path="/profilepage/:serviceId" element={<ServiceProfile />} />
+        {/* Protected Public Routes - Require authentication to access */}
+        <Route path="/services" element={<AuthenticatedRoute><HomePage /></AuthenticatedRoute>} />
+        <Route path="/services/:id" element={<AuthenticatedRoute><ServiceProfile /></AuthenticatedRoute>} />
+        <Route path="/about" element={<AuthenticatedRoute><AboutUs /></AuthenticatedRoute>} />
         
-        {/* Tasker Dashboard Routes */}
-        <Route path="/tasker/profile" element={<TaskerProfilePage />} />
-        <Route path="/tasker/service-cards" element={<TaskerServicesPage />} />
-        <Route path="/tasker/bookings" element={<TaskerBookingsPage />} />
+        {/* Authenticated Routes - Require login but any role */}
+        <Route path="/my-bookings" element={<AuthenticatedRoute><MyBookings /></AuthenticatedRoute>} />
+        <Route path="/profile" element={<AuthenticatedRoute><Profile /></AuthenticatedRoute>} />
         
-        {/* Booking Routes */}
-        <Route path="/book" element={<BookingPage />} />
-        <Route path="/book/:id" element={<BookingPage />} />
+        {/* Tasker-Specific Routes */}
+        <Route path="/complete-tasker-profile" element={<TaskerRoute><TaskerProfileFormPage /></TaskerRoute>} />
+        <Route path="/tasker/profile" element={<TaskerRoute><TaskerProfilePage /></TaskerRoute>} />
+        <Route path="/tasker/service-cards" element={<TaskerRoute><TaskerServicesPage /></TaskerRoute>} />
+        <Route path="/tasker/bookings" element={<TaskerRoute><TaskerBookingsPage /></TaskerRoute>} />
         
-        {/* Admin Routes */}
-        <Route path="/admin/*" element={<AdminPage />} />
+        {/* User-Specific Routes */}
+        <Route path="/book" element={<UserRoute><BookingPage /></UserRoute>} />
+        <Route path="/book/:id" element={<UserRoute><BookingPage /></UserRoute>} />
         
-        {/* Legacy/Utility Routes */}
-        <Route path="/test-services" element={<TestPage />} />
+        {/* Admin-Specific Routes */}
+        <Route path="/admin/*" element={<AdminRoute><AdminPage /></AdminRoute>} />
+        
+        {/* Legacy/Development Routes - Protected */}
+        <Route path="/profilepage" element={<AuthenticatedRoute><ServiceProfile /></AuthenticatedRoute>} />
+        <Route path="/profilepage/:serviceId" element={<AuthenticatedRoute><ServiceProfile /></AuthenticatedRoute>} />
+        <Route path="/test-services" element={<AuthenticatedRoute><TestPage /></AuthenticatedRoute>} />
+        
+        {/* Catch-all route - redirect to landing page */}
+        <Route path="*" element={<LandingOrRedirect />} />
       </Routes>
     </div>
   );
