@@ -90,41 +90,49 @@ const UserNavbar = () => {
         className={isMobile ? `nav-links-mobile nav-overlay${closing ? ' closing' : ''}` : 'nav-links'}
         onClick={handleMenuClick}
       >
-        {/* Show Home link only when NOT on services, my-bookings, profile, or service detail pages */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
-          <li>
-            <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : ''} end>
-              Home
-            </NavLink>
-          </li>
-        )}
+        {/* Show Home link only when NOT on services, my-bookings, profile, or service detail pages - hide from admin */}
+        <HasAnyRole roles={['user', 'tasker']}>
+          {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
+            <li>
+              <NavLink to="/" className={({ isActive }) => isActive ? 'active-link' : ''} end>
+                Home
+              </NavLink>
+            </li>
+          )}
+        </HasAnyRole>
         
-        {/* Show Explore Services when on services, my-bookings, profile, or service detail pages */}
-        {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile' || location.pathname.startsWith('/services/')) && (
-          <li>
-            <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : ''}>
-              Explore Services
-            </NavLink>
-          </li>
-        )}
+        {/* Show Explore Services when on services, my-bookings, profile, or service detail pages - hide from admin */}
+        <HasAnyRole roles={['user', 'tasker']}>
+          {(location.pathname === '/services' || location.pathname === '/my-bookings' || location.pathname === '/profile' || location.pathname.startsWith('/services/')) && (
+            <li>
+              <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : ''}>
+                Explore Services
+              </NavLink>
+            </li>
+          )}
+        </HasAnyRole>
         
-        {/* Show Services link only when NOT on services, my-bookings, profile, or service detail pages */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
-          <li>
-            <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : ''}>
-              Services
-            </NavLink>
-          </li>
-        )}
+        {/* Show Services link only when NOT on services, my-bookings, profile, or service detail pages - hide from admin */}
+        <HasAnyRole roles={['user', 'tasker']}>
+          {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
+            <li>
+              <NavLink to="/services" className={({ isActive }) => isActive ? 'active-link' : ''}>
+                Services
+              </NavLink>
+            </li>
+          )}
+        </HasAnyRole>
         
-        {/* Show About Us link only when NOT on services, my-bookings, profile, or service detail pages */}
-        {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
-          <li>
-            <NavLink to="/about" className={({ isActive }) => isActive ? 'active-link' : ''}>
-              About Us
-            </NavLink>
-          </li>
-        )}
+        {/* Show About Us link only when NOT on services, my-bookings, profile, or service detail pages - hide from admin */}
+        <HasAnyRole roles={['user', 'tasker']}>
+          {location.pathname !== '/services' && location.pathname !== '/my-bookings' && location.pathname !== '/profile' && !location.pathname.startsWith('/services/') && (
+            <li>
+              <NavLink to="/about" className={({ isActive }) => isActive ? 'active-link' : ''}>
+                About Us
+              </NavLink>
+            </li>
+          )}
+        </HasAnyRole>
         
         {/* Show My Bookings when on services, my-bookings, profile, or service detail pages - only for users */}
         <HasRole role="user">
