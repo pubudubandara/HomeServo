@@ -148,9 +148,7 @@ const BookingForm = () => {
           <div className="booking-form">
             <h2>Login Required</h2>
             <p>You must be logged in to make a booking.</p>
-            <p>If you are logged in, please refresh the page.</p>
-            <div style={{ margin: '10px 0' }}>
-              <button onClick={() => window.location.reload()} style={{ marginRight: '10px' }}>Refresh Page</button>
+            <div className="login-actions">
               <a href="/login" className="book-btn">Go to Login</a>
             </div>
           </div>
