@@ -65,6 +65,8 @@ const LoginPage = () => {
             console.error("Error checking tasker profile:", profileError);
             navigate('/tasker/form');
           }
+        } else if (data.user.role === 'admin') {
+          navigate('/admin/dashboard');
         } else {
           navigate('/services');
         }

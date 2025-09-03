@@ -1,5 +1,5 @@
 // Export all middleware components for easy importing
-export { AdminRoute, TaskerRoute, AuthenticatedRoute, PublicRoute } from './SpecificRoutes';
+export { AdminRoute, TaskerRoute, ServicesRoute, AuthenticatedRoute, PublicRoute } from './SpecificRoutes';
 export { default as RoleBasedContent, HasRole, HasAnyRole, AuthenticatedContent, UnauthenticatedContent } from './RoleBasedContent';
 export { default as LandingOrRedirect } from './LandingOrRedirect';
 

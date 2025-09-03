@@ -11,6 +11,7 @@ import './App.css';
 import { 
   AdminRoute, 
   TaskerRoute, 
+  ServicesRoute,
   AuthenticatedRoute, 
   PublicRoute, 
   LandingOrRedirect
@@ -62,8 +63,10 @@ const AppContent = () => {
         <Route path="/tasker-signup" element={<PublicRoute><TaskerSignupPage /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/become-tasker" element={<PublicRoute><TaskerSignupPage /></PublicRoute>} />
-        <Route path="/services" element={<HomePage />} />
-        <Route path="/services/:id" element={<ServiceProfile />} />
+        
+        {/* Services Routes - Redirects admins to admin dashboard */}
+        <Route path="/services" element={<ServicesRoute><HomePage /></ServicesRoute>} />
+        <Route path="/services/:id" element={<ServicesRoute><ServiceProfile /></ServicesRoute>} />
         <Route path="/about" element={<AboutUs />} />
         
         {/* Authenticated Routes - Require login but any role */}

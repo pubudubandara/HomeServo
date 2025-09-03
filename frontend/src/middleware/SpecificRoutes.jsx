@@ -44,6 +44,23 @@ export const TaskerRoute = ({ children }) => {
   return children;
 };
 
+/**
+ * ServicesRoute component that redirects admins to admin dashboard
+ * but allows other users to access services
+ */
+export const ServicesRoute = ({ children }) => {
+  const { user, isLoading, LoadingComponent } = useRouteProtection();
+
+  if (isLoading) return <LoadingComponent />;
+
+  // If user is admin, redirect to admin dashboard
+  if (user && user.role === 'admin') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return children;
+};
+
 
  //AuthenticatedRoute component for routes that require any authenticated user
 
