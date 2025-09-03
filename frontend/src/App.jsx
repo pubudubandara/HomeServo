@@ -64,11 +64,9 @@ const AppContent = () => {
         <Route path="/tasker-signup" element={<PublicRoute><TaskerSignupPage /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/become-tasker" element={<PublicRoute><TaskerSignupPage /></PublicRoute>} />
-        
-        {/* Protected Public Routes - Require authentication to access */}
-        <Route path="/services" element={<AuthenticatedRoute><HomePage /></AuthenticatedRoute>} />
-        <Route path="/services/:id" element={<AuthenticatedRoute><ServiceProfile /></AuthenticatedRoute>} />
-        <Route path="/about" element={<AuthenticatedRoute><AboutUs /></AuthenticatedRoute>} />
+        <Route path="/services" element={<HomePage />} />
+        <Route path="/services/:id" element={<ServiceProfile />} />
+        <Route path="/about" element={<AboutUs />} />
         
         {/* Authenticated Routes - Require login but any role */}
         <Route path="/my-bookings" element={<AuthenticatedRoute><MyBookings /></AuthenticatedRoute>} />
