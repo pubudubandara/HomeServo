@@ -11,10 +11,8 @@ import './App.css';
 import { 
   AdminRoute, 
   TaskerRoute, 
-  UserRoute, 
   AuthenticatedRoute, 
   PublicRoute, 
-  RestrictedPublicRoute,
   LandingOrRedirect
 } from './middleware';
 
@@ -77,14 +75,6 @@ const AppContent = () => {
         <Route path="/tasker/profile" element={<TaskerRoute><TaskerProfilePage /></TaskerRoute>} />
         <Route path="/tasker/service-cards" element={<TaskerRoute><TaskerServicesPage /></TaskerRoute>} />
         <Route path="/tasker/bookings" element={<TaskerRoute><TaskerBookingsPage /></TaskerRoute>} />
-        
-
-        {/* Tasker Dashboard Routes */}
-        <Route path="/tasker/form" element={<TaskerProfileFormPage />} />
-        <Route path="/tasker/profile" element={<TaskerProfilePage />} />
-        <Route path="/tasker/service-cards" element={<TaskerServicesPage />} />
-        <Route path="/tasker/bookings" element={<TaskerBookingsPage />} />
-
         
         {/* Admin-Specific Routes */}
         <Route path="/admin/*" element={<AdminRoute><AdminPage /></AdminRoute>} />

@@ -2,11 +2,8 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Landing } from '../pages';
+import { getRoleBasedRoute } from './utils.jsx';
 
-/**
- * LandingOrRedirect component that shows the landing page to unauthenticated users
- * and redirects authenticated users to their role-based dashboard
- */
 const LandingOrRedirect = () => {
   const { user, isLoading } = useAuth();
 
@@ -26,19 +23,7 @@ const LandingOrRedirect = () => {
 
   // If user is authenticated, redirect to their role-based dashboard
   if (user) {
-    const getRoleBasedRoute = () => {
-      switch (user.role) {
-        case 'admin':
-          return '/admin/dashboard';
-        case 'tasker':
-          return '/tasker/profile';
-        case 'user':
-        default:
-          return '/services';
-      }
-    };
-
-    return <Navigate to={getRoleBasedRoute()} replace />;
+    return <Navigate to={getRoleBasedRoute(user.role)} replace />;
   }
 
   // If user is not authenticated, show the landing page
