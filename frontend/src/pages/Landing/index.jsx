@@ -56,24 +56,24 @@ const Landing = () => {
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">
-                <i className="fas fa-shield-alt"></i>
+                <i className="fas fa-th-large"></i>
               </div>
-              <h3>Verified Professionals</h3>
-              <p>All our service providers are background-checked and verified for quality service.</p>
+              <h3>Wide Range of Services</h3>
+              <p>From cleaning to repairs — everything in one place.</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">
-                <i className="fas fa-clock"></i>
+                <i className="fas fa-user-check"></i>
               </div>
-              <h3>Flexible Scheduling</h3>
-              <p>Book services at your convenience with our easy-to-use scheduling system.</p>
+              <h3>Trusted & Verified Professionals</h3>
+              <p>Every service provider is background-checked and verified.</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">
-                <i className="fas fa-star"></i>
+                <i className="fas fa-headset"></i>
               </div>
-              <h3>Quality Guarantee</h3>
-              <p>100% satisfaction guarantee on all services or your money back.</p>
+              <h3>24/7 Customer Support</h3>
+              <p>Always here to assist you when needed.</p>
             </div>
           </div>
         </div>
