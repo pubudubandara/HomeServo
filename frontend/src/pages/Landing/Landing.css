@@ -31,7 +31,7 @@
 }
 
 .hero-content{
-  top:200px;
+  top:100px;
   z-index: 3;
 }
 
@@ -49,9 +49,8 @@
 }
 
 .hero-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: 5rem;
+  font-weight: 1000;
   margin-bottom: 1rem;
   color: var(--text-primary);
   text-shadow: none;
@@ -64,6 +63,7 @@
   font-weight: 900;
   color: var(--primary-green);
   text-shadow: none;
+  margin-top: 100px;
 }
 
 .hero-description {

@@ -53,10 +53,16 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(newUser));
   };
   
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    return new Promise((resolve) => {
+      setUser(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        resolve();
+      }, 100);
+    });
   };
 
   return (

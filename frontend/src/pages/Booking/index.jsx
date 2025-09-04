@@ -13,11 +13,12 @@ const BookingNavbar = () => {
     setLoggingOut(true);
     try {
       await logout();
-      navigate('/');
+      // Force a page reload to ensure AuthContext is completely refreshed
+      window.location.href = '/';
     } catch (err) {
       console.error('Logout failed:', err);
-    } finally {
-      setLoggingOut(false);
+      // Even if logout fails, redirect to home
+      window.location.href = '/';
     }
   };
 

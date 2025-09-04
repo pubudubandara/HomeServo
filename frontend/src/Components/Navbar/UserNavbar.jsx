@@ -58,9 +58,12 @@ const UserNavbar = () => {
     setLogoutError("");
     try {
       await logout();
-      navigate('/');
+      // Force a page reload to ensure AuthContext is completely refreshed
+      window.location.href = '/';
     } catch (err) {
       setLogoutError("Logout failed. Please try again.");
+      // Even if logout fails, redirect to home
+      window.location.href = '/';
     } finally {
       setLoggingOut(false);
     }

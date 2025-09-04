@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import './navbar.css';
+import { useAuth } from '../../../contexts/AuthContext';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const TaskerNavbar = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    alert('Logged out successfully!');
-    // You can add navigation to login page or clear authentication state
-    window.location.href = '/login';
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Force a page reload to ensure AuthContext is completely refreshed
+      window.location.href = '/';
+    } catch (err) {
+      console.error('Logout failed:', err);
+      // Even if logout fails, redirect to home
+      window.location.href = '/';
+    }
   };
 
   return (
