@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import './navbar.css';
+import { useAuth } from '../../../contexts/AuthContext';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import toast from 'react-hot-toast';
 
 const TaskerNavbar = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    alert('Logged out successfully!');
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully");
     // You can add navigation to login page or clear authentication state
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   return (
