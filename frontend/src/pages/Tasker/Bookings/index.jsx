@@ -265,10 +265,6 @@ const TaskerBookings = () => {
                         </span>
                       </div>
                       <div className="info-item">
-                        <i className="fas fa-user"></i>
-                        <span>{booking.customerEmail}</span>
-                      </div>
-                      <div className="info-item">
                         <i className="fas fa-phone"></i>
                         <span>{booking.customerPhone}</span>
                       </div>
