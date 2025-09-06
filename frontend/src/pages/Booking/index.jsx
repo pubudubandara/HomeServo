@@ -68,6 +68,15 @@ const BookingForm = () => {
   const { user, isLoading } = useAuth(); // Get current user from auth context
   const serviceData = location.state?.service; // Get service data passed via navigation
 
+  // Get today's date in YYYY-MM-DD format for date input min attribute
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Debug URL parameters
   console.log('BookingForm - Full URL:', window.location.href);
   console.log('BookingForm - URL pathname:', window.location.pathname);
@@ -347,6 +356,7 @@ const BookingForm = () => {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
+                    min={getTodayDate()}
                     required
                   />
                 </div>
