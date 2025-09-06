@@ -364,29 +364,77 @@ export const getPublicServices = async (req, res) => {
 
     const total = await Service.countDocuments(query);
 
-    // Format the services for frontend consumption
-    const formattedServices = services.map(service => ({
-      id: service._id,
-      name: service.title,
-      description: service.description,
-      price: service.price,
-      image: service.image,
-      category: service.category,
-      tags: service.tags,
-      rating: service.rating || 4.5,
-      jobsCompleted: service.jobsCompleted || Math.floor(Math.random() * 50) + 10,
-      tasker: service.taskerId ? {
-        id: service.taskerId._id,
-        firstName: service.taskerId.userId?.firstName || '',
-        lastName: service.taskerId.userId?.lastName || '',
-        name: `${service.taskerId.userId?.firstName || ''} ${service.taskerId.userId?.lastName || ''}`.trim(),
-        email: service.taskerId.userId?.email || ''
-      } : null
-    }));
+    // Get booking statistics for each service
+    const servicesWithStats = await Promise.all(
+      services.map(async (service) => {
+        try {
+          // Import Booking model dynamically to avoid circular imports
+          const Booking = (await import('../models/Booking.js')).default;
+          
+          // Get all bookings for this service that are completed
+          const completedBookings = await Booking.find({
+            serviceId: service._id,
+            status: 'completed'
+          });
+
+          // Calculate average rating
+          const ratings = completedBookings
+            .map(booking => booking.rating)
+            .filter(rating => rating !== null && rating !== undefined);
+
+          const averageRating = ratings.length > 0 
+            ? (ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1)
+            : 0;
+
+          // Count completed jobs
+          const jobsCompleted = completedBookings.length;
+
+          return {
+            id: service._id,
+            name: service.title,
+            description: service.description,
+            price: service.price,
+            image: service.image,
+            category: service.category,
+            tags: service.tags,
+            rating: parseFloat(averageRating),
+            jobsCompleted: jobsCompleted,
+            tasker: service.taskerId ? {
+              id: service.taskerId._id,
+              firstName: service.taskerId.userId?.firstName || '',
+              lastName: service.taskerId.userId?.lastName || '',
+              name: `${service.taskerId.userId?.firstName || ''} ${service.taskerId.userId?.lastName || ''}`.trim(),
+              email: service.taskerId.userId?.email || ''
+            } : null
+          };
+        } catch (error) {
+          console.error(`Error calculating stats for service ${service._id}:`, error);
+          // Return service with default values if stats calculation fails
+          return {
+            id: service._id,
+            name: service.title,
+            description: service.description,
+            price: service.price,
+            image: service.image,
+            category: service.category,
+            tags: service.tags,
+            rating: 0,
+            jobsCompleted: 0,
+            tasker: service.taskerId ? {
+              id: service.taskerId._id,
+              firstName: service.taskerId.userId?.firstName || '',
+              lastName: service.taskerId.userId?.lastName || '',
+              name: `${service.taskerId.userId?.firstName || ''} ${service.taskerId.userId?.lastName || ''}`.trim(),
+              email: service.taskerId.userId?.email || ''
+            } : null
+          };
+        }
+      })
+    );
 
     res.status(200).json({
       success: true,
-      data: formattedServices,
+      data: servicesWithStats,
       pagination: {
         current: parseInt(page),
         total: Math.ceil(total / limit),
