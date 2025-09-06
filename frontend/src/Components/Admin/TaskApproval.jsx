@@ -28,7 +28,7 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
   return (
     <div className="task-approvals">
       <div className="section-header">
-        <h2>Tasker Approvals</h2>
+        <h2>Service Approvals</h2>
         <div className="header-actions">
           <span className="pending-count">{pendingTasks.length} pending approvals</span>
           <button className="btn-export">Export List</button>
@@ -39,18 +39,18 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
         <div className="empty-state">
           <FaFileAlt size={48} />
           <h3>No Pending Approvals</h3>
-          <p>All tasker applications have been processed.</p>
+          <p>All service submissions have been processed.</p>
         </div>
       ) : (
         <div className="approvals-table">
           <table>
             <thead>
               <tr>
-                <th>Applicant</th>
+                <th>Service Provider</th>
+                <th>Service Title</th>
                 <th>Category</th>
+                <th>Price</th>
                 <th>Submitted Date</th>
-                <th>Documents</th>
-                <th>Priority</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -69,20 +69,15 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                     </div>
                   </td>
                   <td>
+                    <div className="service-title">{task.title}</div>
+                  </td>
+                  <td>
                     <span className="category-badge">{task.category}</span>
                   </td>
+                  <td>
+                    <span className="price-badge">${task.price}</span>
+                  </td>
                   <td>{task.submittedDate}</td>
-                  <td>
-                    <span className="documents-count">
-                      <FaFileAlt />
-                      {task.documents.length} files
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`priority ${task.priority || 'normal'}`}>
-                      {task.priority || 'Normal'}
-                    </span>
-                  </td>
                   <td>
                     <div className="action-buttons">
                       <button 
@@ -120,7 +115,7 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Tasker Application Details</h3>
+              <h3>Service Details</h3>
               <button className="modal-close" onClick={handleCloseModal}>
                 <FaTimes />
               </button>
@@ -138,17 +133,29 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                 </div>
               </div>
 
-              <div className="application-details">
+              <div className="service-details">
+                <div className="detail-item">
+                  <label>Service Title:</label>
+                  <span>{selectedTask.title}</span>
+                </div>
                 <div className="detail-item">
                   <label>Category:</label>
                   <span className="category-badge">{selectedTask.category}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Price:</label>
+                  <span className="price-badge">${selectedTask.price}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Description:</label>
+                  <span>{selectedTask.description}</span>
                 </div>
                 <div className="detail-item">
                   <label>Submitted Date:</label>
                   <span>{selectedTask.submittedDate}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Experience:</label>
+                  <label>Provider Experience:</label>
                   <span>{selectedTask.experience || '3+ years'}</span>
                 </div>
                 <div className="detail-item">
@@ -157,25 +164,10 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                 </div>
               </div>
 
-              <div className="documents-section">
-                <h4>Submitted Documents</h4>
-                <div className="documents-list">
-                  {selectedTask.documents.map((doc, index) => (
-                    <div key={index} className="document-item">
-                      <FaFileAlt />
-                      <span>{doc}</span>
-                      <button className="btn-download">
-                        <FaDownload />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className="skills-section">
-                <h4>Skills & Certifications</h4>
+                <h4>Service Tags</h4>
                 <div className="skills-list">
-                  {(selectedTask.skills || ['Professional Cleaning', 'Time Management', 'Customer Service']).map((skill, index) => (
+                  {(selectedTask.skills || ['Professional Service', 'Quality Work', 'Customer Service']).map((skill, index) => (
                     <span key={index} className="skill-tag">{skill}</span>
                   ))}
                 </div>
@@ -187,13 +179,13 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                 className="btn-reject-modal" 
                 onClick={() => handleReject(selectedTask.taskerId)}
               >
-                <FaTimes /> Reject Application
+                <FaTimes /> Reject Service
               </button>
               <button 
                 className="btn-approve-modal" 
                 onClick={() => handleApprove(selectedTask.taskerId)}
               >
-                <FaCheck /> Approve Application
+                <FaCheck /> Approve Service
               </button>
             </div>
           </div>

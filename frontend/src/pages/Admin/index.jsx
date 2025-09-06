@@ -120,22 +120,39 @@ const Admin = () => {
 
   const loadApprovals = async (page = 1) => {
     try {
+      console.log('=== LOADING APPROVALS ===');
+      console.log('Calling adminAPI.approvals.getAll with page:', page);
+      
       const response = await adminAPI.approvals.getAll({ page });
-      // Transform the data to match the expected format
-      const transformedTasks = response.pendingTaskers?.map(tasker => ({
-        id: tasker._id,
-        taskerId: tasker._id,
-        taskerName: tasker.user?.name || 'N/A',
-        email: tasker.user?.email || 'N/A',
-        category: tasker.serviceCategories?.join(', ') || 'N/A',
-        submittedDate: new Date(tasker.createdAt).toLocaleDateString(),
-        documents: tasker.documents || [],
-        priority: 'normal',
-        experience: tasker.experience || 'N/A',
-        location: tasker.location || 'N/A',
-        phone: tasker.phoneNumber || 'N/A',
-        skills: tasker.skills || []
+      console.log('Received response:', response);
+      console.log('Raw pendingTaskers:', response.pendingTaskers);
+      
+      // Log first item to see structure
+      if (response.pendingTaskers && response.pendingTaskers.length > 0) {
+        console.log('First service data:', response.pendingTaskers[0]);
+      }
+      
+      // Use the data directly from backend - no transformation needed since backend already transforms it
+      const transformedTasks = response.pendingTaskers?.map(service => ({
+        id: service.id,
+        taskerId: service.taskerId, // This is the service ID for approve/reject
+        taskerName: service.taskerName,
+        email: service.email,
+        category: service.category,
+        title: service.title,
+        description: service.description,
+        price: service.price,
+        submittedDate: service.submittedDate,
+        experience: service.experience,
+        location: service.location,
+        phone: service.phone,
+        skills: service.skills || [],
+        serviceId: service.serviceId,
+        actualTaskerId: service.actualTaskerId
       })) || [];
+      
+      console.log('Transformed tasks:', transformedTasks);
+      console.log('Setting pendingTasks to:', transformedTasks.length, 'items');
       
       setPendingTasks(transformedTasks);
       setPagination(prev => ({
