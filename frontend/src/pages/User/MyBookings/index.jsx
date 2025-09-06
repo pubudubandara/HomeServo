@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
-import { getCustomerBookings } from '../../../utils/bookingAPI';
+import { getCustomerBookings, updateBookingStatus } from '../../../utils/bookingAPI';
+import toast, { Toaster } from 'react-hot-toast';
 import './MyBookings.css';
 
 const MyBookings = () => {
@@ -8,6 +9,7 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [ratingValues, setRatingValues] = useState({});
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -25,14 +27,19 @@ const MyBookings = () => {
 
       try {
         const result = await getCustomerBookings(userIdentifier);
+        console.log('🔍 Bookings API result:', result);
         if (result.success) {
+          console.log('📋 All fetched bookings:', result.data);
+          console.log('✅ Completed bookings:', result.data.filter(b => b.status === 'completed'));
           setBookings(result.data);
         } else {
           setError(result.message);
+          toast.error(`Failed to load bookings: ${result.message}`);
         }
       } catch (err) {
         setError('Failed to fetch bookings');
         console.error('Error fetching bookings:', err);
+        toast.error('Failed to fetch bookings. Please refresh the page.');
       } finally {
         setLoading(false);
       }
@@ -59,6 +66,53 @@ const MyBookings = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleRatingClick = (bookingId, rating) => {
+    setRatingValues(prev => ({
+      ...prev,
+      [bookingId]: rating
+    }));
+  };
+
+  const handleRatingSubmit = async (bookingId) => {
+    const rating = ratingValues[bookingId];
+    if (!rating || rating === 0) {
+      toast.error('Please select a rating before submitting');
+      return;
+    }
+
+    try {
+      const updateData = { rating: parseInt(rating) };
+      const result = await updateBookingStatus(bookingId, updateData);
+      
+      console.log('Rating submission result:', result);
+      
+      if (result && result.success) {
+        // Update the booking in state to reflect the new rating
+        setBookings(prevBookings => 
+          prevBookings.map(booking => 
+            booking._id === bookingId 
+              ? { ...booking, rating: parseInt(rating) }
+              : booking
+          )
+        );
+        // Clear the rating value for this booking
+        setRatingValues(prev => {
+          const newValues = { ...prev };
+          delete newValues[bookingId];
+          return newValues;
+        });
+        toast.success(`Rating of ${rating} stars submitted successfully! 🌟`);
+      } else {
+        const errorMessage = result?.message || 'Failed to submit rating';
+        console.error('Rating submission failed:', errorMessage);
+        toast.error(`Failed to submit rating: ${errorMessage}`);
+      }
+    } catch (err) {
+      console.error('Error submitting rating:', err);
+      toast.error('An error occurred while submitting rating. Please try again.');
+    }
   };
 
   if (loading) {
@@ -144,10 +198,84 @@ const MyBookings = () => {
                   <span className="value">{formatDate(booking.createdAt)}</span>
                 </div>
               </div>
+
+              { booking.status === 'completed' && (
+                <div className="booking-rating">
+                  {booking.rating ? (
+                    <div className="rating-display">
+                      <span className="rating-label">Your Rating:</span>
+                      <div className="stars-display">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={`star ${star <= booking.rating ? 'active' : ''}`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                        <span className="rating-value">({booking.rating}/5)</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rating-container">
+                      <div className="rating-stars">
+                        <span className="rating-label">Rate this service:</span>
+                        <div className="stars">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              className={`star ${(ratingValues[booking._id] || 0) >= star ? 'active' : ''}`}
+                              onClick={() => handleRatingClick(booking._id, star)}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="rating-actions">
+                        <button 
+                          className="submit-rating-btn"
+                          onClick={() => handleRatingSubmit(booking._id)}
+                          disabled={!ratingValues[booking._id] || ratingValues[booking._id] === 0}
+                        >
+                          Submit Rating
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
+      
+      {/* Toast Container for notifications */}
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            theme: {
+              primary: '#10B981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            theme: {
+              primary: '#EF4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   );
 };

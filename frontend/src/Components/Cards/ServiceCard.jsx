@@ -74,7 +74,7 @@ const ServiceCard = ({ service }) => {
           {service.jobsCompleted !== undefined && (
             <div className="jobs-completed">
               <i className="fas fa-check-circle"></i>
-              <span>{service.jobsCompleted} jobs completed</span>
+              <span>{service.jobsCompleted} jobs completed </span>
             </div>
           )}
         </div>

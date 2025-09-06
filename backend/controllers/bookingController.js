@@ -329,7 +329,7 @@ const getBookingById = async (req, res) => {
 const updateBookingStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, assignedTasker, scheduledDate, estimatedCost, actualCost, adminNotes } = req.body;
+    const { status, assignedTasker, scheduledDate, estimatedCost, actualCost, rating, adminNotes } = req.body;
 
     const booking = await Booking.findById(id);
     if (!booking) {
@@ -345,6 +345,7 @@ const updateBookingStatus = async (req, res) => {
     if (scheduledDate) booking.scheduledDate = new Date(scheduledDate);
     if (estimatedCost !== undefined) booking.estimatedCost = estimatedCost;
     if (actualCost !== undefined) booking.actualCost = actualCost;
+    if (rating !== undefined) booking.rating = rating;
     if (adminNotes !== undefined) booking.adminNotes = adminNotes;
 
     // Set completion date if status is completed
