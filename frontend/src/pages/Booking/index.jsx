@@ -320,7 +320,7 @@ const BookingForm = () => {
                 <p>⚠️ Service details could not be loaded, but booking will still work.</p>
               </div>
             )}
-            <p>Get connected with skilled professionals for your needs</p>
+            
           </div>
 
           <div className="form-container">
@@ -390,7 +390,7 @@ const BookingForm = () => {
                   required
                 />
                 <label htmlFor="terms">
-                  I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
+                  I agree to the Terms of Service and Privacy Policy
                 </label>
               </div>
 

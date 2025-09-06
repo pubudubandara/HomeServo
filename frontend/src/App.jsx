@@ -67,6 +67,7 @@ const AppContent = () => {
         {/* Services Routes - Redirects admins to admin dashboard */}
         <Route path="/services" element={<ServicesRoute><HomePage /></ServicesRoute>} />
         <Route path="/services/:id" element={<ServicesRoute><ServiceProfile /></ServicesRoute>} />
+         <Route path="/book/:id" element={<AuthenticatedRoute><BookingPage /></AuthenticatedRoute>} />
         <Route path="/about" element={<AboutUs />} />
         
         {/* Authenticated Routes - Require login but any role */}
