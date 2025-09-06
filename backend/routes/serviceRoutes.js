@@ -13,12 +13,41 @@ import {
 } from '../controllers/serviceController.js';
 import auth from '../middleware/auth.js';
 import { checkServiceOwnership, checkTaskerAccess, checkAdminRole } from '../middleware/serviceAuth.js';
+import { uploadServiceImage } from '../middleware/cloudinaryUpload.js';
 
 const router = express.Router();
 
 // Public routes (no authentication required)
 router.get('/public', getPublicServices);
 router.get('/profile/:serviceId', getServiceProfile);
+
+// Image upload route
+router.post('/upload-image', auth, uploadServiceImage.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image file provided'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: {
+        imageUrl: req.file.path,
+        publicId: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading image',
+      error: error.message
+    });
+  }
+});
 
 // Tasker service routes (protected with ownership checks)
 router.get('/tasker/:taskerId', auth, checkTaskerAccess, getTaskerServices);

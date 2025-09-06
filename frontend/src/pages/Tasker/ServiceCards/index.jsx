@@ -73,6 +73,20 @@ const serviceAPI = {
       }
     });
     return response.json();
+  },
+
+  uploadImage: async (imageFile, token) => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const response = await fetch(`${API_BASE_URL}/services/upload-image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+    return response.json();
   }
 };
 
@@ -101,6 +115,9 @@ const TaskerServiceCards = () => {
     image: '',
     tags: ''
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -181,6 +198,39 @@ const TaskerServiceCards = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile) return;
+
+    setUploadingImage(true);
+    try {
+      const response = await serviceAPI.uploadImage(imageFile, token);
+      if (response.success) {
+        setFormData({ ...formData, image: response.data.imageUrl });
+        alert('Image uploaded successfully!');
+      } else {
+        alert('Failed to upload image: ' + response.message);
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleCreateCard = async (e) => {
     e.preventDefault();
     
@@ -191,7 +241,7 @@ const TaskerServiceCards = () => {
 
     // Basic validation
     if (!formData.title || !formData.category || !formData.description || !formData.price || !formData.image) {
-      setError('Please fill in all required fields');
+      setError('Please fill in all required fields and upload an image');
       return;
     }
 
@@ -239,6 +289,8 @@ const TaskerServiceCards = () => {
       image: card.image,
       tags: card.tags.join(', ')
     });
+    setImagePreview(card.image); // Set preview to existing image
+    setImageFile(null); // Clear any selected file
   };
 
   const handleUpdateCard = async (e) => {
@@ -246,7 +298,7 @@ const TaskerServiceCards = () => {
     
     // Basic validation
     if (!formData.title || !formData.category || !formData.description || !formData.price || !formData.image) {
-      setError('Please fill in all required fields');
+      setError('Please fill in all required fields and upload an image');
       return;
     }
 
@@ -611,6 +663,8 @@ const TaskerServiceCards = () => {
                       setShowCreateForm(false);
                       setEditingCard(null);
                       setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
+                      setImageFile(null);
+                      setImagePreview('');
                     }}
                   >
                     <i className="fas fa-times"></i>
@@ -670,15 +724,51 @@ const TaskerServiceCards = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Image URL</label>
-                    <input
-                      type="url"
-                      name="image"
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      placeholder="Enter image URL"
-                      required
-                    />
+                    <label>Service Image</label>
+                    <div className="image-upload-section">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageSelect}
+                        className="file-input"
+                        id="image-upload"
+                      />
+                      <label htmlFor="image-upload" className="file-input-label">
+                        <i className="fas fa-cloud-upload-alt"></i>
+                        Choose Image
+                      </label>
+                      
+                      {imagePreview && (
+                        <div className="image-preview">
+                          <img src={imagePreview} alt="Preview" />
+                          <button 
+                            type="button" 
+                            className="upload-btn"
+                            onClick={handleImageUpload}
+                            disabled={uploadingImage}
+                          >
+                            {uploadingImage ? (
+                              <>
+                                <i className="fas fa-spinner fa-spin"></i>
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <i className="fas fa-upload"></i>
+                                Upload Image
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                      
+                      {formData.image && (
+                        <div className="uploaded-image">
+                          <i className="fas fa-check-circle"></i>
+                          <span>Image uploaded successfully!</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="form-group">
@@ -715,6 +805,8 @@ const TaskerServiceCards = () => {
                         setShowCreateForm(false);
                         setEditingCard(null);
                         setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
+                        setImageFile(null);
+                        setImagePreview('');
                       }}
                     >
                       Cancel
