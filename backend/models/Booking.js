@@ -80,10 +80,6 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     min: 0
   },
-  adminNotes: {
-    type: String,
-    maxlength: [500, 'Admin notes cannot exceed 500 characters']
-  },
   
   // Timestamps
   scheduledDate: {
@@ -91,17 +87,6 @@ const bookingSchema = new mongoose.Schema({
   },
   completedDate: {
     type: Date
-  },
-  
-  // Rating and Feedback
-  customerRating: {
-    type: Number,
-    min: 1,
-    max: 5
-  },
-  customerFeedback: {
-    type: String,
-    maxlength: [1000, 'Customer feedback cannot exceed 1000 characters']
   },
   
   // Payment Information
@@ -126,7 +111,6 @@ bookingSchema.index({ status: 1 });
 bookingSchema.index({ preferredDate: 1 });
 bookingSchema.index({ assignedTasker: 1 });
 bookingSchema.index({ userId: 1 });
-bookingSchema.index({ serviceId: 1 });
 bookingSchema.index({ serviceId: 1 });
 bookingSchema.index({ createdAt: -1 });
 

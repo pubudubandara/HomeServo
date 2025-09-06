@@ -25,6 +25,8 @@ const TaskerBookings = () => {
   });
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingCost, setEditingCost] = useState(null);
+  const [costValue, setCostValue] = useState('');
 
   // Fetch bookings data
   useEffect(() => {
@@ -94,12 +96,19 @@ const TaskerBookings = () => {
     }
   };
 
-  const handleStatusUpdate = async (bookingId, newStatus) => {
+  const handleStatusUpdate = async (bookingId, newStatus, cost = null) => {
     try {
-      const result = await updateBookingStatus(bookingId, { status: newStatus });
+      const updateData = { status: newStatus };
+      if (cost !== null) {
+        updateData.actualCost = parseFloat(cost);
+      }
+
+      const result = await updateBookingStatus(bookingId, updateData);
       if (result.success) {
         // Refresh bookings after status update
         fetchBookings();
+        setEditingCost(null);
+        setCostValue('');
       } else {
         alert('Failed to update booking status: ' + result.message);
       }
@@ -107,6 +116,16 @@ const TaskerBookings = () => {
       console.error('Error updating booking status:', err);
       alert('An error occurred while updating booking status');
     }
+  };
+
+  const startCostEdit = (bookingId, currentCost) => {
+    setEditingCost(bookingId);
+    setCostValue(currentCost || '');
+  };
+
+  const cancelCostEdit = () => {
+    setEditingCost(null);
+    setCostValue('');
   };
 
   const handlePageChange = (newPage) => {
@@ -295,28 +314,90 @@ const TaskerBookings = () => {
                         </>
                       )}
                       {booking.status === 'confirmed' && (
-                        <>
-                          <button 
-                            className="complete-btn"
-                            onClick={() => handleStatusUpdate(booking._id, 'in-progress')}
-                          >
-                            Start Job
-                          </button>
-                          <button className="contact-btn">
-                            <a href={`tel:${booking.customerPhone}`}>Contact Customer</a>
-                          </button>
-                        </>
+                        <div className="action-with-cost">
+                          {editingCost === booking._id ? (
+                            <div className="cost-edit-container">
+                              <input
+                                type="number"
+                                placeholder="Enter cost"
+                                value={costValue}
+                                onChange={(e) => setCostValue(e.target.value)}
+                                className="cost-input"
+                                min="0"
+                                step="0.01"
+                              />
+                              <button 
+                                className="save-cost-btn"
+                                onClick={() => handleStatusUpdate(booking._id, 'in-progress', costValue)}
+                                disabled={!costValue || parseFloat(costValue) <= 0}
+                              >
+                                Start Job
+                              </button>
+                              <button 
+                                className="cancel-cost-btn"
+                                onClick={cancelCostEdit}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <button 
+                                className="edit-cost-btn"
+                                onClick={() => startCostEdit(booking._id, booking.actualCost || booking.estimatedCost || '')}
+                              >
+                                Set Cost & Start Job
+                              </button>
+                              <button className="contact-btn">
+                                <a href={`tel:${booking.customerPhone}`}>Contact Customer</a>
+                              </button>
+                            </>
+                          )}
+                        </div>
                       )}
                       {booking.status === 'in-progress' && (
-                        <button 
-                          className="complete-btn"
-                          onClick={() => handleStatusUpdate(booking._id, 'completed')}
-                        >
-                          Mark Complete
-                        </button>
+                        <div className="action-with-cost">
+                          {editingCost === booking._id ? (
+                            <div className="cost-edit-container">
+                              <input
+                                type="number"
+                                placeholder="Enter final cost"
+                                value={costValue}
+                                onChange={(e) => setCostValue(e.target.value)}
+                                className="cost-input"
+                                min="0"
+                                step="0.01"
+                              />
+                              <button 
+                                className="save-cost-btn"
+                                onClick={() => handleStatusUpdate(booking._id, 'completed', costValue)}
+                                disabled={!costValue || parseFloat(costValue) <= 0}
+                              >
+                                Mark Complete
+                              </button>
+                              <button 
+                                className="cancel-cost-btn"
+                                onClick={cancelCostEdit}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button 
+                              className="edit-cost-btn"
+                              onClick={() => startCostEdit(booking._id, booking.actualCost || booking.estimatedCost || '')}
+                            >
+                              Set Final Cost & Complete
+                            </button>
+                          )}
+                        </div>
                       )}
                       {booking.status === 'completed' && (
-                        <button className="view-btn">View Details</button>
+                        <div className="completed-actions">
+                          {booking.actualCost && (
+                            <span className="final-cost">Final Cost: ${booking.actualCost}</span>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
