@@ -3,6 +3,7 @@ import './service.css';
 import TaskerNavbar from '../../../Components/Tasker/TaskerNavbar';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getTaskerProfile } from '../../../utils/taskerAPI';
+import toast, { Toaster } from 'react-hot-toast';
 
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
@@ -117,7 +118,6 @@ const TaskerServiceCards = () => {
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
-  const [uploadingImage, setUploadingImage] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -171,9 +171,11 @@ const TaskerServiceCards = () => {
       if (response.success) {
         setServiceCards(response.data);
       } else {
+        toast.error(response.message || 'Failed to load services');
         setError(response.message || 'Failed to load services');
       }
     } catch (err) {
+      toast.error('Error loading services. Please try again.');
       setError('Error loading services. Please try again.');
       console.error('Error loading services:', err);
     }
@@ -187,8 +189,11 @@ const TaskerServiceCards = () => {
       
       if (response.success) {
         setServiceStats(response.data);
+      } else {
+        toast.error('Failed to load service statistics');
       }
     } catch (err) {
+      toast.error('Error loading service statistics');
       console.error('Error loading service stats:', err);
     }
   };
@@ -211,26 +216,6 @@ const TaskerServiceCards = () => {
     }
   };
 
-  const handleImageUpload = async () => {
-    if (!imageFile) return;
-
-    setUploadingImage(true);
-    try {
-      const response = await serviceAPI.uploadImage(imageFile, token);
-      if (response.success) {
-        setFormData({ ...formData, image: response.data.imageUrl });
-        alert('Image uploaded successfully!');
-      } else {
-        alert('Failed to upload image: ' + response.message);
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Error uploading image. Please try again.');
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
   const handleCreateCard = async (e) => {
     e.preventDefault();
     
@@ -240,8 +225,14 @@ const TaskerServiceCards = () => {
     }
 
     // Basic validation
-    if (!formData.title || !formData.category || !formData.description || !formData.price || !formData.image) {
-      setError('Please fill in all required fields and upload an image');
+    if (!formData.title || !formData.category || !formData.description || !formData.price) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    // Check if image is selected
+    if (!imageFile) {
+      setError('Please select an image for your service');
       return;
     }
 
@@ -249,16 +240,35 @@ const TaskerServiceCards = () => {
       setLoading(true);
       setError(null);
 
+      // Show loading toast
+      const loadingToast = toast.loading('Creating service...');
+
+      // First, upload the image
+      let imageUrl = '';
+      if (imageFile) {
+        const uploadResponse = await serviceAPI.uploadImage(imageFile, token);
+        if (uploadResponse.success) {
+          imageUrl = uploadResponse.data.imageUrl;
+        } else {
+          toast.dismiss(loadingToast);
+          toast.error('Failed to upload image: ' + uploadResponse.message);
+          setError('Failed to upload image: ' + uploadResponse.message);
+          return;
+        }
+      }
+
       const serviceData = {
         title: formData.title.trim(),
         category: formData.category,
         description: formData.description.trim(),
         price: formData.price.trim(),
-        image: formData.image.trim(),
+        image: imageUrl,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
       };
 
       const response = await serviceAPI.createService(taskerId, serviceData, token);
+      
+      toast.dismiss(loadingToast);
       
       if (response.success) {
         await Promise.all([
@@ -266,12 +276,17 @@ const TaskerServiceCards = () => {
           loadServiceStats()
         ]);
         setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
+        setImageFile(null);
+        setImagePreview('');
         setShowCreateForm(false);
-        alert(response.message || 'Service created successfully! It will be reviewed by admin before activation.');
+        toast.success(response.message || 'Service created successfully! It will be reviewed by admin before activation.');
       } else {
+        toast.error(response.message || 'Failed to create service');
         setError(response.message || 'Failed to create service');
       }
     } catch (err) {
+      toast.dismiss();
+      toast.error('Error creating service. Please try again.');
       setError('Error creating service. Please try again.');
       console.error('Error creating service:', err);
     } finally {
@@ -297,8 +312,15 @@ const TaskerServiceCards = () => {
     e.preventDefault();
     
     // Basic validation
-    if (!formData.title || !formData.category || !formData.description || !formData.price || !formData.image) {
-      setError('Please fill in all required fields and upload an image');
+    if (!formData.title || !formData.category || !formData.description || !formData.price) {
+      toast.error('Please fill in all required fields');
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    // Check if image is selected (for updates, we might keep existing image)
+    if (!imageFile && !formData.image) {
+      setError('Please select an image for your service');
       return;
     }
 
@@ -306,16 +328,35 @@ const TaskerServiceCards = () => {
       setLoading(true);
       setError(null);
 
+      // Show loading toast
+      const loadingToast = toast.loading('Updating service...');
+
+      // Upload new image if selected
+      let imageUrl = formData.image;
+      if (imageFile) {
+        const uploadResponse = await serviceAPI.uploadImage(imageFile, token);
+        if (uploadResponse.success) {
+          imageUrl = uploadResponse.data.imageUrl;
+        } else {
+          toast.dismiss(loadingToast);
+          toast.error('Failed to upload image: ' + uploadResponse.message);
+          setError('Failed to upload image: ' + uploadResponse.message);
+          return;
+        }
+      }
+
       const serviceData = {
         title: formData.title.trim(),
         category: formData.category,
         description: formData.description.trim(),
         price: formData.price.trim(),
-        image: formData.image.trim(),
+        image: imageUrl,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
       };
 
       const response = await serviceAPI.updateService(editingCard, serviceData, token);
+      
+      toast.dismiss(loadingToast);
       
       if (response.success) {
         await Promise.all([
@@ -324,11 +365,16 @@ const TaskerServiceCards = () => {
         ]);
         setEditingCard(null);
         setFormData({ title: '', category: '', description: '', price: '', image: '', tags: '' });
-        alert(response.message || 'Service updated successfully!');
+        setImageFile(null);
+        setImagePreview('');
+        toast.success(response.message || 'Service updated successfully!');
       } else {
+        toast.error(response.message || 'Failed to update service');
         setError(response.message || 'Failed to update service');
       }
     } catch (err) {
+      toast.dismiss();
+      toast.error('Error updating service. Please try again.');
       setError('Error updating service. Please try again.');
       console.error('Error updating service:', err);
     } finally {
@@ -341,19 +387,25 @@ const TaskerServiceCards = () => {
       setLoading(true);
       setError(null);
 
+      const loadingToast = toast.loading('Updating service status...');
+
       const response = await serviceAPI.toggleServiceStatus(serviceId, token);
+      
+      toast.dismiss(loadingToast);
       
       if (response.success) {
         await Promise.all([
           loadServices(),
           loadServiceStats()
         ]);
-        alert(response.message);
+        toast.success(response.message);
       } else {
         setError(response.message || 'Failed to toggle service status');
-        alert(response.message || 'This service must be approved by admin before you can activate it.');
+        toast.error(response.message || 'This service must be approved by admin before you can activate it.');
       }
     } catch (err) {
+      toast.dismiss();
+      toast.error('Error toggling service status. Please try again.');
       setError('Error toggling service status. Please try again.');
       console.error('Error toggling service status:', err);
     } finally {
@@ -370,18 +422,25 @@ const TaskerServiceCards = () => {
       setLoading(true);
       setError(null);
 
+      const loadingToast = toast.loading('Deleting service...');
+
       const response = await serviceAPI.deleteService(serviceId, token);
+      
+      toast.dismiss(loadingToast);
       
       if (response.success) {
         await Promise.all([
           loadServices(),
           loadServiceStats()
         ]);
-        alert(response.message || 'Service deleted successfully!');
+        toast.success(response.message || 'Service deleted successfully!');
       } else {
+        toast.error(response.message || 'Failed to delete service');
         setError(response.message || 'Failed to delete service');
       }
     } catch (err) {
+      toast.dismiss();
+      toast.error('Error deleting service. Please try again.');
       setError('Error deleting service. Please try again.');
       console.error('Error deleting service:', err);
     } finally {
@@ -735,37 +794,16 @@ const TaskerServiceCards = () => {
                       />
                       <label htmlFor="image-upload" className="file-input-label">
                         <i className="fas fa-cloud-upload-alt"></i>
-                        Choose Image
+                        {imageFile ? 'Change Image' : 'Choose Image'}
                       </label>
                       
                       {imagePreview && (
                         <div className="image-preview">
                           <img src={imagePreview} alt="Preview" />
-                          <button 
-                            type="button" 
-                            className="upload-btn"
-                            onClick={handleImageUpload}
-                            disabled={uploadingImage}
-                          >
-                            {uploadingImage ? (
-                              <>
-                                <i className="fas fa-spinner fa-spin"></i>
-                                Uploading...
-                              </>
-                            ) : (
-                              <>
-                                <i className="fas fa-upload"></i>
-                                Upload Image
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      )}
-                      
-                      {formData.image && (
-                        <div className="uploaded-image">
-                          <i className="fas fa-check-circle"></i>
-                          <span>Image uploaded successfully!</span>
+                          <div className="image-status">
+                            <i className="fas fa-check-circle"></i>
+                            <span>{imageFile ? 'New image selected' : 'Current image'}</span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -834,6 +872,30 @@ const TaskerServiceCards = () => {
           )}
         </div>
       </div>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            theme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            theme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   );
 };
