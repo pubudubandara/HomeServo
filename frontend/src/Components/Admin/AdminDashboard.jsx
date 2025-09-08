@@ -22,6 +22,7 @@ const AdminDashboard = ({ stats }) => {
     <div className="dashboard-content">
       <div className="dashboard-header">
         <h2>Dashboard Overview</h2>
+        <span className="dashboard-period">Last 30 Days</span>
       </div>
 
       <div className="stats-grid">
@@ -30,7 +31,7 @@ const AdminDashboard = ({ stats }) => {
             <FaUsers />
           </div>
           <div className="stat-info">
-            <h3>{stats.totalUsers}</h3>
+            <h3>{stats.totalUsers || 0}</h3>
             <p>Total Users</p>
           </div>
         </div>
@@ -40,8 +41,8 @@ const AdminDashboard = ({ stats }) => {
             <FaTasks />
           </div>
           <div className="stat-info">
-            <h3>{stats.totalTaskers}</h3>
-            <p>Active Taskers</p>
+            <h3>{stats.totalTaskers || 0}</h3>
+            <p>Total Taskers</p>
           </div>
         </div>
         
@@ -50,7 +51,7 @@ const AdminDashboard = ({ stats }) => {
             <FaChartBar />
           </div>
           <div className="stat-info">
-            <h3>{stats.pendingTasks}</h3>
+            <h3>{stats.pendingTasks || 0}</h3>
             <p>Pending Approvals</p>
           </div>
         </div>
@@ -86,37 +87,6 @@ const AdminDashboard = ({ stats }) => {
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="dashboard-charts">
-        <div className="chart-container">
-          <h3>Monthly Booking Trends</h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="month" 
-                tick={{ fontSize: 12 }}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-              />
-              <YAxis />
-              <Tooltip 
-                labelFormatter={(label) => `Month: ${label}`}
-                formatter={(value, name) => [value, name === 'bookings' ? 'Bookings' : 'Revenue']}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="bookings" 
-                stroke="#218838" 
-                strokeWidth={3}
-                dot={{ fill: '#218838', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#218838', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
     </div>
   );
 };

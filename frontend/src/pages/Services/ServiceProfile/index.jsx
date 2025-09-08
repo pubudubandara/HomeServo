@@ -121,9 +121,6 @@ const ServiceProfile = () => {
           </ul>
 
           <button className="btn-book" onClick={() => {
-            console.log('ServiceProfile - Booking button clicked');
-            console.log('ServiceProfile - Current id:', id);
-            console.log('ServiceProfile - Navigating to:', `/book/${id}`);
             navigate(`/book/${id}`);
           }}>
             <i className="fas fa-calendar-check"></i> Book Now

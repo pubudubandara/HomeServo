@@ -329,7 +329,7 @@ const getBookingById = async (req, res) => {
 const updateBookingStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, assignedTasker, scheduledDate, estimatedCost, adminNotes } = req.body;
+    const { status, assignedTasker, scheduledDate, estimatedCost, actualCost, rating, adminNotes } = req.body;
 
     const booking = await Booking.findById(id);
     if (!booking) {
@@ -344,6 +344,8 @@ const updateBookingStatus = async (req, res) => {
     if (assignedTasker) booking.assignedTasker = assignedTasker;
     if (scheduledDate) booking.scheduledDate = new Date(scheduledDate);
     if (estimatedCost !== undefined) booking.estimatedCost = estimatedCost;
+    if (actualCost !== undefined) booking.actualCost = actualCost;
+    if (rating !== undefined) booking.rating = rating;
     if (adminNotes !== undefined) booking.adminNotes = adminNotes;
 
     // Set completion date if status is completed
@@ -538,15 +540,35 @@ const getTaskerBookings = async (req, res) => {
     // Get total count for pagination
     const totalBookings = await Booking.countDocuments(query);
 
-    // Calculate booking statistics for this tasker
-    const stats = {
-      total: totalBookings,
-      pending: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'pending' }),
-      confirmed: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'confirmed' }),
-      inProgress: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'in-progress' }),
-      completed: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'completed' }),
-      cancelled: await Booking.countDocuments({ serviceId: { $in: serviceIds }, status: 'cancelled' })
+    // Calculate booking statistics for this tasker (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const last30DaysQuery = { 
+      serviceId: { $in: serviceIds },
+      createdAt: { $gte: thirtyDaysAgo }
     };
+    
+    const stats = {
+      total: await Booking.countDocuments(last30DaysQuery),
+      pending: await Booking.countDocuments({ ...last30DaysQuery, status: 'pending' }),
+      confirmed: await Booking.countDocuments({ ...last30DaysQuery, status: 'confirmed' }),
+      inProgress: await Booking.countDocuments({ ...last30DaysQuery, status: 'in-progress' }),
+      completed: await Booking.countDocuments({ ...last30DaysQuery, status: 'completed' }),
+      cancelled: await Booking.countDocuments({ ...last30DaysQuery, status: 'cancelled' })
+    };
+
+    // Calculate earnings for the last 30 days
+    const completedBookingsLast30Days = await Booking.find({
+      ...last30DaysQuery,
+      status: 'completed'
+    }).select('actualCost estimatedCost');
+    
+    const monthlyEarnings = completedBookingsLast30Days.reduce((total, booking) => {
+      return total + (booking.actualCost || booking.estimatedCost || 0);
+    }, 0);
+    
+    stats.monthlyEarnings = monthlyEarnings;
 
     console.log('Booking stats:', stats);
 

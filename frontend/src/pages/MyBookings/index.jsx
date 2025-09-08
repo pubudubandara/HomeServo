@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getCustomerBookings } from '../../utils/bookingAPI';
+import { getCustomerBookings, updateBookingStatus } from '../../utils/bookingAPI';
 import './MyBookings.css';
 
 const MyBookings = () => {
@@ -8,6 +8,7 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [ratingValues, setRatingValues] = useState({});
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -25,7 +26,10 @@ const MyBookings = () => {
 
       try {
         const result = await getCustomerBookings(userIdentifier);
+        console.log('🔍 Bookings API result:', result);
         if (result.success) {
+          console.log('📋 All fetched bookings:', result.data);
+          console.log('✅ Completed bookings:', result.data.filter(b => b.status === 'completed'));
           setBookings(result.data);
         } else {
           setError(result.message);
@@ -59,6 +63,45 @@ const MyBookings = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleRatingClick = (bookingId, rating) => {
+    setRatingValues(prev => ({
+      ...prev,
+      [bookingId]: rating
+    }));
+  };
+
+  const handleRatingSubmit = async (bookingId) => {
+    const rating = ratingValues[bookingId];
+    if (!rating || rating === 0) return;
+
+    try {
+      const updateData = { rating: parseInt(rating) };
+      const result = await updateBookingStatus(bookingId, updateData);
+      if (result.success) {
+        // Update the booking in state to reflect the new rating
+        setBookings(prevBookings => 
+          prevBookings.map(booking => 
+            booking._id === bookingId 
+              ? { ...booking, rating: parseInt(rating) }
+              : booking
+          )
+        );
+        // Clear the rating value for this booking
+        setRatingValues(prev => {
+          const newValues = { ...prev };
+          delete newValues[bookingId];
+          return newValues;
+        });
+        alert('Rating submitted successfully!');
+      } else {
+        alert('Failed to submit rating: ' + result.message);
+      }
+    } catch (err) {
+      console.error('Error submitting rating:', err);
+      alert('An error occurred while submitting rating');
+    }
   };
 
   if (loading) {
@@ -97,7 +140,9 @@ const MyBookings = () => {
         </div>
       ) : (
         <div className="bookings-list">
-          {bookings.map((booking) => (
+          {bookings.map((booking) => {
+            console.log('🎯 Rendering booking:', booking._id, 'Status:', booking.status, 'Type:', typeof booking.status);
+            return (
             <div key={booking._id} className="booking-card">
               <div className="booking-header">
                 <h3>{booking.serviceId?.title || 'Service'}</h3>
@@ -144,8 +189,54 @@ const MyBookings = () => {
                   <span className="value">{formatDate(booking.createdAt)}</span>
                 </div>
               </div>
+
+              {booking.status === 'completed' && (
+                <div className="booking-rating">
+                  {ratingBooking === booking._id ? (
+                    <div className="rating-container">
+                      <div className="rating-stars">
+                        <span className="rating-label">Rate this service:</span>
+                        <div className="stars">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              className={`star ${(ratingValues[booking._id] || 0) >= star ? 'active' : ''}`}
+                              onClick={() => handleRatingClick(booking._id, star)}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="rating-actions">
+                        <button 
+                          className="submit-rating-btn"
+                          onClick={() => handleRatingSubmit(booking._id)}
+                          disabled={!ratingValues[booking._id] || ratingValues[booking._id] === 0}
+                        >
+                          Submit Rating
+                        </button>
+                        <button 
+                          className="cancel-rating-btn"
+                          onClick={cancelRating}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button 
+                      className="rate-btn"
+                      onClick={() => startRating(booking._id)}
+                    >
+                      {booking.rating ? `Rated: ${booking.rating}★` : 'Rate this service'}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

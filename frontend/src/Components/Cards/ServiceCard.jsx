@@ -66,15 +66,15 @@ const ServiceCard = ({ service }) => {
         <div className="service-stats">
           <div className="service-rating">
             <div className="stars">
-              {renderStars(service.rating || 4.5)}
+              {renderStars(service.rating || 0)}
             </div>
-            <span className="rating-value">({(service.rating || 4.5).toFixed(1)})</span>
+            <span className="rating-value">({(service.rating || 0).toFixed(1)})</span>
           </div>
           
           {service.jobsCompleted !== undefined && (
             <div className="jobs-completed">
               <i className="fas fa-check-circle"></i>
-              <span>{service.jobsCompleted} jobs completed</span>
+              <span>{service.jobsCompleted} jobs completed </span>
             </div>
           )}
         </div>

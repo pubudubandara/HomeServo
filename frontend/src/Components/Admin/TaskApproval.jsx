@@ -31,7 +31,6 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
         <h2>Tasker Approvals</h2>
         <div className="header-actions">
           <span className="pending-count">{pendingTasks.length} pending approvals</span>
-          <button className="btn-export">Export List</button>
         </div>
       </div>
 
@@ -79,9 +78,7 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                     </span>
                   </td>
                   <td>
-                    <span className={`priority ${task.priority || 'normal'}`}>
-                      {task.priority || 'Normal'}
-                    </span>
+                   
                   </td>
                   <td>
                     <div className="action-buttons">
@@ -133,8 +130,8 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                 </div>
                 <div className="profile-info">
                   <h4>{selectedTask.taskerName}</h4>
-                  <p><FaEnvelope /> {selectedTask.email || 'email@example.com'}</p>
-                  <p><FaPhone /> {selectedTask.phone || '+94 77 123 4567'}</p>
+                  <p><FaEnvelope /> {selectedTask.email || 'unknown'}</p>
+                  <p><FaPhone /> {selectedTask.phone || 'unknown'}</p>
                 </div>
               </div>
 
@@ -149,11 +146,11 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
                 </div>
                 <div className="detail-item">
                   <label>Experience:</label>
-                  <span>{selectedTask.experience || '3+ years'}</span>
+                  <span>{selectedTask.experience || 'unknown'}</span>
                 </div>
                 <div className="detail-item">
                   <label>Location:</label>
-                  <span>{selectedTask.location || 'Colombo, Sri Lanka'}</span>
+                  <span>{selectedTask.location || 'unknown'}</span>
                 </div>
               </div>
 

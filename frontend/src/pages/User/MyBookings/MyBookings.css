@@ -179,3 +179,125 @@
     padding: 4px 8px;
   }
 }
+
+/* Rating Styles */
+.booking-rating {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.rating-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.rating-stars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rating-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.stars {
+  display: flex;
+  gap: 5px;
+}
+
+.star {
+  font-size: 1.8rem;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star.active {
+  color: #ffc107;
+}
+
+.star:hover {
+  color: #ffc107;
+}
+
+.rating-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.submit-rating-btn, .cancel-rating-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-rating-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.submit-rating-btn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.submit-rating-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancel-rating-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-rating-btn:hover {
+  background-color: #5a6268;
+}
+
+.rate-btn {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.rate-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Rating Display Styles */
+.rating-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stars-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rating-value {
+  margin-left: 8px;
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}

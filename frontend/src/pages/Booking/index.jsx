@@ -378,15 +378,15 @@ const BookingForm = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="location">Service Location</label>
-                  <input
-                    type="text"
+                  <textarea
                     id="location"
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    placeholder="Enter the service address"
+                    placeholder="Enter the complete service address (street, city, state, zip code)"
+                    rows="3"
                     required
-                  />
+                  ></textarea>
                 </div>
               </div>
 

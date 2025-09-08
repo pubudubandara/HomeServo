@@ -79,6 +79,13 @@
   font-weight: 700;
 }
 
+.dashboard-period {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-left: auto;
+}
+
 .dashboard-actions {
   display: flex;
   gap: 1rem;
@@ -146,11 +153,14 @@
 }
 
 .stat-card.users::before { background: linear-gradient(90deg, #10b981, #059669); }
-.stat-card.taskers::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
-.stat-card.pending::before { background: linear-gradient(90deg, #ef4444, #dc2626); }
-.stat-card.completed::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
-.stat-card.revenue::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
-.stat-card.growth::before { background: linear-gradient(90deg, #ec4899, #db2777); }
+.stat-card.taskers::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.pending::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.bookings::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.completed-bookings::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.in-progress::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.completed::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.revenue::before { background: linear-gradient(90deg, #10b981, #059669); }
+.stat-card.growth::before { background: linear-gradient(90deg, #10b981, #059669); }
 
 .stat-icon {
   width: 60px;

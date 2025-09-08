@@ -3,7 +3,8 @@ import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary.js';
 
-const storage = new CloudinaryStorage({
+// Storage for tasker profile images
+const taskerStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'tasker_profiles',
@@ -12,6 +13,19 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+// Storage for service images
+const serviceStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'service_images',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 800, height: 600, crop: 'limit' }],
+  },
+});
 
-export default upload;
+// Upload middlewares
+const uploadTaskerProfile = multer({ storage: taskerStorage });
+const uploadServiceImage = multer({ storage: serviceStorage });
+
+export { uploadTaskerProfile, uploadServiceImage };
+export default uploadTaskerProfile;

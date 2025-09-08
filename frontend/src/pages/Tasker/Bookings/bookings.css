@@ -466,3 +466,101 @@
 .booking-description strong {
   color: #374151;
 }
+
+/* Cost Editing Styles */
+.action-with-cost {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cost-edit-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cost-input {
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 120px;
+  transition: border-color 0.2s ease;
+}
+
+.cost-input:focus {
+  outline: none;
+  border-color: #06b6d4;
+}
+
+.edit-cost-btn, .save-cost-btn {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-cost-btn:hover, .save-cost-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.save-cost-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cancel-cost-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-cost-btn:hover {
+  background: #e5e7eb;
+}
+
+.completed-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.final-cost {
+  font-weight: 600;
+  color: #059669;
+  font-size: 14px;
+}
+
+/* Responsive adjustments for cost editing */
+@media (max-width: 768px) {
+  .cost-edit-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cost-input {
+    width: 100%;
+  }
+
+  .completed-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

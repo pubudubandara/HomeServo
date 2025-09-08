@@ -55,10 +55,13 @@ const bookingSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'],
     default: 'pending'
   },
-  priority: {
-    type: String,
-    enum: ['low', 'medium', 'high', 'urgent'],
-    default: 'medium'
+
+  // Rating and Feedback
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: false
   },
 
   // Optional: Link to specific tasker
@@ -77,14 +80,6 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     min: 0
   },
-  adminNotes: {
-    type: String,
-    maxlength: [500, 'Admin notes cannot exceed 500 characters']
-  },
-  customerNotes: {
-    type: String,
-    maxlength: [500, 'Customer notes cannot exceed 500 characters']
-  },
   
   // Timestamps
   scheduledDate: {
@@ -92,17 +87,6 @@ const bookingSchema = new mongoose.Schema({
   },
   completedDate: {
     type: Date
-  },
-  
-  // Rating and Feedback
-  customerRating: {
-    type: Number,
-    min: 1,
-    max: 5
-  },
-  customerFeedback: {
-    type: String,
-    maxlength: [1000, 'Customer feedback cannot exceed 1000 characters']
   },
   
   // Payment Information
@@ -128,7 +112,6 @@ bookingSchema.index({ preferredDate: 1 });
 bookingSchema.index({ assignedTasker: 1 });
 bookingSchema.index({ userId: 1 });
 bookingSchema.index({ serviceId: 1 });
-bookingSchema.index({ serviceId: 1 });
 bookingSchema.index({ createdAt: -1 });
 
 // Virtual for booking age in days
@@ -141,35 +124,9 @@ bookingSchema.virtual('daysUntilService').get(function() {
   return Math.floor((this.preferredDate - Date.now()) / (1000 * 60 * 60 * 24));
 });
 
-// Pre-save middleware to set priority based on preferred date
-bookingSchema.pre('save', function(next) {
-  if (this.isNew && this.preferredDate) {
-    const daysUntilService = Math.floor((this.preferredDate - Date.now()) / (1000 * 60 * 60 * 24));
-    
-    if (daysUntilService <= 1) {
-      this.priority = 'urgent';
-    } else if (daysUntilService <= 3) {
-      this.priority = 'high';
-    } else if (daysUntilService <= 7) {
-      this.priority = 'medium';
-    } else {
-      this.priority = 'low';
-    }
-  }
-  next();
-});
-
 // Static method to get bookings by status
 bookingSchema.statics.getBookingsByStatus = function(status) {
   return this.find({ status }).sort({ createdAt: -1 });
-};
-
-// Static method to get urgent bookings
-bookingSchema.statics.getUrgentBookings = function() {
-  return this.find({ 
-    priority: 'urgent',
-    status: { $in: ['pending', 'confirmed'] }
-  }).sort({ preferredDate: 1 });
 };
 
 // Instance method to calculate estimated duration
