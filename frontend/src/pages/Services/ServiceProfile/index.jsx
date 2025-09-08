@@ -7,7 +7,7 @@ const ServiceProfile = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Changed from serviceId to id to match the route
   const [service, setService] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const ServiceProfile = () => {
     return (
       <div className="profile-container">
         <div className="loading">
-          <i className="fas fa-spinner fa-spin"></i>
+          <i className="fas fa-spinner"></i>
           <p>Loading service...</p>
         </div>
       </div>
@@ -121,9 +121,6 @@ const ServiceProfile = () => {
           </ul>
 
           <button className="btn-book" onClick={() => {
-            console.log('ServiceProfile - Booking button clicked');
-            console.log('ServiceProfile - Current id:', id);
-            console.log('ServiceProfile - Navigating to:', `/book/${id}`);
             navigate(`/book/${id}`);
           }}>
             <i className="fas fa-calendar-check"></i> Book Now
