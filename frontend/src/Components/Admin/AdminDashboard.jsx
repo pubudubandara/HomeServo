@@ -84,26 +84,6 @@ const AdminDashboard = ({ stats }) => {
             <p>In Progress</p>
           </div>
         </div>
-
-        <div className="stat-card pending-bookings">
-          <div className="stat-icon">
-            <FaClock />
-          </div>
-          <div className="stat-info">
-            <h3>{stats.pendingBookings || 0}</h3>
-            <p>Pending Bookings</p>
-          </div>
-        </div>
-
-        <div className="stat-card revenue">
-          <div className="stat-icon">
-            <FaChartBar />
-          </div>
-          <div className="stat-info">
-            <h3>${stats.totalRevenue || 0}</h3>
-            <p>Total Revenue</p>
-          </div>
-        </div>
       </div>
 
     </div>
