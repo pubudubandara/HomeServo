@@ -45,7 +45,7 @@
 
 .hero-content p {
   font-size: 1.1rem;
-  color: #ffffff;
+  opacity: 0.9;
   margin: 8px 0;
 }
 
@@ -113,7 +113,7 @@
 
 .card.description p {
   line-height: 1.6;
-  color: #333;
+  color: white;
   margin-bottom: 16px;
 }
 
@@ -354,69 +354,6 @@
 .guarantees i {
   color: #48bb78;
   margin-right: 6px;
-}
-
-/* Loading and Error States */
-.profile-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f7f9fc;
-}
-
-.loading {
-  text-align: center;
-  padding: 40px;
-}
-
-.loading i {
-  font-size: 2rem;
-  color: #28a745;
-  margin-bottom: 20px;
-  animation: spin 1s linear infinite;
-}
-
-.loading p {
-  font-size: 1.2rem;
-  color: #666;
-  margin: 0;
-}
-
-.error {
-  text-align: center;
-  padding: 40px;
-}
-
-.error i {
-  font-size: 3rem;
-  color: #dc3545;
-  margin-bottom: 20px;
-}
-
-.error p {
-  font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.btn-back {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn-back:hover {
-  background: #0056b3;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 /* Responsive */

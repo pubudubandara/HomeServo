@@ -7,7 +7,7 @@ const ServiceProfile = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Changed from serviceId to id to match the route
   const [service, setService] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const ServiceProfile = () => {
     return (
       <div className="profile-container">
         <div className="loading">
-          <i className="fas fa-spinner"></i>
+          <i className="fas fa-spinner fa-spin"></i>
           <p>Loading service...</p>
         </div>
       </div>
