@@ -22,6 +22,7 @@ const AdminDashboard = ({ stats }) => {
     <div className="dashboard-content">
       <div className="dashboard-header">
         <h2>Dashboard Overview</h2>
+        <span className="dashboard-period">Last 30 Days</span>
       </div>
 
       <div className="stats-grid">
