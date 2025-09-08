@@ -8,6 +8,7 @@ const SignupPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [terms, setTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,6 +18,11 @@ const SignupPage = () => {
     e.preventDefault();
     if (!terms) {
       setError('You must agree to the terms and policy.');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
       return;
     }
     
@@ -87,6 +93,18 @@ const SignupPage = () => {
               />
             </div>
             
+            <div className="input-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                placeholder="Re-enter your password"
+              />
+            </div>
+            
             <div className="checkbox-group">
               <input
                 type="checkbox"
@@ -95,7 +113,7 @@ const SignupPage = () => {
                 onChange={(e) => setTerms(e.target.checked)}
               />
               <label htmlFor="terms">
-                I agree to the <a href="/terms">Terms and Conditions</a> and <a href="/privacy">Privacy Policy</a>
+                I agree to the Terms and Conditions and Privacy Policy
               </label>
             </div>
             
