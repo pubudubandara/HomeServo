@@ -31,7 +31,6 @@ const TaskApproval = ({ pendingTasks, onApprove, onReject }) => {
         <h2>Service Approvals</h2>
         <div className="header-actions">
           <span className="pending-count">{pendingTasks.length} pending approvals</span>
-          <button className="btn-export">Export List</button>
         </div>
       </div>
 
