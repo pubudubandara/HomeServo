@@ -51,6 +51,10 @@ const TaskerBookings = () => {
         return;
       }
 
+      console.log('=== TASKER INFO ===');
+      console.log('Tasker result:', taskerResult);
+      console.log('Tasker ID being used:', taskerId);
+
       // Fetch bookings for this tasker
       const params = {
         page: currentPage,
@@ -60,31 +64,26 @@ const TaskerBookings = () => {
         params.status = statusFilter;
       }
 
+      console.log('=== API CALL PARAMETERS ===');
+      console.log('Tasker ID:', taskerId);
+      console.log('Params:', params);
+
       const result = await getTaskerBookings(taskerId, params);
       if (result.success) {
+        console.log('=== BOOKINGS API RESPONSE ===');
+        console.log('Full result:', result);
+        console.log('Stats from backend:', result.data.stats);
+        console.log('Bookings count:', result.data.bookings?.length || 0);
+        
         setBookings(result.data.bookings || []);
         setStats(result.data.stats || stats);
         setPagination(result.data.pagination || pagination);
         
-        // Calculate monthly earnings (this is a basic calculation)
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-        const monthlyBookings = result.data.bookings?.filter(booking => {
-          const bookingDate = new Date(booking.createdAt);
-          return bookingDate.getMonth() === currentMonth && 
-                 bookingDate.getFullYear() === currentYear &&
-                 booking.status === 'completed';
-        }) || [];
-        
-        const monthlyEarnings = monthlyBookings.reduce((total, booking) => {
-          return total + (booking.actualCost || booking.estimatedCost || 0);
-        }, 0);
-        
-        setStats(prev => ({
-          ...prev,
-          monthlyEarnings,
-          averageRating: 4.8 // This should come from actual ratings in the future
-        }));
+        console.log('=== STATS AFTER SETTING ===');
+        console.log('Stats state:', result.data.stats || stats);
+        console.log('Total bookings (last 30 days):', (result.data.stats || stats).total);
+        console.log('Completed bookings (last 30 days):', (result.data.stats || stats).completed);
+        console.log('Monthly earnings:', (result.data.stats || stats).monthlyEarnings);
       } else {
         setError(result.message || 'Failed to fetch bookings');
       }
@@ -205,7 +204,7 @@ const TaskerBookings = () => {
         <div className="bookings-container">
           <div className="bookings-header">
             <h1>My Bookings</h1>
-            <p>Manage your upcoming and completed jobs</p>
+            <p>Manage your upcoming and completed jobs - Last 30 Days</p>
           </div>
 
           <div className="bookings-filters">
@@ -226,19 +225,27 @@ const TaskerBookings = () => {
           <div className="bookings-stats">
             <div className="stat-card">
               <div className="stat-number">{stats.total || 0}</div>
-              <div className="stat-label">Total Bookings</div>
+              <div className="stat-label">Total (30d)</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.pending || 0}</div>
+              <div className="stat-label">Pending (30d)</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.confirmed || 0}</div>
+              <div className="stat-label">Confirmed (30d)</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.inProgress || 0}</div>
+              <div className="stat-label">In Progress (30d)</div>
             </div>
             <div className="stat-card">
               <div className="stat-number">{stats.completed || 0}</div>
-              <div className="stat-label">Completed Jobs</div>
+              <div className="stat-label">Completed (30d)</div>
             </div>
             <div className="stat-card">
               <div className="stat-number">${stats.monthlyEarnings || 0}</div>
-              <div className="stat-label">This Month Earnings</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">{stats.averageRating || 0}★</div>
-              <div className="stat-label">Average Rating</div>
+              <div className="stat-label">Earnings (30d)</div>
             </div>
           </div>
 

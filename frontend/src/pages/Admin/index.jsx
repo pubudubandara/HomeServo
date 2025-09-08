@@ -83,9 +83,18 @@ const Admin = () => {
       setStats({
         totalUsers: dashboardData.totalUsers || 0,
         totalTaskers: dashboardData.totalTaskers || 0,
+        totalBookings: dashboardData.totalBookings || 0,
         pendingTasks: dashboardData.pendingApprovals || 0,
-        completedTasks: dashboardData.completedBookings || 0,
-        revenue: dashboardData.totalRevenue || 0
+        activeUsers: dashboardData.activeUsers || 0,
+        activeTaskers: dashboardData.activeTaskers || 0,
+        completedBookings: dashboardData.completedBookings || 0,
+        pendingBookings: dashboardData.pendingBookings || 0,
+        inProgressBookings: dashboardData.inProgressBookings || 0,
+        recentUsers: dashboardData.recentUsers || 0,
+        recentTaskers: dashboardData.recentTaskers || 0,
+        recentBookings: dashboardData.recentBookings || 0,
+        totalRevenue: dashboardData.totalRevenue || 0,
+        monthlyStats: dashboardData.monthlyStats || []
       });
     } catch (err) {
       throw new Error('Failed to load dashboard data: ' + err.message);

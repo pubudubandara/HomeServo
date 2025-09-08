@@ -30,7 +30,7 @@ const AdminDashboard = ({ stats }) => {
             <FaUsers />
           </div>
           <div className="stat-info">
-            <h3>{stats.totalUsers}</h3>
+            <h3>{stats.totalUsers || 0}</h3>
             <p>Total Users</p>
           </div>
         </div>
@@ -40,8 +40,8 @@ const AdminDashboard = ({ stats }) => {
             <FaTasks />
           </div>
           <div className="stat-info">
-            <h3>{stats.totalTaskers}</h3>
-            <p>Active Taskers</p>
+            <h3>{stats.totalTaskers || 0}</h3>
+            <p>Total Taskers</p>
           </div>
         </div>
         
@@ -50,7 +50,7 @@ const AdminDashboard = ({ stats }) => {
             <FaChartBar />
           </div>
           <div className="stat-info">
-            <h3>{stats.pendingTasks}</h3>
+            <h3>{stats.pendingTasks || 0}</h3>
             <p>Pending Approvals</p>
           </div>
         </div>
@@ -82,6 +82,26 @@ const AdminDashboard = ({ stats }) => {
           <div className="stat-info">
             <h3>{stats.inProgressBookings || 0}</h3>
             <p>In Progress</p>
+          </div>
+        </div>
+
+        <div className="stat-card pending-bookings">
+          <div className="stat-icon">
+            <FaClock />
+          </div>
+          <div className="stat-info">
+            <h3>{stats.pendingBookings || 0}</h3>
+            <p>Pending Bookings</p>
+          </div>
+        </div>
+
+        <div className="stat-card revenue">
+          <div className="stat-icon">
+            <FaChartBar />
+          </div>
+          <div className="stat-info">
+            <h3>${stats.totalRevenue || 0}</h3>
+            <p>Total Revenue</p>
           </div>
         </div>
       </div>
