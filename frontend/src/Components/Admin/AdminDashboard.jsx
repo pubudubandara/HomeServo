@@ -86,37 +86,6 @@ const AdminDashboard = ({ stats }) => {
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="dashboard-charts">
-        <div className="chart-container">
-          <h3>Monthly Booking Trends</h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="month" 
-                tick={{ fontSize: 12 }}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-              />
-              <YAxis />
-              <Tooltip 
-                labelFormatter={(label) => `Month: ${label}`}
-                formatter={(value, name) => [value, name === 'bookings' ? 'Bookings' : 'Revenue']}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="bookings" 
-                stroke="#218838" 
-                strokeWidth={3}
-                dot={{ fill: '#218838', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#218838', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
     </div>
   );
 };
