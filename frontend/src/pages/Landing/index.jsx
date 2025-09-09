@@ -15,7 +15,7 @@ const Landing = () => {
               Professional Home Services
               <span className="hero-highlight">Made Easy</span>
             </h1>
-            <p className="hero-description">
+            <p className="hero-description" style={{ color: '#2c3e50' }}>
               Connect with trusted professionals for all your home service needs.
               From cleaning to repairs, we've got you covered.
             </p>

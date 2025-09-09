@@ -22,21 +22,18 @@ const AboutUs = () => {
         <h2>Our Values</h2>
         <div className="values-cards">
           <div className="value-card">
-            <img src="/images/value1.png" alt="Trust" />
             <h3>Trust</h3>
             <p>
               We ensure that all service providers on our platform are vetted and trustworthy so that you can feel safe and secure using our services.
             </p>
           </div>
           <div className="value-card">
-            <img src="/images/value2.png" alt="Quality" />
             <h3>Quality</h3>
             <p>
               We focus on providing top-quality services through experienced and reliable professionals. Your satisfaction is our priority.
             </p>
           </div>
           <div className="value-card">
-            <img src="/images/value3.png" alt="Convenience" />
             <h3>Convenience</h3>
             <p>
               Whether you need a cleaner, a plumber, or a handyman, we’ve made it easy to book the right professional at a time that suits you.
@@ -56,22 +53,22 @@ const AboutUs = () => {
         <h2>Meet Our Team</h2>
         <div className="team-grid">
           <div className="team-member">
-            <img src="/images/team1.jpg" alt="Team Member 1" />
+            <img src="https://www.bing.com/th/id/OIP.OESNjjem3bSfkIKKfJXEzwHaHa?w=204&h=211&c=8&rs=1&qlt=70&o=7&cb=thws4&dpr=1.3&pid=3.1&rm=3" alt="Team Member 1" />
             <h3>John Doe</h3>
             <p>Founder & CEO</p>
           </div>
           <div className="team-member">
-            <img src="/images/team2.jpg" alt="Team Member 2" />
+            <img src="https://thfvnext.bing.com/th/id/OIP.xb20sw5ix--UUOwn8BhS8AHaHa?w=189&h=189&c=7&r=0&o=7&cb=thfvnext&pid=1.7&rm=3" alt="Team Member 2" />
             <h3>Jane Smith</h3>
             <p>Chief Operating Officer</p>
           </div>
           <div className="team-member">
-            <img src="/images/team3.jpg" alt="Team Member 3" />
+            <img src="https://thfvnext.bing.com/th/id/OIP.Ez7AYlOBWvgs8mHYKEtJhQHaFk?w=234&h=180&c=7&r=0&o=7&cb=thfvnext&pid=1.7&rm=3" alt="Team Member 3" />
             <h3>Sarah Williams</h3>
             <p>Marketing Lead</p>
           </div>
           <div className="team-member">
-            <img src="/images/team4.jpg" alt="Team Member 4" />
+            <img src="https://thfvnext.bing.com/th/id/OIP.b4HrtVtjRDNj2SH9IB8OrAHaHa?w=189&h=189&c=7&r=0&o=7&cb=thfvnext&pid=1.7&rm=3" alt="Team Member 4" />
             <h3>Mike Johnson</h3>
             <p>Head of Technology</p>
           </div>
