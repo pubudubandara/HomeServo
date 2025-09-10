@@ -7,6 +7,7 @@ import { serviceAPI } from '../../utils/serviceAPI';
 
 const ServicesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('Assembly');
+  const [searchTerm, setSearchTerm] = useState('');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +19,9 @@ const ServicesPage = () => {
         const queryParams = {};
         if (selectedCategory && selectedCategory !== 'all') {
           queryParams.category = selectedCategory;
+        }
+        if (searchTerm.trim()) {
+          queryParams.search = searchTerm.trim();
         }
         const response = await serviceAPI.getPublicServices(queryParams);
         setServices(response.data || []);
@@ -31,22 +35,43 @@ const ServicesPage = () => {
     };
 
     fetchServices();
-  }, [selectedCategory]);
+  }, [selectedCategory, searchTerm]);
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
   };
 
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
+  const getTitle = () => {
+    if (searchTerm.trim()) {
+      return `Search Results for "${searchTerm}"`;
+    }
+    return `${selectedCategory} Services`;
+  };
+
   return (
     <div>
-      <Hero />
+      <Hero onSearch={handleSearch} />
+      {searchTerm.trim() && (
+        <ServiceCardList
+          services={services}
+          title={getTitle()}
+          loading={loading}
+          error={error}
+        />
+      )}
       <ServiceCards onCategoryChange={handleCategoryChange} />
-      <ServiceCardList
-        services={services}
-        title={`${selectedCategory} Services`}
-        loading={loading}
-        error={error}
-      />
+      {!searchTerm.trim() && (
+        <ServiceCardList
+          services={services}
+          title={getTitle()}
+          loading={loading}
+          error={error}
+        />
+      )}
       <Footer />
     </div>
   );

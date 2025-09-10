@@ -58,7 +58,7 @@ const ServiceCard = ({ service }) => {
           <div className="service-tasker-info">
             <div className="tasker-name">
               <i className="fas fa-user-circle"></i>
-              <span>{service.tasker.firstName} {service.tasker.lastName}</span>
+              <span>{service.tasker.name || `${service.tasker.firstName} ${service.tasker.lastName}`}</span>
             </div>
           </div>
         )}
@@ -100,7 +100,8 @@ ServiceCard.propTypes = {
     rating: PropTypes.number,
     tasker: PropTypes.shape({
       firstName: PropTypes.string,
-      lastName: PropTypes.string
+      lastName: PropTypes.string,
+      name: PropTypes.string
     })
   }).isRequired
 };
