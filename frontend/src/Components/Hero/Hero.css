@@ -117,11 +117,11 @@
 
 .search-button {
   position: absolute;
-  right: 5px;
-  top: 50%;
+  right: -60px;
+  top: -8px;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   background: #34a853 !important;
   color: white !important;
   border: none !important;
