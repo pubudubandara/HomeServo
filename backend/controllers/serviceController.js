@@ -245,7 +245,7 @@ export const getAllServicesForAdmin = async (req, res) => {
         path: 'taskerId',
         populate: {
           path: 'userId',
-          select: 'firstName lastName email'
+          select: 'name email'
         }
       })
       .sort({ createdAt: -1 })
@@ -341,28 +341,121 @@ export const getPublicServices = async (req, res) => {
       query.category = category;
     }
 
-    // Add search filter if provided
+    let services;
+    let total;
+
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search, 'i')] } }
-      ];
-    }
-
-    const services = await Service.find(query)
-      .populate({
-        path: 'taskerId',
-        populate: {
-          path: 'userId',
-          select: 'firstName lastName email'
+      // Use aggregation pipeline for searching in populated fields
+      const aggregationPipeline = [
+        {
+          $match: query
+        },
+        {
+          $lookup: {
+            from: 'taskers',
+            localField: 'taskerId',
+            foreignField: '_id',
+            as: 'tasker'
+          }
+        },
+        {
+          $unwind: '$tasker'
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'tasker.userId',
+            foreignField: '_id',
+            as: 'tasker.user'
+          }
+        },
+        {
+          $unwind: '$tasker.user'
+        },
+        {
+          $match: {
+            $or: [
+              { title: { $regex: search, $options: 'i' } },
+              { description: { $regex: search, $options: 'i' } },
+              { tags: { $in: [new RegExp(search, 'i')] } },
+              { 'tasker.user.name': { $regex: search, $options: 'i' } },
+              { 'tasker.city': { $regex: search, $options: 'i' } },
+              { 'tasker.stateProvince': { $regex: search, $options: 'i' } },
+              { 'tasker.country': { $regex: search, $options: 'i' } },
+              { 'tasker.addressLine1': { $regex: search, $options: 'i' } },
+              { 'tasker.addressLine2': { $regex: search, $options: 'i' } }
+            ]
+          }
+        },
+        {
+          $sort: { createdAt: -1 }
+        },
+        {
+          $skip: (page - 1) * limit
+        },
+        {
+          $limit: limit
         }
-      })
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      ];
 
-    const total = await Service.countDocuments(query);
+      services = await Service.aggregate(aggregationPipeline);
+      total = await Service.aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: 'taskers',
+            localField: 'taskerId',
+            foreignField: '_id',
+            as: 'tasker'
+          }
+        },
+        {
+          $unwind: '$tasker'
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'tasker.userId',
+            foreignField: '_id',
+            as: 'tasker.user'
+          }
+        },
+        {
+          $unwind: '$tasker.user'
+        },
+        {
+          $match: {
+            $or: [
+              { title: { $regex: search, $options: 'i' } },
+              { description: { $regex: search, $options: 'i' } },
+              { tags: { $in: [new RegExp(search, 'i')] } },
+              { 'tasker.user.name': { $regex: search, $options: 'i' } },
+              { 'tasker.city': { $regex: search, $options: 'i' } },
+              { 'tasker.stateProvince': { $regex: search, $options: 'i' } },
+              { 'tasker.country': { $regex: search, $options: 'i' } },
+              { 'tasker.addressLine1': { $regex: search, $options: 'i' } },
+              { 'tasker.addressLine2': { $regex: search, $options: 'i' } }
+            ]
+          }
+        },
+        { $count: "total" }
+      ]);
+      total = total.length > 0 ? total[0].total : 0;
+    } else {
+      services = await Service.find(query)
+        .populate({
+          path: 'taskerId',
+          populate: {
+            path: 'userId',
+            select: 'name email'
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(limit * 1)
+        .skip((page - 1) * limit);
+
+      total = await Service.countDocuments(query);
+    }
 
     // Get booking statistics for each service
     const servicesWithStats = await Promise.all(
@@ -389,6 +482,11 @@ export const getPublicServices = async (req, res) => {
           // Count completed jobs
           const jobsCompleted = completedBookings.length;
 
+          // Handle different service structures (aggregation vs populate)
+          const isAggregated = service.tasker && service.tasker.user;
+          const taskerData = isAggregated ? service.tasker : service.taskerId;
+          const userData = isAggregated ? service.tasker.user : service.taskerId?.userId;
+
           return {
             id: service._id,
             name: service.title,
@@ -399,17 +497,22 @@ export const getPublicServices = async (req, res) => {
             tags: service.tags,
             rating: parseFloat(averageRating),
             jobsCompleted: jobsCompleted,
-            tasker: service.taskerId ? {
-              id: service.taskerId._id,
-              firstName: service.taskerId.userId?.firstName || '',
-              lastName: service.taskerId.userId?.lastName || '',
-              name: `${service.taskerId.userId?.firstName || ''} ${service.taskerId.userId?.lastName || ''}`.trim(),
-              email: service.taskerId.userId?.email || ''
+            tasker: taskerData ? {
+              id: taskerData._id,
+              firstName: userData?.name?.split(' ')[0] || '',
+              lastName: userData?.name?.split(' ').slice(1).join(' ') || '',
+              name: userData?.name || '',
+              email: userData?.email || ''
             } : null
           };
         } catch (error) {
           console.error(`Error calculating stats for service ${service._id}:`, error);
           // Return service with default values if stats calculation fails
+          // Handle different service structures (aggregation vs populate)
+          const isAggregated = service.tasker && service.tasker.user;
+          const taskerData = isAggregated ? service.tasker : service.taskerId;
+          const userData = isAggregated ? service.tasker.user : service.taskerId?.userId;
+
           return {
             id: service._id,
             name: service.title,
@@ -420,12 +523,12 @@ export const getPublicServices = async (req, res) => {
             tags: service.tags,
             rating: 0,
             jobsCompleted: 0,
-            tasker: service.taskerId ? {
-              id: service.taskerId._id,
-              firstName: service.taskerId.userId?.firstName || '',
-              lastName: service.taskerId.userId?.lastName || '',
-              name: `${service.taskerId.userId?.firstName || ''} ${service.taskerId.userId?.lastName || ''}`.trim(),
-              email: service.taskerId.userId?.email || ''
+            tasker: taskerData ? {
+              id: taskerData._id,
+              firstName: userData?.name?.split(' ')[0] || '',
+              lastName: userData?.name?.split(' ').slice(1).join(' ') || '',
+              name: userData?.name || '',
+              email: userData?.email || ''
             } : null
           };
         }
@@ -462,7 +565,7 @@ export const getServiceProfile = async (req, res) => {
         path: 'taskerId',
         populate: {
           path: 'userId',
-          select: 'firstName lastName email'
+          select: 'name email'
         }
       });
 
@@ -503,8 +606,9 @@ export const getServiceProfile = async (req, res) => {
       createdAt: service.createdAt,
       tasker: {
         id: service.taskerId._id,
-        firstName: service.taskerId.userId?.firstName || '',
-        lastName: service.taskerId.userId?.lastName || '',
+        firstName: service.taskerId.userId?.name?.split(' ')[0] || '',
+        lastName: service.taskerId.userId?.name?.split(' ').slice(1).join(' ') || '',
+        name: service.taskerId.userId?.name || '',
         email: service.taskerId.userId?.email || '',
         profileImage: service.taskerId.profileImageUrl,
         phoneNumber: service.taskerId.phoneNumber,

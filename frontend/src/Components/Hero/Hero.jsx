@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Hero.css';
 
-const Hero = () => {
+const Hero = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (onSearch) {
+      onSearch(searchTerm);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
   return (
     <div>
       <div className="Conatiner">
@@ -15,8 +34,19 @@ const Hero = () => {
           <p>Find <span>Customers</span></p>
         </div>
         <div className="SearchBar">
-          <input type="text" placeholder="Search..."/>
-          <img src="/search.png" alt="" />
+          <form onSubmit={handleSearch} className="search-form">
+            <input 
+              type="text" 
+              placeholder="Search services, taskers, or locations..."
+              value={searchTerm}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+              className="search-input"
+            />
+            <button type="submit" className="search-button">
+              <i className="fas fa-search"></i>
+            </button>
+          </form>
         </div>
       </div>
       <div className="Background">
