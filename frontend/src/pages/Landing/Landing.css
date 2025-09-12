@@ -32,7 +32,7 @@
 }
 
 .hero-content{
-  top:100px;
+  top:150px;
   z-index: 3;
 }
 
@@ -50,8 +50,9 @@
 }
 
 .hero-title {
+  font-family: 'Segoe UI', sans-serif;
   font-size: 5rem;
-  font-weight: 1000;
+  font-weight: 900;
   margin-bottom: 1rem;
   color: var(--text-primary);
   text-shadow: none;
@@ -64,7 +65,7 @@
   font-weight: 900;
   color: var(--primary-green);
   text-shadow: none;
-  margin-top: 100px;
+  margin-top: 10px;
 }
 
 .hero-description {
@@ -82,7 +83,8 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 150px;
+  margin-top: 180px;
+  
 }
 
 /* =================== */
